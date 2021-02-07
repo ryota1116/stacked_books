@@ -57,3 +57,8 @@
 例えば300ページの書籍を読了した場合、その本をアプリ上に登録することで、<br>
 300ページ x 0.1mm/1ページ(※参考値) = 3cm<br>
 という計算から、読書量が3cm加算されるような設定となっています。
+
+## 画面遷移図
+https://www.figma.com/file/OTN0BtC3RrgPhMgW9wILm2/Stacked_Books?node-id=0%3A1
+
+## ER図
