@@ -1,0 +1,341 @@
+openapi: 3.0.0
+info:
+  title: Stacked Books API
+  version: 1.0.0
+  description: これはStacked BooksのAPI定義です。
+basePath:
+paths:
+  /signup:
+    post:
+      tags:
+        - 認証
+      summary: 会員登録
+      requestBody:
+        description: 会員登録に必要なUserのデータを送信
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/parameters/SignUpForm'
+      responses:
+        '200':
+          description: 会員登録成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/SignInResponse'
+  /signin:
+    post:
+      tags:
+        - 認証
+      summary: ログイン
+      requestBody:
+        description: ログインに必要なUserのデータを送信
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/parameters/SignInForm'
+      responses:
+        '200':
+          description: ログイン成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/SignInResponse'
+  /books/search:
+    post:
+      tags:
+        - 本の検索
+      summary: 本の登録
+      parameters:
+        - in: query
+          name: word
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 書籍検索時のレスポンス
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/GoogleBooksAPIResponse'
+  /books:
+    post:
+      tags:
+        - 本のCRUD
+      summary: 本の登録
+      parameters: []
+      responses:
+        '200':
+          description: 本の登録成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                    description: UserBook Id
+                  name:
+                    type: string
+                    example: test user
+                    description: UserBook Name
+
+  /users/{userId}/books:
+    get:
+      tags:
+        - 本のCRUD
+      summary: 特定ユーザーの本の一覧を取得
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+            description: ユーザーのID
+      responses:
+        '200':
+          description: 特定ユーザーの本の一覧を取得したときのレスポンス
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/UserBooksList'
+  /userbooks/value:
+    post:
+      tags:
+        - 本のCRUD
+      summary: 読書量を表示
+      parameters: []
+      responses:
+        '200':
+          description: 読書量を表示した時のレスポンス
+          content:
+            application/json:
+              schema:
+                title: 読書量
+                content: applicatiopn/json
+                type: object
+                properties:
+                  userbooks:
+                    type: object
+                    $ref: '#/components/schemas/UserBooksPageCount'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: 山田太郎
+        email:
+          type: string
+          example: test@example.jp
+        password:
+          type: string
+          example: password
+        avatar:
+          type: string
+        role:
+          type: string
+          enum:
+            - general
+            - admin
+      required:
+        - id
+        - name
+        - email
+        - password
+        - role
+    UserBook:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          example: 1
+        book_id:
+          type: integer
+          format: int64
+          example: 1
+        status:
+          type: string
+          enum:
+            - want
+            - done
+          example: want
+          description: 読書ステータス
+        memo:
+          type: string
+          example: メモメモ
+      required:
+        - user_id
+        - book_id
+        - status
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        title:
+          type: string
+          example: リーダブルコード
+        description:
+          type: string
+          example: 読んでわかるコードの重要性と方法について解説
+        image:
+          type: string
+        isbn_10:
+          type: string
+          example: 4873115655
+        isbn_13:
+          type: string
+          example: 9784873115658
+        page_count:
+          type: integer
+          example: 237
+        published_at:
+          type: string
+          example: 2012-06
+      required:
+        - id
+        - title
+        - page_count
+        - published_at
+    UserBooksList:
+      type: object
+      properties:
+        userbooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBook'
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+      required:
+        - user_id
+        - book_id
+    UserBooksPageCount:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        page_count:
+          type: integer
+          example: 237
+        published_at:
+          type: string
+          example: 2012-06
+    AccessToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: b77yz37w7kzy8v5fuga6hoge
+        expires_in:
+          type: string
+          example: 2345678
+        refresh_token:
+          type: string
+          format: time
+          example: dm3yzerg24kzyfoo9v00lka
+  parameters:
+    SignUpForm:
+      description: ユーザー登録フォーム
+      type: object
+      properties:
+        name:
+          type: string
+          example: 山田太郎
+        email:
+          type: string
+          example: test@example.jp
+        password:
+          type: string
+          example: password
+      required:
+        - name
+        - email
+        - password
+    SignInForm:
+      description: ログインフォーム
+      type: object
+      properties:
+        email:
+          type: string
+          example: test@example.jp
+        password:
+          type: string
+          example: password
+      required:
+        - email
+        - password
+  responses:
+    SignInResponse:
+      title: ログイン
+      content: applicatiopn/json
+      type: object
+      properties:
+        user:
+          type: object
+          $ref: '#/components/schemas/User'
+        token:
+          type: object
+          $ref: '#/components/schemas/AccessToken'
+      required:
+        - profile
+        - token
+    GoogleBooksAPIResponse:
+      title: GoogleBooksAPIを叩く
+      content: applicatiopn/json
+      type: object
+      properties:
+        title:
+          type: string
+          example: リーダブルコード
+        description:
+          type: string
+          example: 読んでわかるコードの重要性と方法について解説
+        image:
+          type: string
+        isbn_10:
+          type: string
+          example: 4873115655
+        isbn_13:
+          type: string
+          example: 9784873115658
+        page_count:
+          type: integer
+          example: 237
+        published_at:
+          type: string
+          example: 2012-06
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
