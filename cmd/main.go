@@ -1,24 +1,12 @@
 package main
 
 import (
-	"../domain/model"
-	"fmt"
+	"../server"
 	_ "github.com/go-sql-driver/mysql"
-	"net/http"
 )
 
-func RootHandler(w http.ResponseWriter, r *http.Request)  {
-	fmt.Println("Hello World\n")
+func main() {
+
+	server.StartWebServer()
 
 }
-
-func SignUpHandler(w http.ResponseWriter, r *http.Request)  {
-
-	fmt.Println("Hello World\n")
-}
-
-func main()  {
-	model.StartWebServer()
-
-}
-
