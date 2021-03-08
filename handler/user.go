@@ -68,14 +68,6 @@ func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-//func (uh userHandler) VerifyToken(w http.ResponseWriter, r *http.Request) {
-//
-//	err := usecase.VerifyToken
-//	if err != nil {
-//		w.Header()
-//	}
-//}
-
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
 	// ParseFromRequestで、リクエストヘッダーのAuthorizationからJWTを抽出し、
 	// 抽出したJWTのclaimをparseしてくれる。parseするだけで署名検証とかはしてくれないzv
