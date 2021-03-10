@@ -10,6 +10,6 @@ type UserRepository interface {
 	// *型名でポイント型になる
 	// *型名でUser型へのポイント型
 	SignUp(user model.User, bcryptHashPassword []byte) error
-	SignIn(w http.ResponseWriter, r *http.Request) (model.User, error)
+	SignIn(user model.User) (model.User, error)
 	ShowUser(w http.ResponseWriter, r *http.Request) model.User
 }

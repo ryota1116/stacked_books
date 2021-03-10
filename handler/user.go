@@ -35,13 +35,12 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 
 // uhはuserHandler型の構造体 → つまりUserHandler(インターフェイス型)
 func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
-	// リクエストボディをデコードする
 	user := model.User{}
 	json.NewDecoder(r.Body).Decode(&user)
 
+	// TODO: バリデーションエラーを受け取り、JSONでレスポンスする
 	err := uh.userUseCase.SignUp(user)
 	if err != nil {
-		// バリデーションエラーがあれば、JSONでレスポンスする
 		fmt.Println(err)
 	}
 
@@ -50,19 +49,17 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
-	user, err := uh.userUseCase.SignIn(w, r)
+	user := model.User{}
+	json.NewDecoder(r.Body).Decode(&user)
+
+	token, err := uh.userUseCase.SignIn(user)
+
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		tokenString, err := usecase.GenerateToken(user) // token生成
-		if err != nil {
-			fmt.Println(err)
-		}
-
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		//json.NewEncoder(w).Encode(user)
-		json.NewEncoder(w).Encode(tokenString) // 生成したトークンをリクエストボディで返してみる
+		json.NewEncoder(w).Encode(token) // 生成したトークンをリクエストボディで返してみる
 	}
 }
 
@@ -75,8 +72,7 @@ func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func VerifyToken(w http.ResponseWriter, r *http.Request) {
-	// ParseFromRequestで、リクエストヘッダーのAuthorizationからJWTを抽出し、
-	// 抽出したJWTのclaimをparseしてくれる。parseするだけで署名検証とかはしてくれないzv
+	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
 		if !ok {

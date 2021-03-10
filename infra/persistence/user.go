@@ -3,10 +3,8 @@ package persistence
 import (
 	"../../domain/model"
 	"../../domain/repository"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"net/http"
@@ -39,11 +37,8 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) err
 	return err
 }
 
-func (up userPersistence) SignIn(w http.ResponseWriter, r *http.Request) (model.User, error) {
+func (up userPersistence) SignIn(user model.User) (model.User, error) {
 	db := DbConnect()
-	user := model.User{}
-
-	json.NewDecoder(r.Body).Decode(&user)
 
 	dbUser := model.User{}
 	err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().
@@ -52,17 +47,7 @@ func (up userPersistence) SignIn(w http.ResponseWriter, r *http.Request) (model.
 		panic(err.Error())
 	}
 
-	fmt.Println("SQL実行結果")
-	fmt.Println(dbUser.Password)
-
-	// TODO: usecaseに移す
-	// これが通れば、generateTokenするように分岐させる
-	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
-		fmt.Println("ログインできませんでした")
-	} else {
-		fmt.Println("ログインできました")
-	}
-	return user, err
+	return dbUser, err
 }
 
 //Userを1件取得

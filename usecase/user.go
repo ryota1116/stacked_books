@@ -17,7 +17,7 @@ const (
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
 	SignUp(user model.User) error
-	SignIn(w http.ResponseWriter, r *http.Request) (model.User, error)
+	SignIn(user model.User) (string, error)
 	ShowUser(w http.ResponseWriter, r *http.Request) model.User
 	//GenerateToken([]*model.User) (string, error)
 	//VerifyToken(w http.ResponseWriter, r *http.Request)
@@ -51,12 +51,19 @@ func (uu userUseCase) SignUp(user model.User) error {
 	return dbErr
 }
 
-func (uu userUseCase) SignIn(w http.ResponseWriter, r *http.Request) (model.User, error) {
-	user, err := uu.userRepository.SignIn(w, r)
-	if err != nil {
-		fmt.Println(err)
+func (uu userUseCase) SignIn(user model.User) (string, error) {
+	dbUser, err := uu.userRepository.SignIn(user)
+
+	// TODO: usecaseに移す？
+	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
+		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
+		return "", err
+	} else {
+		fmt.Println("ログインできました")
 	}
-	return user, err
+
+	token, err := GenerateToken(user)
+	return token, err
 }
 
 func (uu userUseCase) ShowUser(w http.ResponseWriter, r *http.Request) model.User {
