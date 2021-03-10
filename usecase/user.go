@@ -5,6 +5,7 @@ import (
 	"../domain/repository"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"time"
 )
@@ -15,7 +16,7 @@ const (
 
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
-	SignUp(w http.ResponseWriter, r *http.Request) error
+	SignUp(user model.User) error
 	SignIn(w http.ResponseWriter, r *http.Request) (model.User, error)
 	ShowUser(w http.ResponseWriter, r *http.Request) model.User
 	//GenerateToken([]*model.User) (string, error)
@@ -36,12 +37,18 @@ func NewUserUseCase(ur repository.UserRepository) UserUseCase {
 	}
 }
 
-func (uu userUseCase) SignUp(w http.ResponseWriter, r *http.Request) error {
-	err := uu.userRepository.SignUp(w, r)
+func (uu userUseCase) SignUp(user model.User) error {
+	// bcryptを使ってパスワードをハッシュ化する
+	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
-	return err
+
+	dbErr := uu.userRepository.SignUp(user, bcryptHashPassword)
+	if dbErr != nil {
+		return dbErr
+	}
+	return dbErr
 }
 
 func (uu userUseCase) SignIn(w http.ResponseWriter, r *http.Request) (model.User, error) {

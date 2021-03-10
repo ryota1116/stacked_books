@@ -30,28 +30,12 @@ func NewUserPersistence() repository.UserRepository {
 // 	関数の中身
 // }
 // インターフェイスの実装
-func (up userPersistence) SignUp(w http.ResponseWriter, r *http.Request) error {
+func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) error {
 	db := DbConnect()
-	user := model.User{}
-
-	// リクエストボディをデコードする
-	json.NewDecoder(r.Body).Decode(&user)
-
-	// bcryptを使ってパスワードをハッシュ化する
-	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("-----リクエストボディをデコードした結果-----")
-	fmt.Println(user)
 
 	// DBにユーザーを登録
-	if r.Method == "POST" {
-		query := "INSERT INTO USERS(user_name, email, password) VALUES(?, ?, ?)"
-		// TODO: Execは戻り値がないから、変数に格納できない
-		db.Debug().Exec(query, user.UserName, user.Email, bcryptHashPassword)
-	}
-
+	query := "INSERT INTO USERS(user_name, email, password) VALUES(?, ?, ?)"
+	err := db.Debug().Exec(query, user.UserName, user.Email, bcryptHashPassword).Error
 	return err
 }
 

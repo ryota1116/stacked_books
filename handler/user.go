@@ -2,6 +2,7 @@ package handler
 
 import (
 	"../usecase"
+	"../domain/model"
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -34,8 +35,13 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 
 // uhはuserHandler型の構造体 → つまりUserHandler(インターフェイス型)
 func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
-	err := uh.userUseCase.SignUp(w, r)
+	// リクエストボディをデコードする
+	user := model.User{}
+	json.NewDecoder(r.Body).Decode(&user)
+
+	err := uh.userUseCase.SignUp(user)
 	if err != nil {
+		// バリデーションエラーがあれば、JSONでレスポンスする
 		fmt.Println(err)
 	}
 
