@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"net/http"
 	"../model"
 )
 
@@ -11,5 +10,5 @@ type UserRepository interface {
 	// *型名でUser型へのポイント型
 	SignUp(user model.User, bcryptHashPassword []byte) error
 	SignIn(user model.User) (model.User, error)
-	ShowUser(w http.ResponseWriter, r *http.Request) model.User
+	ShowUser(params map[string]string) model.User
 }

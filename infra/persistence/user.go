@@ -4,10 +4,8 @@ import (
 	"../../domain/model"
 	"../../domain/repository"
 	"fmt"
-	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 // Userのインフラ層の構造体
@@ -51,13 +49,10 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 }
 
 //Userを1件取得
-func (up userPersistence) ShowUser(w http.ResponseWriter, r *http.Request) model.User {
+func (up userPersistence) ShowUser(params map[string]string) model.User {
 	db := DbConnect()
 
-	fmt.Println(r.URL) // 「/user/1」とかを取得している
-
 	user := model.User{}
-	params := mux.Vars(r) // map[id:1]
 	result := db.Debug().First(&user, params["userId"])
 
 	fmt.Println(&result)

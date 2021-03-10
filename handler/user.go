@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
+	"github.com/gorilla/mux"
 	"net/http"
 	"errors"
 )
@@ -64,7 +65,8 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	user := uh.userUseCase.ShowUser(w, r) // usecaseを呼んでいるだけ
+	params := mux.Vars(r) // map[id:1]
+	user := uh.userUseCase.ShowUser(params)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

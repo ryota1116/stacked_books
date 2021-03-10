@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 	"time"
 )
 
@@ -18,9 +17,7 @@ const (
 type UserUseCase interface {
 	SignUp(user model.User) error
 	SignIn(user model.User) (string, error)
-	ShowUser(w http.ResponseWriter, r *http.Request) model.User
-	//GenerateToken([]*model.User) (string, error)
-	//VerifyToken(w http.ResponseWriter, r *http.Request)
+	ShowUser(params map[string]string) model.User
 }
 
 // TODO: 依存する方向てきな？
@@ -66,8 +63,8 @@ func (uu userUseCase) SignIn(user model.User) (string, error) {
 	return token, err
 }
 
-func (uu userUseCase) ShowUser(w http.ResponseWriter, r *http.Request) model.User {
-	user := uu.userRepository.ShowUser(w, r)
+func (uu userUseCase) ShowUser(params map[string]string) model.User {
+	user := uu.userRepository.ShowUser(params)
 	return user
 }
 
