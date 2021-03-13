@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"../domain/model"
+	"github.com/ryota1116/stacked_books/domain/model"
 )
 
 type UserUseCaseMock struct {
@@ -80,7 +80,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 		panic(err)
 	}
 
-	assert.Equal(t, user.Id, int64(1), `ユーザーIDが`)
+	assert.Equal(t, user.Id, int64(1), `ユーザーIDが正しいこと`)
 }
 
 func TestUserHandler_SignIn(t *testing.T) {

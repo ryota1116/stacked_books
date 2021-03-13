@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"../domain/model"
-	"../usecase"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gorilla/mux"
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
 )
 

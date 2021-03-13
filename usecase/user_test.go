@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	//"net/http/httptest"
+	"github.com/ryota1116/stacked_books/domain/model"
+	_ "github.com/ryota1116/stacked_books/domain/repository"
+	_ "net/http/httptest"
 	"testing"
-	//"../domain/repository"
-	"../domain/model"
 )
 
 type UserRepositoryMock struct {

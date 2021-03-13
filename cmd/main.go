@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../server"
+	"github.com/ryota1116/stacked_books/server"
 	_ "github.com/go-sql-driver/mysql"
 )
 

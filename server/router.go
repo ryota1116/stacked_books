@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"../handler"
-	"../infra/persistence"
-	"../usecase"
+	"github.com/ryota1116/stacked_books/handler"
+	"github.com/ryota1116/stacked_books/infra/persistence"
+	"github.com/ryota1116/stacked_books/usecase"
 )
 
 // webサーバーに接続する

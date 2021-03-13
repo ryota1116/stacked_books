@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"../model"
+	"github.com/ryota1116/stacked_books/domain/model"
 )
 
 // interfaceを定義し、技術的関心事を扱うinfra層がrepositoryの処理を実装する（依存性逆転）
