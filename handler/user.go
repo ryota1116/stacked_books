@@ -1,15 +1,15 @@
 package handler
 
 import (
-	"../usecase"
 	"../domain/model"
+	"../usecase"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gorilla/mux"
 	"net/http"
-	"errors"
 )
 
 const (
@@ -40,11 +40,13 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&user)
 
 	// TODO: バリデーションエラーを受け取り、JSONでレスポンスする
-	err := uh.userUseCase.SignUp(user)
+	dbUser, err := uh.userUseCase.SignUp(user)
 	if err != nil {
 		fmt.Println(err)
+		// json.NewEncoder(w).Encode(err)
 	}
 
+	json.NewEncoder(w).Encode(dbUser)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 }

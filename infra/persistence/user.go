@@ -3,6 +3,7 @@ package persistence
 import (
 	"../../domain/model"
 	"../../domain/repository"
+	"errors"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -26,13 +27,20 @@ func NewUserPersistence() repository.UserRepository {
 // 	関数の中身
 // }
 // インターフェイスの実装
-func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) error {
+func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (model.User, error) {
 	db := DbConnect()
 
+	// TODO: playground/validationを使う
+	var err error
+	if user.UserName == "" {
+		err = errors.New("ユーザー名を入力してください")
+	}
+	
+	user.Password = string(bcryptHashPassword)
 	// DBにユーザーを登録
-	query := "INSERT INTO USERS(user_name, email, password) VALUES(?, ?, ?)"
-	err := db.Debug().Exec(query, user.UserName, user.Email, bcryptHashPassword).Error
-	return err
+	db.Create(&user)
+	fmt.Println(user)
+	return user, err
 }
 
 func (up userPersistence) SignIn(user model.User) (model.User, error) {

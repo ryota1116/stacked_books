@@ -15,7 +15,7 @@ const (
 
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
-	SignUp(user model.User) error
+	SignUp(user model.User) (model.User, error)
 	SignIn(user model.User) (string, error)
 	ShowUser(params map[string]string) model.User
 }
@@ -34,18 +34,20 @@ func NewUserUseCase(ur repository.UserRepository) UserUseCase {
 	}
 }
 
-func (uu userUseCase) SignUp(user model.User) error {
+func (uu userUseCase) SignUp(user model.User) (model.User, error) {
 	// bcryptを使ってパスワードをハッシュ化する
 	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		//return
+		fmt.Println(err)
 	}
 
-	dbErr := uu.userRepository.SignUp(user, bcryptHashPassword)
-	if dbErr != nil {
-		return dbErr
-	}
-	return dbErr
+	dbUser, err := uu.userRepository.SignUp(user, bcryptHashPassword)
+	return dbUser, err
+	//if dbErr != nil {
+	//	return dbErr
+	//}
+	//return dbErr
 }
 
 func (uu userUseCase) SignIn(user model.User) (string, error) {
