@@ -16,7 +16,7 @@ var (
 
 // TODO: 最終的に全構造体のバリデーションを１つのメソッドに集約させる
 // Userストラクト用のバリデーター
-func UserValidate(user User) {
+func UserValidate(user User) map[string]string {
 	translator := ja.New()
 	uni := ut.New(translator, translator)
 
@@ -27,22 +27,31 @@ func UserValidate(user User) {
 	validate = validator.New()
 	jatranslations.RegisterDefaultTranslations(validate, trans)
 
-	translateAll(trans, user)
-	translateIndividual(trans, user)
-	translateOverride(trans, user)
+	fmt.Println("--------------")
+	var errmap map[string]string
+	errmap = translateAll(trans, user)
+	fmt.Println("--------------")
+	//translateIndividual(trans, user)
+	fmt.Println("--------------")
+	//translateOverride(trans, user)
+
+	return errmap
 }
 
 
-
-func translateAll(trans ut.Translator, user User) {
+func translateAll(trans ut.Translator, user User) map[string]string {
 	err := validate.Struct(user)
 	fmt.Println(err)
+
+	errmap := map[string]string{}
 	if err != nil {
 		// 全てのエラーを一度に翻訳
 		errs := err.(validator.ValidationErrors)
 
-		fmt.Println(errs.Translate(trans))
+		errmap = errs.Translate(trans)
 	}
+	// バリデーションエラーが無い場合はnullを返す
+	return errmap
 }
 
 func translateIndividual(trans ut.Translator, user User) {
@@ -75,3 +84,36 @@ func translateOverride(trans ut.Translator, user User) {
 		}
 	}
 }
+
+////エラーレスポンス用の構造体
+//type ErrResponse struct {
+//	Code string `json:"error"`
+//	Message string `json:"error_description"`
+//	Status int `json:"status"`
+//}
+//
+//func respondJson()  {
+//	errRes := ErrResponse{
+//		Code:    "",
+//		Message: "",
+//		Status:  0,
+//	}
+//	json.NewEncoder().Encode(errRes)
+//	w.Header().Set("Content-Type", "application/json")
+//	w.WriteHeader(http.StatusBadRequest)
+//}
+//
+//// Mapを構造体に変換する
+//func MapToStruct(m map[string]interface{}, val interface{}) error {
+//	// mapをJSONに変換
+//	tmp, err := json.Marshal(m)
+//	if err != nil {
+//		return err
+//	}
+//	// JSONをStructに変換
+//	err = json.Unmarshal(tmp, val)
+//	if err != nil {
+//		return err
+//	}
+//	return nil
+//}

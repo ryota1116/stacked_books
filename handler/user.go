@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/usecase"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -37,7 +38,21 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 // uhはuserHandler型の構造体 → つまりUserHandler(インターフェイス型)
 func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	user := model.User{}
-	json.NewDecoder(r.Body).Decode(&user)
+
+	responseBodyBytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
+		panic(err)
+	}
+
+
+	errmap := model.UserValidate(user)
+	fmt.Println(errmap)
+
+	// TODO: エラーレスポンスを生成する
+	//model.MapToStruct(errmap, model.ErrResponse{})
 
 	// TODO: バリデーションエラーを受け取り、JSONでレスポンスする
 	dbUser, err := uh.userUseCase.SignUp(user)
