@@ -15,6 +15,7 @@ import (
 type UserUseCaseMock struct {
 }
 
+
 func (uu *UserUseCaseMock) SignUp(user model.User) (model.User, error) {
 	return model.User{
 		Id:        1,
