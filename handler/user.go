@@ -54,7 +54,6 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	// TODO: エラーレスポンスを生成する
 	//model.MapToStruct(errmap, model.ErrResponse{})
 
-
 	// TODO: バリデーションエラーを受け取り、JSONでレスポンスする
 	dbUser, err := uh.userUseCase.SignUp(user)
 	if err != nil {
