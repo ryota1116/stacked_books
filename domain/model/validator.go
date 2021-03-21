@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-playground/locales/ja"
 	ut "github.com/go-playground/universal-translator"
@@ -14,9 +15,30 @@ var (
 	validate *validator.Validate
 )
 
+type Error struct {
+	Messages []string `json:"error_message"`
+}
+////エラーレスポンス用の構造体
+type ErrResponse struct {
+	Code int `json:"code"`
+	Errors Error
+}
+
+func RespondErrJson(code int, errmap map[string]string) ErrResponse {
+	var errResponse ErrResponse
+	errResponse.Code = code
+
+	for _, v := range errmap {
+		errResponse.Errors.Messages = append(errResponse.Errors.Messages, v)
+		fmt.Println(errResponse.Errors.Messages)
+	}
+
+	return errResponse
+}
+
 // TODO: 最終的に全構造体のバリデーションを１つのメソッドに集約させる
 // Userストラクト用のバリデーター
-func UserValidate(user User) map[string]string {
+func UserValidate(user User) (int, map[string]string) {
 	translator := ja.New()
 	uni := ut.New(translator, translator)
 
@@ -27,31 +49,26 @@ func UserValidate(user User) map[string]string {
 	validate = validator.New()
 	jatranslations.RegisterDefaultTranslations(validate, trans)
 
-	fmt.Println("--------------")
-	var errmap map[string]string
-	errmap = translateAll(trans, user)
-	fmt.Println("--------------")
-	//translateIndividual(trans, user)
-	fmt.Println("--------------")
-	//translateOverride(trans, user)
+	code, errmap := translateAll(trans, user)
 
-	return errmap
+	return code, errmap
 }
 
-
-func translateAll(trans ut.Translator, user User) map[string]string {
-	err := validate.Struct(user)
-	fmt.Println(err)
-
+func translateAll(trans ut.Translator, user User) (int, map[string]string) {
+	var code int
 	errmap := map[string]string{}
-	if err != nil {
-		// 全てのエラーを一度に翻訳
-		errs := err.(validator.ValidationErrors)
 
+	err := validate.Struct(user)
+
+	if err != nil {
+		code = 400
+
+		errs := err.(validator.ValidationErrors)
+		// 全てのエラーを一度に翻訳
 		errmap = errs.Translate(trans)
 	}
 	// バリデーションエラーが無い場合はnullを返す
-	return errmap
+	return code, errmap
 }
 
 func translateIndividual(trans ut.Translator, user User) {
@@ -85,35 +102,15 @@ func translateOverride(trans ut.Translator, user User) {
 	}
 }
 
-////エラーレスポンス用の構造体
-//type ErrResponse struct {
-//	Code string `json:"error"`
-//	Message string `json:"error_description"`
-//	Status int `json:"status"`
-//}
-//
-//func respondJson()  {
-//	errRes := ErrResponse{
-//		Code:    "",
-//		Message: "",
-//		Status:  0,
-//	}
-//	json.NewEncoder().Encode(errRes)
-//	w.Header().Set("Content-Type", "application/json")
-//	w.WriteHeader(http.StatusBadRequest)
-//}
-//
-//// Mapを構造体に変換する
-//func MapToStruct(m map[string]interface{}, val interface{}) error {
-//	// mapをJSONに変換
-//	tmp, err := json.Marshal(m)
-//	if err != nil {
-//		return err
-//	}
-//	// JSONをStructに変換
-//	err = json.Unmarshal(tmp, val)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// TODO: map[string]stringをmap[string]interfaceに変える
+func MapToStruct(m map[string]string, val interface{}) error {
+	tmp, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(tmp, val)
+	if err != nil {
+		return err
+	}
+	return nil
+}

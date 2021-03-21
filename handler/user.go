@@ -37,33 +37,34 @@ func NewUserHandler(uu usecase.UserUseCase) UserHandler {
 
 // uhはuserHandler型の構造体 → つまりUserHandler(インターフェイス型)
 func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
-	user := model.User{}
-
 	responseBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
+
+	// リクエストをUserの構造体に変換
+	user := model.User{}
 	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
 		panic(err)
 	}
 
+	// アプリ側のバリデーションエラーを受け取り、JSONでレスポンスする
+	code, errmap := model.UserValidate(user)
+	if len(errmap) != 0 {
+		errResponse := model.RespondErrJson(code, errmap)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(errResponse)
+	} else {
+		dbUser, err := uh.userUseCase.SignUp(user)
+		if err != nil {
+			// TODO: DB側のバリデーションエラーを受け取り、JSONでレスポンスする
+			fmt.Println(err)
+		}
 
-	errmap := model.UserValidate(user)
-	fmt.Println(errmap)
-
-	// TODO: エラーレスポンスを生成する
-	//model.MapToStruct(errmap, model.ErrResponse{})
-
-	// TODO: バリデーションエラーを受け取り、JSONでレスポンスする
-	dbUser, err := uh.userUseCase.SignUp(user)
-	if err != nil {
-		fmt.Println(err)
-		// json.NewEncoder(w).Encode(err)
+		// 正常時のレスポンス
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(dbUser)
 	}
-
-	json.NewEncoder(w).Encode(dbUser)
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
 }
 
 func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
