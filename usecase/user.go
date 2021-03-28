@@ -53,7 +53,6 @@ func (uu userUseCase) SignUp(user model.User) (model.User, error) {
 func (uu userUseCase) SignIn(user model.User) (string, error) {
 	dbUser, err := uu.userRepository.SignIn(user)
 
-	// TODO: usecaseに移す？
 	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
 		return "", err
