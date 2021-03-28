@@ -1,10 +1,7 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
-	"log"
-	"net/http"
 
 	"github.com/ryota1116/stacked_books/handler"
 	"github.com/ryota1116/stacked_books/infra/persistence"
@@ -12,7 +9,7 @@ import (
 )
 
 // webサーバーに接続する
-func StartWebServer() error {
+func HandleFunc() mux.Router {
 	userPersistence := persistence.NewUserPersistence()
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
@@ -24,6 +21,5 @@ func StartWebServer() error {
 	router.HandleFunc("/user/{userId:[0-9]+}", userHandler.ShowUser).Methods("GET")
 	router.HandleFunc("/user/authenticate", handler.VerifyToken).Methods("POST")
 
-	log.Println("サーバー起動 : 3000 port で受信")
-	return http.ListenAndServe(fmt.Sprintf(":%d", 3000), router)
+	return *router
 }
