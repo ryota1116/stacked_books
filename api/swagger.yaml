@@ -18,7 +18,7 @@ paths:
             schema:
               $ref: '#/components/parameters/SignUpForm'
       responses:
-        '200':
+        200:
           description: 会員登録成功時のレスポンス
           content:
             application/json:
@@ -44,7 +44,7 @@ paths:
               schema:
                 $ref: '#/components/responses/SignInResponse'
   /books/search:
-    post:
+    get:
       tags:
         - 本の検索
       summary: 本の登録
@@ -68,7 +68,7 @@ paths:
       summary: 本の登録
       parameters: []
       responses:
-        '200':
+        200:
           description: 本の登録成功時のレスポンス
           content:
             application/json:
@@ -112,7 +112,7 @@ paths:
       summary: 読書量を表示
       parameters: []
       responses:
-        '200':
+        200:
           description: 読書量を表示した時のレスポンス
           content:
             application/json:
@@ -323,19 +323,4 @@ components:
         published_at:
           type: string
           example: 2012-06
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
