@@ -3,6 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	_ "github.com/ryota1116/stacked_books/domain/model"
+	_ "github.com/ryota1116/stacked_books/infra/persistence"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -79,6 +81,7 @@ type ResponseByGoogleBooksAPI struct {
 
 
 type SearchBookResult struct {
+	GoogleBooksId	string	`json:"google_books_id"`
 	Title	string			`json:"title"`
 	Authors	[]string				`json:"authors"`
 	Description	string		`json:"description"`
@@ -91,21 +94,62 @@ type SearchBookResult struct {
 type SearchBookResults []SearchBookResult
 
 
-// Booksテーブルの構造体
-type Book struct {
-	Id		int64			`json:"id"`
-	Title	string			`json:"title"`
-	Description	string		`json:"description"`
-	Isbn10 string			`json:"isbn_10"`
-	Isbn13 string			`json:"isbn_13"`
-	PageCount int 			`json:"page_count"`
-	RegisteredAt time.Time	`json:"created_at"`
-	UpdatedAt time.Time		`json:"updated_at"`
+const URLForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
+
+type RegisterBookForm struct {
+	GoogleBooksId	string		`json:"google_books_id"`
+	Title			string		`json:"title"`
+	Description		string		`json:"description"`
+	Isbn10			string		`json:"isbn_10"`
+	Isbn13			string		`json:"isbn_13"`
+	PageCount		int			`json:"page_count"`
+	PublishAt		time.Time	`json:"publish_at"`
+	Image			string		`json:"image"`
+
+	Status			int			`json:"status"`
+	Memo			string		`json:"memo"`
+
+	Authors			[]string	`json:"authors"`
 }
 
-type Books []Book
 
-const URLForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
+// booksを参照→同じのあればそれを使って、user_booksを作成
+//func RegisterUserBook(w http.ResponseWriter, r *http.Request)  {
+//	responseBodyBytes, err := ioutil.ReadAll(r.Body)
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	// フォームで送られてきたデータを構造体に格納
+//	if err := json.Unmarshal(responseBodyBytes, &RegisterBookForm{}); err != nil {
+//		panic(err)
+//	}
+//
+//	// TODO: handle→handlerになっているので修正する
+//	// 認証
+//	if VerifyToken(w, r) {
+//
+//	}
+//	// 本の検索（無ければ新しくbooksを作成）
+//	// UserとBooksをもとにUserBooksを作成
+//	db := persistence.DbConnect()
+//	for _, item := range RegisterBookForm {
+//
+//	}
+//
+//	db.Model(model.Book{
+//		GoogleBooksId: RegisterBookForm,
+//		Title:         "",
+//		Description:   "",
+//		Image:         "",
+//		Isbn10:        "",
+//		Isbn13:        "",
+//		PageCount:     0,
+//		PublishAt:     ,
+//		Users:         nil,
+//	})
+//}
+
 
 func SearchBooks(w http.ResponseWriter, r *http.Request)  {
 	var searchWord SearchWord
@@ -131,11 +175,7 @@ func SearchBooks(w http.ResponseWriter, r *http.Request)  {
 }
 
 func SearchBooksByGoogleBooksAPI(searchWord string) (SearchBookResults, error) {
-	//var byteURL = make([]byte, 0, 100) // 100byte のキャパシティを確保
-	//byteURL = append(byteURL, []byte(URLForGoogleBooksAPI))
-	//byteURL = append(byteURL, searchWord[0])
-	//searchURL := string(byteURL)
-
+	// TODO: 文字列の結合は処理遅いから、100byteキャパシティ与える方法に変える
 	// 文字列を連結してURLを生成
 	searchURL := URLForGoogleBooksAPI
 	searchURL += searchWord
@@ -151,26 +191,24 @@ func SearchBooksByGoogleBooksAPI(searchWord string) (SearchBookResults, error) {
 
 	defer res.Body.Close()//関数終了時にクローズ
 
-
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return SearchBookResults{}, err
 	}
 
-	var bookResponse ResponseByGoogleBooksAPI
-	if err := json.Unmarshal(body, &bookResponse); err != nil {
+	var resByGoogleBooksAPI ResponseByGoogleBooksAPI
+	if err := json.Unmarshal(body, &resByGoogleBooksAPI); err != nil {
 		return SearchBookResults{}, err
 	}
 
 	// TODO: 関数切り分け
 	var searchBookResults = SearchBookResults{}
-	for _, item := range bookResponse.Items {
+	for _, item := range resByGoogleBooksAPI.Items {
 		searchBookResult := SearchBookResult{
+			GoogleBooksId:	item.ID,
 			Title:			item.VolumeInfo.Title,
 			Authors:		item.VolumeInfo.Authors,
 			Description:	item.VolumeInfo.Description,
-			Isbn10:			"",
-			Isbn13:			"",
 			PageCount:		item.VolumeInfo.PageCount,
 			RegisteredAt:	item.VolumeInfo.PublishedDate,
 		}
@@ -186,7 +224,6 @@ func SearchBooksByGoogleBooksAPI(searchWord string) (SearchBookResults, error) {
 
 		searchBookResults = append(searchBookResults, searchBookResult)
 	}
-
 	return searchBookResults, nil
 }
 

@@ -48,7 +48,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// アプリ側のバリデーションエラーを受け取り、JSONでレスポンスする
+	// アプリケーションのバリデーションエラーを受け取り、JSONでレスポンスする
 	code, errmap := model.UserValidate(user)
 	if len(errmap) != 0 {
 		errResponse := model.RespondErrJson(code, errmap)
@@ -91,7 +91,8 @@ func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func VerifyToken(w http.ResponseWriter, r *http.Request) {
+// TODO: 戻り値を設定するなら、HTTPリクエスト＆レスポンスするのはおかしい。
+func VerifyToken(w http.ResponseWriter, r *http.Request) bool {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
@@ -107,6 +108,7 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 	if err == nil && parsedToken.Valid {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode("認証成功")
+		return true
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 		if err != nil {
@@ -115,5 +117,6 @@ func VerifyToken(w http.ResponseWriter, r *http.Request) {
 		if !parsedToken.Valid {
 			fmt.Println("トークンが有効ではない")
 		}
+		return false
 	}
 }

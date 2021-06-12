@@ -19,7 +19,9 @@ func HandleFunc() mux.Router {
 	router.HandleFunc("/signup", userHandler.SignUp).Methods("POST")
 	router.HandleFunc("/signin", userHandler.SignIn).Methods("POST")
 	router.HandleFunc("/user/{userId:[0-9]+}", userHandler.ShowUser).Methods("GET")
-	router.HandleFunc("/user/authenticate", handler.VerifyToken).Methods("POST")
+
+	// 外部APIを用いた書籍検索のエンドポイント
+	router.HandleFunc("/books/search", handler.SearchBooks).Methods("GET")
 
 	return *router
 }
