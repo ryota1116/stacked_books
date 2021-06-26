@@ -1,11 +1,10 @@
 package persistence
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
 	"errors"
 	"fmt"
-
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
 // Userのインフラ層の構造体
@@ -46,6 +45,7 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 	db := DbConnect()
 
 	dbUser := model.User{}
+	// emailでUserを取得
 	err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().
 		Scan(&dbUser.Password) // DBからユーザー取得
 	if err != nil {

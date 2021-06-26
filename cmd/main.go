@@ -6,6 +6,9 @@ import (
 )
 
 func main() {
+	// TODO: main.goでserver, router, dbの関数呼びたい
 	router := server.HandleFunc()
 	server.StartWebServer(&router)
+
+	//server.StartWebServer()
 }

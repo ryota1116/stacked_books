@@ -92,6 +92,7 @@ func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // TODO: 戻り値を設定するなら、HTTPリクエスト＆レスポンスするのはおかしい。
+// 引数は「r *http.Request」だけでいいのでは？そしてbeforeAction的な設定をする
 func VerifyToken(w http.ResponseWriter, r *http.Request) bool {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
