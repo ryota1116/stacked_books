@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS books (
     `isbn_10` VARCHAR(10),
     `isbn_13` VARCHAR(13),
     `page_count` INT(11),
-    `publish_at` TIMESTAMP,
+    `published_year` INT(4) DEFAULT NULL,
+    `published_month` INT(2) DEFAULT NULL,
+    `published_date` INT(2) DEFAULT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at` TIMESTAMP DEFAULT NULL
