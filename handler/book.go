@@ -7,7 +7,6 @@ import (
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 type SearchWord struct {
@@ -95,25 +94,7 @@ type SearchBookResult struct {
 
 type SearchBookResults []SearchBookResult
 
-
 const URLForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
-
-type RegisterBookForm struct {
-	GoogleBooksId	string		`json:"google_books_id"`
-	Title			string		`json:"title"`
-	Description		string		`json:"description"`
-	Isbn10			string		`json:"isbn_10"`
-	Isbn13			string		`json:"isbn_13"`
-	PageCount		int			`json:"page_count"`
-	PublishAt		time.Time	`json:"publish_at"`
-	Image			string		`json:"image"`
-
-	Status			int			`json:"status"`
-	Memo			string		`json:"memo"`
-
-	Authors			[]string	`json:"authors"`
-}
-
 
 // booksを参照→同じのあればそれを使って、user_booksを作成
 func RegisterUserBook(w http.ResponseWriter, r *http.Request) {
@@ -124,44 +105,14 @@ func RegisterUserBook(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	dbBook := usecase.RegisterUserBook(book)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(dbBook)
-	//db.Model(&model.UserBook{}).Create(map[string]interface{}{
-	//	"UserId": 1,
-	//	"BookId": book.Id,
-	//	"status": r.Body.Read(),
-	//	"memo": r.Body.Read(),
-	//})
-
-	//db.Model(&user).Association()
-
-
-
-	//TODO: handle→handlerになる
 	//認証
 	//if VerifyToken(w, r) {
 	//}
 
-	//本の検索（無ければ新しくbooksを作成）
-	//UserとBooksをもとにUserBooksを作成
-	//db := persistence.DbConnect()
-	//for _, item := range RegisterBookForm {
-	//
-	//}
+	dbBook := usecase.RegisterUserBook(book)
 
-	//db.Model(model.Book{
-	//	GoogleBooksId: RegisterBookForm,
-	//	Title:         "",
-	//	Description:   "",
-	//	Image:         "",
-	//	Isbn10:        "",
-	//	Isbn13:        "",
-	//	PageCount:     0,
-	//	PublishAt:     ,
-	//	Users:         nil,
-	//})
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dbBook)
 }
 
 // 書籍を検索するメソッド

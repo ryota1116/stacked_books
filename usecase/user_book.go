@@ -12,6 +12,13 @@ func RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookP
 	// Booksが存在すればそのレコードを取得し、存在しなければ新しいレコードを作成する
 	db.Where("google_books_id = ?", userBookParameter.GoogleBooksId).FirstOrCreate(&userBookParameter.Book)
 
+	db.Model(&model.UserBook{}).Create(map[string]interface{}{
+		"UserId": 1,
+		"BookId": userBookParameter.Book.Id,
+		"status": userBookParameter.Status,
+		"memo": userBookParameter.Memo,
+	})
+
 	fmt.Println(userBookParameter)
 	return userBookParameter
 }
