@@ -23,5 +23,9 @@ func HandleFunc() mux.Router {
 	// 外部APIを用いた書籍検索のエンドポイント
 	router.HandleFunc("/books/search", handler.SearchBooks).Methods("GET")
 
+
+	// ユーザーと書籍を紐付ける
+	router.HandleFunc("/register/book", handler.RegisterUserBook).Methods("POST")
+
 	return *router
 }

@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	_ "github.com/ryota1116/stacked_books/domain/model"
-	_ "github.com/ryota1116/stacked_books/infra/persistence"
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -14,6 +14,8 @@ type SearchWord struct {
 	Title	string	`json:"title"`
 }
 
+// TODO: GoogleBooksAPI用のファイルに移す
+// GoogleBooksAPIを叩いた時のレスポンスに合わせた構造体
 type ResponseByGoogleBooksAPI struct {
 	Kind       string `json:"kind"`
 	TotalItems int    `json:"totalItems"`
@@ -79,7 +81,7 @@ type ResponseByGoogleBooksAPI struct {
 	} `json:"items"`
 }
 
-
+// 検索結果レスポンスの構造体(これをjson形式に変換する)
 type SearchBookResult struct {
 	GoogleBooksId	string	`json:"google_books_id"`
 	Title	string			`json:"title"`
@@ -88,7 +90,7 @@ type SearchBookResult struct {
 	Isbn10 string			`json:"isbn_10"`
 	Isbn13 string			`json:"isbn_13"`
 	PageCount int 			`json:"page_count"`
-	RegisteredAt string	`json:"created_at"`
+	RegisteredAt string	`json:"registered_at"`
 }
 
 type SearchBookResults []SearchBookResult
@@ -114,49 +116,62 @@ type RegisterBookForm struct {
 
 
 // booksを参照→同じのあればそれを使って、user_booksを作成
-//func RegisterUserBook(w http.ResponseWriter, r *http.Request)  {
-//	responseBodyBytes, err := ioutil.ReadAll(r.Body)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	// フォームで送られてきたデータを構造体に格納
-//	if err := json.Unmarshal(responseBodyBytes, &RegisterBookForm{}); err != nil {
-//		panic(err)
-//	}
-//
-//	// TODO: handle→handlerになっているので修正する
-//	// 認証
-//	if VerifyToken(w, r) {
-//
-//	}
-//	// 本の検索（無ければ新しくbooksを作成）
-//	// UserとBooksをもとにUserBooksを作成
-//	db := persistence.DbConnect()
-//	for _, item := range RegisterBookForm {
-//
-//	}
-//
-//	db.Model(model.Book{
-//		GoogleBooksId: RegisterBookForm,
-//		Title:         "",
-//		Description:   "",
-//		Image:         "",
-//		Isbn10:        "",
-//		Isbn13:        "",
-//		PageCount:     0,
-//		PublishAt:     ,
-//		Users:         nil,
-//	})
-//}
+func RegisterUserBook(w http.ResponseWriter, r *http.Request) {
+	//
+	book := model.UserBookParameter{}
+	err := json.NewDecoder(r.Body).Decode(&book)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	dbBook := usecase.RegisterUserBook(book)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dbBook)
+	//db.Model(&model.UserBook{}).Create(map[string]interface{}{
+	//	"UserId": 1,
+	//	"BookId": book.Id,
+	//	"status": r.Body.Read(),
+	//	"memo": r.Body.Read(),
+	//})
+
+	//db.Model(&user).Association()
 
 
+
+	//TODO: handle→handlerになる
+	//認証
+	//if VerifyToken(w, r) {
+	//}
+
+	//本の検索（無ければ新しくbooksを作成）
+	//UserとBooksをもとにUserBooksを作成
+	//db := persistence.DbConnect()
+	//for _, item := range RegisterBookForm {
+	//
+	//}
+
+	//db.Model(model.Book{
+	//	GoogleBooksId: RegisterBookForm,
+	//	Title:         "",
+	//	Description:   "",
+	//	Image:         "",
+	//	Isbn10:        "",
+	//	Isbn13:        "",
+	//	PageCount:     0,
+	//	PublishAt:     ,
+	//	Users:         nil,
+	//})
+}
+
+// 書籍を検索するメソッド
 func SearchBooks(w http.ResponseWriter, r *http.Request)  {
 	var searchWord SearchWord
 	responseBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
+	// byte型をデコードしてSearchWord構造体に格納
 	if err := json.Unmarshal(responseBodyBytes, &searchWord); err != nil {
 		panic(err)
 	}
@@ -181,6 +196,7 @@ func SearchBooksByGoogleBooksAPI(searchWord string) (SearchBookResults, error) {
 	searchURL += searchWord
 	fmt.Println(searchURL)
 
+	// APIを叩く
 	res, err := http.Get(searchURL)
 
 	if err != nil {
@@ -202,7 +218,7 @@ func SearchBooksByGoogleBooksAPI(searchWord string) (SearchBookResults, error) {
 	}
 
 	// TODO: 関数切り分け
-	var searchBookResults = SearchBookResults{}
+	var searchBookResults SearchBookResults
 	for _, item := range resByGoogleBooksAPI.Items {
 		searchBookResult := SearchBookResult{
 			GoogleBooksId:	item.ID,
@@ -222,6 +238,7 @@ func SearchBooksByGoogleBooksAPI(searchWord string) (SearchBookResults, error) {
 			}
 		}
 
+		// 内部で配列の参照を持つ可変長のリストsliceに要素を追加する
 		searchBookResults = append(searchBookResults, searchBookResult)
 	}
 	return searchBookResults, nil
