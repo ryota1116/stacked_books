@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS stacked_books_development.users
+DROP TABLE IF EXISTS users
