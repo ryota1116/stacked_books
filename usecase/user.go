@@ -16,7 +16,7 @@ const (
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
 	SignUp(user model.User) (model.User, error)
-	SignIn(user model.User) (string, error)
+	SignIn(user model.User) (model.User, error)
 	ShowUser(params map[string]string) model.User
 }
 
@@ -52,19 +52,18 @@ func (uu userUseCase) SignUp(user model.User) (model.User, error) {
 
 
 // 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
-func (uu userUseCase) SignIn(user model.User) (string, error) {
+func (uu userUseCase) SignIn(user model.User) (model.User, error) {
 	dbUser, err := uu.userRepository.SignIn(user)
 
 	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
-		return "", err
+		return user, err
 	} else {
 		fmt.Println("ログインできました")
 	}
 
-	// tokenを返す
-	token, err := GenerateToken(user)
-	return token, err
+
+	return dbUser, err
 }
 
 func (uu userUseCase) ShowUser(params map[string]string) model.User {

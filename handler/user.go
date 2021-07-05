@@ -71,7 +71,11 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	user := model.User{}
 	json.NewDecoder(r.Body).Decode(&user)
 
-	token, err := uh.userUseCase.SignIn(user)
+	dbUser, err := uh.userUseCase.SignIn(user)
+	// tokenを返す
+	token, err := usecase.GenerateToken(dbUser)
+	// Userの情報を赤書
+	setUserSession(w, dbUser)
 
 	if err != nil {
 		fmt.Println(err)
