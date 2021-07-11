@@ -2,9 +2,10 @@ package server
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/ryota1116/stacked_books/infra/persistence"
 
 	"github.com/ryota1116/stacked_books/handler"
-	"github.com/ryota1116/stacked_books/infra/persistence"
+
 	"github.com/ryota1116/stacked_books/usecase"
 )
 
@@ -13,6 +14,11 @@ func HandleFunc() mux.Router {
 	userPersistence := persistence.NewUserPersistence()
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
+
+	bookPersistence := persistence.NewBookPersistence()
+	userBookPersistence := persistence.NewUserBookPersistence()
+	userBookUseCase := usecase.NewUserBookUseCase(bookPersistence, userBookPersistence)
+	userBookHandler := handler.NewUserBookHandler(userBookUseCase)
 
 	router := mux.NewRouter().StrictSlash(true)
 	// エンドポイント(リクエストを処理して、レスポンスを返す)
@@ -25,7 +31,7 @@ func HandleFunc() mux.Router {
 
 
 	// ユーザーと書籍を紐付ける
-	router.HandleFunc("/register/book", handler.RegisterUserBook).Methods("POST")
+	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
 
 	return *router
 }

@@ -1,24 +1,28 @@
 package usecase
 
 import (
-	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/infra/persistence"
+	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
-func RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter {
-	db := persistence.DbConnect()
-	//dbBook := model.Book{}
-	// Booksが存在すればそのレコードを取得し、存在しなければ新しいレコードを作成する
-	db.Where("google_books_id = ?", userBookParameter.GoogleBooksId).FirstOrCreate(&userBookParameter.Book)
+type UserBookUseCase interface {
+	RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter
+}
 
-	db.Model(&model.UserBook{}).Create(map[string]interface{}{
-		"UserId": 1,
-		"BookId": userBookParameter.Book.Id,
-		"status": userBookParameter.Status,
-		"memo": userBookParameter.Memo,
-	})
+type userBookUseCase struct {
+	bookRepository repository.BookRepository
+	userBookRepository repository.UserBookRepository
+}
 
-	fmt.Println(userBookParameter)
-	return userBookParameter
+func NewUserBookUseCase(br repository.BookRepository, ubr repository.UserBookRepository) UserBookUseCase {
+	return &userBookUseCase{
+		bookRepository:     br,
+		userBookRepository: ubr,
+	}
+}
+
+func (uub userBookUseCase) RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter {
+	userBookParameter.Book = uub.bookRepository.FindOrCreateByGoogleBooksId(userBookParameter.GoogleBooksId, userBookParameter)
+	userBook := uub.userBookRepository.CreateOne(userBookParameter)
+	return userBook
 }

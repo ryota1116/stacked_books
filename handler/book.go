@@ -3,8 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
 )
@@ -95,25 +93,6 @@ type SearchBookResult struct {
 type SearchBookResults []SearchBookResult
 
 const URLForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
-
-// booksを参照→同じのあればそれを使って、user_booksを作成
-func RegisterUserBook(w http.ResponseWriter, r *http.Request) {
-	//
-	book := model.UserBookParameter{}
-	err := json.NewDecoder(r.Body).Decode(&book)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	//認証
-	//if VerifyToken(w, r) {
-	//}
-
-	dbBook := usecase.RegisterUserBook(book)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(dbBook)
-}
 
 // 書籍を検索するメソッド
 func SearchBooks(w http.ResponseWriter, r *http.Request)  {
