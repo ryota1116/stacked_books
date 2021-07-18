@@ -10,6 +10,7 @@ import (
 
 type UserBookHandler interface {
 	RegisterUserBook(w http.ResponseWriter, r *http.Request)
+	ReadUserBooks(w http.ResponseWriter, r *http.Request)
 }
 
 type userBookHandler struct {
@@ -39,4 +40,13 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dbBook)
+}
+
+func (ubh userBookHandler) ReadUserBooks(w http.ResponseWriter, r *http.Request) {
+	//err := json.NewDecoder(r.Body).Decode(&bookParams)
+	// トークンからUserのidを取得
+	// userId =
+	userBooks := ubh.userBookUseCase.ReadUserBooks(1)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(userBooks)
 }
