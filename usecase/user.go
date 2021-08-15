@@ -17,7 +17,7 @@ const (
 type UserUseCase interface {
 	SignUp(user model.User) (model.User, error)
 	SignIn(user model.User) (model.User, error)
-	ShowUser(params map[string]string) model.User
+	FindOne(userId int) model.User
 }
 
 // TODO: 依存する方向てきな？
@@ -62,12 +62,11 @@ func (uu userUseCase) SignIn(user model.User) (model.User, error) {
 		fmt.Println("ログインできました")
 	}
 
-
 	return dbUser, err
 }
 
-func (uu userUseCase) ShowUser(params map[string]string) model.User {
-	user := uu.userRepository.ShowUser(params)
+func (uu userUseCase) FindOne(userId int) model.User {
+	user := uu.userRepository.FindOne(userId)
 	return user
 }
 
@@ -82,12 +81,14 @@ func GenerateToken(user model.User) (string, error) {
 	token.Claims = jwt.MapClaims{
 		"exp": jwt.TimeFunc().Add(time.Hour * 72).Unix(), // トークンの有効期限
 		"iat": jwt.TimeFunc().Unix(), // トークンの生成時間
-		"Email": user.Email, // メールアドレス
-		"Password": user.Password, // パスワード
+		"userId": user.Id, // ユーザーID
+		"email": user.Email, // メールアドレス
+		"password": user.Password, // パスワード
 	}
 	fmt.Println(token)
-	fmt.Println(token.Claims)
 
+	// TODO: シークレットキーを環境変数で持たせる
+	// link: https://qiita.com/po3rin/items/740445d21487dfcb5d9f
 	// データに対して署名を付与して、文字列にする
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {

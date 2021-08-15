@@ -27,9 +27,12 @@ func (userBookPersistence) CreateOne(userBookParameter model.UserBookParameter) 
 // ReadUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
 func (userBookPersistence) ReadUserBooks(userId int) model.Book {
 	db := DbConnect()
-	err := db.Model(&model.User{}).Where("id = ?", userId).Association("Books").Find(&model.Book{})
+	user := model.User{}
+	book := model.Book{}
+	//result := db.Debug().First(&user, 1)
+	err := db.Model(&user).Association("Books").Find(&book)
 	if err != nil {
 		fmt.Println("aaa")
 	}
-	return model.Book{}
+	return book
 }
