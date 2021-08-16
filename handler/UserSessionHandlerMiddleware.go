@@ -40,10 +40,6 @@ func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("parseされたtoken---")
 	fmt.Println(parsedToken)
 
-
-	fmt.Println()
-
-
 	if err == nil && parsedToken.Valid {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode("認証成功")
@@ -80,14 +76,18 @@ func CurrentUser(r *http.Request) model.User {
 	//TODO: Goではmodel.Userまたはnilみたいな戻り値は設定できない？
 	if err == nil && parsedToken.Valid {
 		claims := parsedToken.Claims.(jwt.MapClaims)
-		return userUseCase.FindOne(claims["userId"].(int))
+		userId := int(claims["userId"].(float64))
+		return userUseCase.FindOne(userId)
 	} else {
+		if err != nil {
+			fmt.Println(err) // key is of invalid type
+		}
 		if !parsedToken.Valid {
 			fmt.Println("トークンが有効ではない")
 			return userUseCase.FindOne(1)
 		}
 	}
-
+	return model.User{}
 }
 
 func setUserSession(w http.ResponseWriter, user model.User) {
@@ -105,7 +105,6 @@ func setUserSession(w http.ResponseWriter, user model.User) {
 	//	Value:      uuid.Generate(uuid.Bits),
 	//	Expires:    expiration,
 	//}
-
 
 	http.SetCookie(w, &cookie)
 }
