@@ -3,12 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 )
 
 const (
@@ -42,7 +40,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// リクエストをUserの構造体に変換
 	user := model.User{}
-	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
+	if err := json.Unmarshal(responseBodyBytes, user); err != nil {
 		panic(err)
 	}
 
@@ -86,11 +84,10 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r) // map[id:1]
+	user := model.User{}
+	json.NewDecoder(r.Body).Decode(&user)
 
-	userId := params["userId"].(int)
-
-	user := uh.userUseCase.FindOne(userId)
+	user = uh.userUseCase.FindOne(user.Id)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
