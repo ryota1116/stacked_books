@@ -29,10 +29,16 @@ func (userBookPersistence) ReadUserBooks(userId int) model.Book {
 	db := DbConnect()
 	user := model.User{}
 	book := model.Book{}
-	//result := db.Debug().First(&user, 1)
+
+	// ユーザーを取得する
+	db.Where("id = ?", userId).First(&user)
+	// ユーザーが登録している本一覧を取得
 	err := db.Model(&user).Association("Books").Find(&book)
+
+	fmt.Println()
 	if err != nil {
 		fmt.Println("aaa")
 	}
+
 	return book
 }

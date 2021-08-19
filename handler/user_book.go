@@ -43,10 +43,12 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 }
 
 func (ubh userBookHandler) ReadUserBooks(w http.ResponseWriter, r *http.Request) {
-	//err := json.NewDecoder(r.Body).Decode(&bookParams)
-	// トークンからUserのidを取得
-	// userId =
-	userBooks := ubh.userBookUseCase.ReadUserBooks(1)
+	// セッション情報からUserを取得
+	user := CurrentUser(r)
+	userBooks := ubh.userBookUseCase.ReadUserBooks(user.Id)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(userBooks)
+	err := json.NewEncoder(w).Encode(userBooks)
+	if err != nil {
+		return 
+	}
 }

@@ -59,6 +59,7 @@ func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// CurrentUser : セッションからログイン中のユーザー情報を取得する
 func CurrentUser(r *http.Request) model.User {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
