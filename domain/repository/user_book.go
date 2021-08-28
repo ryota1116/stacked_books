@@ -6,5 +6,5 @@ import (
 
 type UserBookRepository interface {
 	CreateOne(userBookParameter model.UserBookParameter) model.UserBookParameter
-	ReadUserBooks(userId int) model.Book
+	ReadUserBooks(userId int) []model.Book
 }

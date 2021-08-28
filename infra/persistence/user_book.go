@@ -16,7 +16,7 @@ func (userBookPersistence) CreateOne(userBookParameter model.UserBookParameter) 
 	db := DbConnect()
 	db.Model(&model.UserBook{}).Create(map[string]interface{}{
 		"UserId": 1,
-		"BookId": userBookParameter.BookId,
+		"BookId": userBookParameter.Book.Id,
 		"status": userBookParameter.Status,
 		"memo": userBookParameter.Memo,
 	})
@@ -25,20 +25,22 @@ func (userBookPersistence) CreateOne(userBookParameter model.UserBookParameter) 
 }
 
 // ReadUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
-func (userBookPersistence) ReadUserBooks(userId int) model.Book {
+func (userBookPersistence) ReadUserBooks(userId int) []model.Book {
 	db := DbConnect()
 	user := model.User{}
-	book := model.Book{}
+	var books []model.Book
 
 	// ユーザーを取得する
 	db.Where("id = ?", userId).First(&user)
 	// ユーザーが登録している本一覧を取得
-	err := db.Model(&user).Association("Books").Find(&book)
+	err := db.Model(&user).Association("Books").Find(&books)
+	fmt.Println("---------")
+	fmt.Println(books)
 
 	fmt.Println()
 	if err != nil {
 		fmt.Println("aaa")
 	}
 
-	return book
+	return books
 }

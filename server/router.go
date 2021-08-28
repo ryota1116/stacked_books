@@ -33,6 +33,8 @@ func HandleFunc() mux.Router {
 	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
 	// ユーザーの登録した書籍を取得する
 	router.HandleFunc("/user/books", userBookHandler.ReadUserBooks).Methods("GET")
+	// ユーザーの読書量を本の厚さ単位で取得する
+	router.HandleFunc("/user/books/volume", userBookHandler.GetUserTotalReadingVolume).Methods("GET")
 
 	return *router
 }

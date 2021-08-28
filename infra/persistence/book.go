@@ -18,4 +18,3 @@ func (bookPersistence) FindOrCreateByGoogleBooksId(googleBooksId string, userBoo
 	db.Where("google_books_id = ?", googleBooksId).FirstOrCreate(&userBook.Book)
 	return userBook.Book
 }
-

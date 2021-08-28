@@ -11,6 +11,7 @@ import (
 type UserBookHandler interface {
 	RegisterUserBook(w http.ResponseWriter, r *http.Request)
 	ReadUserBooks(w http.ResponseWriter, r *http.Request)
+	GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request)
 }
 
 type userBookHandler struct {
@@ -50,5 +51,19 @@ func (ubh userBookHandler) ReadUserBooks(w http.ResponseWriter, r *http.Request)
 	err := json.NewEncoder(w).Encode(userBooks)
 	if err != nil {
 		return 
+	}
+}
+
+// GetUserTotalReadingVolume : ユーザーの読書量を本の厚さ単位で取得する
+func (ubh userBookHandler) GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request) {
+	// セッション情報からUserを取得
+	user := CurrentUser(r)
+	// ユーザーの読書量を本の厚さ単位で取得する
+	TotalReadingVolume := ubh.userBookUseCase.GetUserTotalReadingVolume(user.Id)
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(TotalReadingVolume)
+	if err != nil {
+		return
 	}
 }
