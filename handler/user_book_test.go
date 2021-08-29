@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
+	"testing"
 	"time"
 )
 
@@ -61,4 +62,20 @@ func (uu *UserUseCaseMock) ReadUserBooks(userId int) []model.Book {
 
 func (uu *UserUseCaseMock) GetUserTotalReadingVolume(userId int) int {
 	return 100
+}
+
+func TestUserHandlerRegisterUserBookWithoutBookTitle(t *testing.T) {
+
+}
+
+func TestUserHandlerRegisterUserBookWithInvalidIsbn10(t *testing.T) {
+
+}
+
+func TestUserHandlerReadUserBooks(t *testing.T) {
+
+}
+
+func TestUserHandlerGetUserTotalReadingVolume(t *testing.T) {
+
 }
