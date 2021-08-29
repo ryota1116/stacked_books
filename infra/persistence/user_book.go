@@ -44,3 +44,21 @@ func (userBookPersistence) ReadUserBooks(userId int) []model.Book {
 
 	return books
 }
+
+func (userBookPersistence) FindUserBooksWithReadingStatus(userId int, readingStatus int) []model.Book {
+	db := DbConnect()
+	var books []model.Book
+
+	// 特定の読書ステータスに紐付くBooks一覧を取得
+	err := db.Find(&books).
+		Joins(
+			"JOIN user_books ON user_books.user_id = users.id AND user_books.status = ?",
+			readingStatus).
+		Where("users.id = ?", userId)
+
+	if err != nil {
+		fmt.Println("aaa")
+	}
+
+	return books
+}

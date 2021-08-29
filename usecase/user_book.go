@@ -37,7 +37,8 @@ func (ubu userBookUseCase) ReadUserBooks(userId int) []model.Book {
 // GetUserTotalReadingVolume : ユーザーの読書量を本の厚さ単位で取得する
 func (ubu userBookUseCase) GetUserTotalReadingVolume(userId int) int {
 	// ユーザーの読了済みの本を全て取得する
-	userBooks := ubu.userBookRepository.ReadUserBooks(userId)
+	readingStatus := model.UserBookStatus(model.Done).GetStatusInt()
+	userBooks := ubu.userBookRepository.FindUserBooksWithReadingStatus(userId, readingStatus)
 
 	// ユーザーの読書量を計算する
 	var userTotalReadingVolume int
