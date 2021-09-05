@@ -12,6 +12,10 @@ import (
 type UserRepositoryMock struct {
 }
 
+func (ur *UserRepositoryMock) FindOne(userId int) model.User {
+	panic("implement me")
+}
+
 func (ur *UserRepositoryMock) SignUp(user model.User, bcryptHashPassword []byte) (model.User, error) {
 	return model.User{
 		Id:        1,
