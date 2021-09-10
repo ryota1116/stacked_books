@@ -1,11 +1,7 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
-	"log"
-	"net/http"
-
 	"github.com/ryota1116/stacked_books/handler"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 	"github.com/ryota1116/stacked_books/usecase"
@@ -13,7 +9,7 @@ import (
 
 // webサーバーに接続する
 func HandleFunc() mux.Router {
-	//userPersistence := persistence.NewUserPersistence()
+	userPersistence := persistence.NewUserPersistence()
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
 
@@ -30,6 +26,5 @@ func HandleFunc() mux.Router {
 	// 外部APIを用いた書籍検索のエンドポイント
 	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET")
 
-	log.Println("サーバー起動 : 3000 port で受信")
-	return http.ListenAndServe(fmt.Sprintf(":%d", 3000), router)
+	return *router
 }
