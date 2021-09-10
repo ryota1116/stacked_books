@@ -12,8 +12,8 @@ import (
 )
 
 // webサーバーに接続する
-func StartWebServer() error {
-	userPersistence := persistence.NewUserPersistence()
+func HandleFunc() mux.Router {
+	//userPersistence := persistence.NewUserPersistence()
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
 
