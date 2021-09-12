@@ -23,9 +23,7 @@ func (client Client) SendRequest(searchWord string) (SearchBooksResponses, error
 	//searchURL := string(byteURL)
 
 	// 文字列を連結してURLを生成
-	searchURL := URLForGoogleBooksAPI
-	searchURL += searchWord
-	fmt.Println(searchURL)
+	searchURL := URLForGoogleBooksAPI + searchWord
 
 	// GoogleBooksAPIを叩く
 	res, err := http.Get(searchURL)
