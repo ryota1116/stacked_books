@@ -1,6 +1,13 @@
 package handler
 
-import "github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+import (
+	"encoding/json"
+	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"io/ioutil"
+	"net/http/httptest"
+	"strings"
+	"testing"
+)
 
 // BookUseCaseMock : BookUseCaseInterfaceを実装しているモック
 type BookUseCaseMock struct {}
@@ -26,4 +33,52 @@ func (bu BookUseCaseMock) SearchBooks(requestParameter googleBooksApi.RequestPar
 			RegisteredAt: "2017-04",
 		},
 	}, nil
+}
+
+// TestBookHandlerSearchBooks : Handler層のSearchBooksメソッドの正常系テスト
+func TestBookHandlerSearchBooks(t *testing.T) {
+	bu := BookUseCaseMock{}
+	bh := NewBookHandler(bu)
+
+	bodyReader := strings.NewReader(`{
+		"title": "リーダブルコード"
+	}`)
+
+	r := httptest.NewRequest("GET", "/books/search", bodyReader)
+	w := httptest.NewRecorder()
+
+	// handler/book.goのSearchBooksメソッドを呼び出し、
+	// その中でBookUseCaseMockのSearchBooksメソッドが呼び出されている
+	bh.SearchBooks(w, r)
+
+	// レスポンスを代入
+	response := w.Result()
+
+	// ステータスコードのテスト
+	if response.StatusCode != 200 {
+		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+	}
+
+	// レスポンスボディを[]byte型に変換
+	responseBodyBytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		panic(err)
+	}
+	// []byte型を構造体に格納
+	var searchBooksResponses googleBooksApi.SearchBooksResponses
+	if err := json.Unmarshal(responseBodyBytes, &searchBooksResponses); err != nil {
+		panic(err)
+	}
+	
+	//assert.Equal(t, )
+}
+
+// TestBookHandlerSearchBooksWithoutRequestBody : リクエストボディが無い場合、
+func TestBookHandlerSearchBooksWithoutRequestBody(t *testing.T) {
+
+}
+
+// TestBookHandlerSearchBooksWithEmptyTitleParameter : リクエストボディのTitleの値が空の場合
+func TestBookHandlerSearchBooksWithEmptyParameter(t *testing.T) {
+
 }
