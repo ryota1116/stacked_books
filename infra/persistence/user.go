@@ -1,10 +1,10 @@
 package persistence
 
 import (
-	"errors"
-	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/repository"
+	"errors"
+	"fmt"
 )
 
 // Userのインフラ層の構造体
@@ -33,7 +33,7 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (mo
 	if user.UserName == "" {
 		err = errors.New("ユーザー名を入力してください")
 	}
-	
+
 	user.Password = string(bcryptHashPassword)
 	// DBにユーザーを登録
 	db.Create(&user)
@@ -67,5 +67,3 @@ func (up userPersistence) FindOne(userId int) model.User {
 
 	return user
 }
-
-
