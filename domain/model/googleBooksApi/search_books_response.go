@@ -6,6 +6,7 @@ type SearchBooksResponses []SearchBooksResponse
 //GoogleBooksAPIを叩いた時に取得したJSONレスポンスのうち、
 // 必要なフィールドだけをセットしたレスポンスボディの構造体
 type SearchBooksResponse struct {
+	GoogleBooksId string    `json:"google_books_id"`
 	Title	string			`json:"title"`
 	Authors	[]string		`json:"authors"`
 	Description	string		`json:"description"`
