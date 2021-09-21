@@ -72,6 +72,10 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	// tokenを返す
 	token, err := usecase.GenerateToken(dbUser)
 
+	// Userの情報をセット
+	middleware.SetUserSession(w, dbUser)
+
+
 	if err != nil {
 		fmt.Println(err)
 	} else {
