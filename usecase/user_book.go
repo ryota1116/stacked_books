@@ -6,8 +6,8 @@ import (
 )
 
 type UserBookUseCase interface {
-	RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter
-	ReadUserBooks(userId int) model.Book
+	RegisterUserBook(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter
+  ReadUserBooks(userId int) model.Book
 }
 
 type userBookUseCase struct {
@@ -22,9 +22,10 @@ func NewUserBookUseCase(br repository.BookRepository, ubr repository.UserBookRep
 	}
 }
 
-func (ubu userBookUseCase) RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter {
-	userBookParameter.Book = ubu.bookRepository.FindOrCreateByGoogleBooksId(userBookParameter.GoogleBooksId, userBookParameter)
-	userBook := ubu.userBookRepository.CreateOne(userBookParameter)
+func (uub userBookUseCase) RegisterUserBook(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter {
+	userBookParameter.Book = uub.bookRepository.FindOrCreateByGoogleBooksId(userBookParameter.GoogleBooksId, userBookParameter)
+	userBook := uub.userBookRepository.CreateOne(userId, userBookParameter)
+
 	return userBook
 }
 
