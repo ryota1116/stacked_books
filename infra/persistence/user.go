@@ -1,10 +1,10 @@
 package persistence
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
 	"errors"
 	"fmt"
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -57,11 +57,11 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 }
 
 //Userを1件取得
-func (up userPersistence) ShowUser(params map[string]string) model.User {
+func (up userPersistence) FindOne(userId int) model.User {
 	db := DbConnect()
 
 	user := model.User{}
-	result := db.Debug().First(&user, params["userId"])
+	result := db.Debug().First(&user, userId)
 
 	fmt.Println(&result)
 
