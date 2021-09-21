@@ -11,11 +11,11 @@ func NewUserBookPersistence() repository.UserBookRepository {
 	return &userBookPersistence{}
 }
 
-func (userBookPersistence) CreateOne(userBookParameter model.UserBookParameter) model.UserBookParameter {
+func (userBookPersistence) CreateOne(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter {
 	db := DbConnect()
 	db.Model(&model.UserBook{}).Create(map[string]interface{}{
-		"UserId": 1,
-		"BookId": userBookParameter.BookId,
+		"UserId": userId,
+		"BookId": userBookParameter.Book.Id,
 		"status": userBookParameter.Status,
 		"memo": userBookParameter.Memo,
 	})
