@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
 )
@@ -45,7 +46,7 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 
 func (ubh userBookHandler) ReadUserBooks(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
-	user := CurrentUser(r)
+	user := middleware.CurrentUser(r)
 	userBooks := ubh.userBookUseCase.ReadUserBooks(user.Id)
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(userBooks)

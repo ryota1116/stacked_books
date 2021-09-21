@@ -33,7 +33,7 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (mo
 	if user.UserName == "" {
 		err = errors.New("ユーザー名を入力してください")
 	}
-	
+
 	user.Password = string(bcryptHashPassword)
 	// DBにユーザーを登録
 	db.Create(&user)
@@ -67,5 +67,3 @@ func (up userPersistence) FindOne(userId int) model.User {
 
 	return user
 }
-
-

@@ -1,5 +1,4 @@
-package handler
-
+package middleware
 
 import (
 	"encoding/json"
@@ -15,14 +14,12 @@ import (
 	"time"
 )
 
+const (
+	secretKey = "secretKey"
+)
+
 type UserSessionHandlerMiddleWare struct {
 	userUseCase usecase.UserUseCase
-}
-
-func NewUserSessionHandlerMiddleWare(uu usecase.UserUseCase) UserHandler {
-	return &userHandler{
-		userUseCase: uu,
-	}
 }
 
 // 認証が通らないとメッセージとリターンを返す（認証失敗時にどのページに繊維するとかはどこで定義する？）
@@ -91,16 +88,14 @@ func CurrentUser(r *http.Request) model.User {
 	return model.User{}
 }
 
-func setUserSession(w http.ResponseWriter, user model.User) {
-	fmt.Println(user.Id)
+func SetUserSession(w http.ResponseWriter, user model.User) {
 	expiration := time.Now()
 	expiration.AddDate(0, 0, 7)
 	cookie := http.Cookie{
 		Name:       "user_id",
-		Value:      strconv.Itoa(user.Id),
+		Value:      strconv.Itoa(int(user.Id)),
 		Expires:    expiration,
 	}
-
 	//cookie := http.Cookie{
 	//	Name:       "user_session_key",
 	//	Value:      uuid.Generate(uuid.Bits),
@@ -108,8 +103,4 @@ func setUserSession(w http.ResponseWriter, user model.User) {
 	//}
 
 	http.SetCookie(w, &cookie)
-}
-
-func readUserSession(w http.ResponseWriter, r *http.Request)  {
-
 }
