@@ -10,5 +10,5 @@ type UserRepository interface {
 	// *型名でUser型へのポイント型
 	SignUp(user model.User, bcryptHashPassword []byte) (model.User, error)
 	SignIn(user model.User) (model.User, error)
-	ShowUser(params map[string]string) model.User
+	FindOne(userId int) model.User
 }

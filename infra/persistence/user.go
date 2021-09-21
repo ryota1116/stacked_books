@@ -57,11 +57,11 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 }
 
 //Userを1件取得
-func (up userPersistence) ShowUser(params map[string]string) model.User {
+func (up userPersistence) FindOne(userId int) model.User {
 	db := DbConnect()
 
 	user := model.User{}
-	result := db.Debug().First(&user, params["userId"])
+	result := db.Debug().First(&user, userId)
 
 	fmt.Println(&result)
 

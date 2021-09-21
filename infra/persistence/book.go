@@ -14,8 +14,8 @@ func NewBookPersistence() repository.BookRepository {
 // FindOrCreateByGoogleBooksId : GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
 func (bookPersistence) FindOrCreateByGoogleBooksId(googleBooksId string, userBook model.UserBookParameter) model.Book {
 	db := DbConnect()
-	db.Where(userBook.Book)
 	db.Where("google_books_id = ?", googleBooksId).FirstOrCreate(&userBook.Book)
+
 	return userBook.Book
 }
 

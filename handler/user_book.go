@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
 )
@@ -31,11 +32,9 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 		fmt.Println(err)
 	}
 
-	//認証
-	//if VerifyToken(w, r) {
-	//}
+	currentUser := middleware.CurrentUser(r)
 
-	dbBook := ubh.userBookUseCase.RegisterUserBook(bookParams)
+	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id,bookParams)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dbBook)

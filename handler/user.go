@@ -2,12 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/dgrijalva/jwt-go/request"
-	"github.com/gorilla/mux"
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
@@ -74,12 +71,14 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	dbUser, err := uh.userUseCase.SignIn(user)
 	// tokenを返す
 	token, err := usecase.GenerateToken(dbUser)
-	// Userの情報を赤書
-	setUserSession(w, dbUser)
+	// Userの情報をセット
+	middleware.SetUserSession(w, dbUser)
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
+		// Userの情報をセット
+		middleware.SetUserSession(w, dbUser)
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(token) // 生成したトークンをリクエストボディで返してみる
@@ -87,41 +86,15 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r) // map[id:1]
-	user := uh.userUseCase.ShowUser(params)
+	user := model.User{}
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		return
+	}
+
+	user = uh.userUseCase.FindOne(user.Id)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
-}
-
-// TODO: 戻り値を設定するなら、HTTPリクエスト＆レスポンスするのはおかしい。
-// 引数は「r *http.Request」だけでいいのでは？そしてbeforeAction的な設定をする
-func VerifyToken(w http.ResponseWriter, r *http.Request) bool {
-	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
-	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
-		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
-		if !ok {
-			err := errors.New("署名方法が違います")
-			return nil, err
-		}
-		return []byte(secretKey), nil
-	})
-	fmt.Println("parseされたtoken---")
-	fmt.Println(parsedToken)
-
-	if err == nil && parsedToken.Valid {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode("認証成功")
-		return true
-	} else {
-		w.WriteHeader(http.StatusUnauthorized)
-		if err != nil {
-			fmt.Println(err) // key is of invalid type
-		}
-		if !parsedToken.Valid {
-			fmt.Println("トークンが有効ではない")
-		}
-		return false
-	}
 }
