@@ -47,8 +47,10 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 	db := DbConnect()
 
 	dbUser := model.User{}
-	err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().
-		Scan(&dbUser.Password) // DBからユーザー取得
+	// emailでUserを取得
+	err := db.Debug().Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
+	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
+
 	if err != nil {
 		panic(err.Error())
 	}
@@ -57,11 +59,11 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 }
 
 //Userを1件取得
-func (up userPersistence) ShowUser(params map[string]string) model.User {
+func (up userPersistence) FindOne(userId int) model.User {
 	db := DbConnect()
 
 	user := model.User{}
-	result := db.Debug().First(&user, params["userId"])
+	result := db.Debug().First(&user, userId)
 
 	fmt.Println(&result)
 
