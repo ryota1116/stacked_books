@@ -5,7 +5,7 @@ import (
 )
 
 type UserBookRepository interface {
-	CreateOne(userBookParameter model.UserBookParameter) model.UserBookParameter
-	ReadUserBooks(userId int) []model.Book
-	FindUserBooksWithReadingStatus(userId int, readingStatus int) []model.Book
+	CreateOne(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter
+  ReadUserBooks(userId int) model.Book
+  FindUserBooksWithReadingStatus(userId int, readingStatus int) []model.Book
 }
