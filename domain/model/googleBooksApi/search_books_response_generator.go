@@ -15,6 +15,7 @@ func (sbrg SearchBooksResponseGenerator) execute() SearchBooksResponses {
 	// 検索結果一覧が配列で返ってくるため、slice型に格納して返す
 	for _, item := range sbrg.ResponseBodyFromGoogleBooksAPI.Items {
 		searchBooksResponse := SearchBooksResponse{
+			GoogleBooksId:item.ID,
 			Title:        item.VolumeInfo.Title,
 			Authors:      item.VolumeInfo.Authors,
 			Description:  item.VolumeInfo.Description,
@@ -24,6 +25,7 @@ func (sbrg SearchBooksResponseGenerator) execute() SearchBooksResponses {
 			RegisteredAt: item.VolumeInfo.PublishedDate,
 		}
 
+		// ISBNが存在すれば構造体にセットする
 		for _, isbn := range item.VolumeInfo.IndustryIdentifiers {
 			switch isbn.Type {
 			case "ISBN_10":

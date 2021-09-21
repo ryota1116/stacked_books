@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
@@ -74,9 +75,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		// Userの情報を赤書
-		setUserSession(w, dbUser)
-
+		middleware.SetUserSession(w, dbUser)
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(token) // 生成したトークンをリクエストボディで返してみる
@@ -85,7 +84,10 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
 	user := model.User{}
-	json.NewDecoder(r.Body).Decode(&user)
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		return
+	}
 
 	user = uh.userUseCase.FindOne(user.Id)
 
