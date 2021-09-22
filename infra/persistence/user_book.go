@@ -13,12 +13,15 @@ func NewUserBookPersistence() repository.UserBookRepository {
 
 func (userBookPersistence) CreateOne(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter {
 	db := DbConnect()
-	db.Model(&model.UserBook{}).Create(map[string]interface{}{
-		"UserId": userId,
-		"BookId": userBookParameter.Book.Id,
-		"status": userBookParameter.Status,
-		"memo": userBookParameter.Memo,
-	})
+
+	userBook := model.UserBook{
+		UserId:    userId,
+		BookId:    userBookParameter.Book.Id,
+		Status:    userBookParameter.Status,
+		Memo:      userBookParameter.Memo,
+	}
+
+	db.Create(&userBook)
 
 	return userBookParameter
 }
