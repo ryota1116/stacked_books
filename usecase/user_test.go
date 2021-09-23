@@ -38,7 +38,7 @@ func (ur *UserRepositoryMock) SignIn(user model.User) (model.User, error) {
 	}, nil
 }
 
-func (ur *UserRepositoryMock) ShowUser(params map[string]string) model.User {
+func (ur *UserRepositoryMock) FindOne(int) model.User {
 	return model.User{
 		Id:        1,
 		UserName:  "user",
@@ -81,7 +81,7 @@ func TestUserHandler_SignIn(t *testing.T) {
 		Password:  "password",
 	}
 
-	token, err := uu.SignUp(user)
+	uu.SignUp(user)
 
 }
 
