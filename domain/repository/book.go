@@ -1,7 +1,10 @@
 package repository
 
-import "github.com/ryota1116/stacked_books/domain/model"
+import (
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/dto"
+)
 
 type BookRepository interface {
-	FindOrCreateByGoogleBooksId(googleBooksId string, userBook model.UserBookParameter) model.Book
+	FindOrCreateByGoogleBooksId(parameter dto.RegisterUserBookRequestParameter) model.Book
 }

@@ -3,6 +3,7 @@ package persistence
 import (
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/dto"
 	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
@@ -12,16 +13,20 @@ func NewUserBookPersistence() repository.UserBookRepository {
 	return &userBookPersistence{}
 }
 
-func (userBookPersistence) CreateOne(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter {
+// CreateOne : UserBooksレコードを作成する
+func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) model.UserBook {
 	db := DbConnect()
-	db.Model(&model.UserBook{}).Create(map[string]interface{}{
-		"UserId": userId,
-		"BookId": userBookParameter.Book.Id,
-		"status": userBookParameter.Status,
-		"memo": userBookParameter.Memo,
-	})
 
-	return userBookParameter
+	userBook := model.UserBook{
+		UserId:    userId,
+		BookId:    bookId,
+		Status:    registerUserBookRequestParameter.UserBook.Status,
+		Memo:      registerUserBookRequestParameter.UserBook.Memo,
+	}
+
+	db.Create(&userBook)
+
+	return userBook
 }
 
 // ReadUserBooks : ログイン中のユーザーが登録している本の一覧を取得する

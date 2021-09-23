@@ -10,9 +10,6 @@ type UserBook struct {
 	Memo          string    `json:"memo"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-}
 
-type UserBookParameter struct {
-	UserBook
-	Book
+	Book          Book      `json:"book"`
 }
