@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/dto"
 	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
@@ -11,17 +12,18 @@ func NewUserBookPersistence() repository.UserBookRepository {
 	return &userBookPersistence{}
 }
 
-func (userBookPersistence) CreateOne(userId int, userBookParameter model.UserBookParameter) model.UserBookParameter {
+// CreateOne : UserBooksレコードを作成する
+func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) model.UserBook {
 	db := DbConnect()
 
 	userBook := model.UserBook{
 		UserId:    userId,
-		BookId:    userBookParameter.Book.Id,
-		Status:    userBookParameter.Status,
-		Memo:      userBookParameter.Memo,
+		BookId:    bookId,
+		Status:    registerUserBookRequestParameter.UserBook.Status,
+		Memo:      registerUserBookRequestParameter.UserBook.Memo,
 	}
 
 	db.Create(&userBook)
 
-	return userBookParameter
+	return userBook
 }
