@@ -18,8 +18,10 @@ const (
 	secretKey = "secretKey"
 )
 
-type UserSessionHandlerMiddleWare struct {
-	userUseCase usecase.UserUseCase
+type userSessionHandlerMiddleWare struct {}
+
+func NewUserSessionHandlerMiddleWare() UserSessionHandlerMiddleWareInterface {
+	return userSessionHandlerMiddleWare{}
 }
 
 // 認証が通らないとメッセージとリターンを返す（認証失敗時にどのページに繊維するとかはどこで定義する？）
@@ -57,7 +59,7 @@ func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
 }
 
 // CurrentUser : セッションからログイン中のユーザー情報を取得する
-func CurrentUser(r *http.Request) model.User {
+func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
