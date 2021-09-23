@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/dto"
 	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
@@ -25,16 +25,18 @@ func NewUserBookHandler(ubu usecase.UserBookUseCase) UserBookHandler {
 
 // RegisterUserBook : booksを参照→同じのあればそれを使って、user_booksを作成
 func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Request) {
-	//
-	bookParams := model.UserBookParameter{}
-	err := json.NewDecoder(r.Body).Decode(&bookParams)
+	registerUserBookRequestParams := dto.RegisterUserBookRequestParameter{}
+
+	err := json.NewDecoder(r.Body).Decode(&registerUserBookRequestParams)
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	// ログイン中のユーザーを取得する
 	currentUser := middleware.CurrentUser(r)
 
-	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id,bookParams)
+	// UserBooksレコードを作成する
+	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id, registerUserBookRequestParams)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dbBook)
