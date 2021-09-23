@@ -29,8 +29,8 @@ func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookReq
 	return userBook
 }
 
-// ReadUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
-func (userBookPersistence) ReadUserBooks(userId int) model.Book {
+// FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
+func (userBookPersistence) FindAllByUserId(userId int) model.Book {
 	db := DbConnect()
 	user := model.User{}
 	book := model.Book{}

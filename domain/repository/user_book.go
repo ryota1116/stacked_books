@@ -7,5 +7,5 @@ import (
 
 type UserBookRepository interface {
 	CreateOne(int, int, dto.RegisterUserBookRequestParameter) model.UserBook
-  	ReadUserBooks(userId int) model.Book
+	FindAllByUserId(int) model.Book
 }

@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/ryota1116/stacked_books/infra/persistence"
 	"github.com/ryota1116/stacked_books/handler"
+	"github.com/ryota1116/stacked_books/infra/persistence"
 	"github.com/ryota1116/stacked_books/usecase"
 )
 
@@ -32,8 +32,8 @@ func HandleFunc() mux.Router {
 
 	// ユーザーと書籍を紐付ける
 	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
-	// ユーザーの登録した書籍を取得する
-	router.HandleFunc("/user/books", userBookHandler.ReadUserBooks).Methods("GET")
+	// ログイン中のユーザーが登録している本の一覧を取得する
+	router.HandleFunc("/user/books", userBookHandler.FindUserBooks).Methods("GET")
 
 	return *router
 }
