@@ -33,7 +33,8 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	}
 
 	// ログイン中のユーザーを取得する
-	currentUser := middleware.CurrentUser(r)
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	currentUser := ushm.CurrentUser(r)
 
 	// UserBooksレコードを作成する
 	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id, registerUserBookRequestParams)
