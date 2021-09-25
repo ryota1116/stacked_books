@@ -51,6 +51,7 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 	user := ushm.CurrentUser(r)
 
 	userBooks := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(userBooks)
 	if err != nil {

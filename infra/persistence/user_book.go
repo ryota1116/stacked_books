@@ -30,20 +30,19 @@ func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookReq
 }
 
 // FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
-func (userBookPersistence) FindAllByUserId(userId int) model.Book {
+func (userBookPersistence) FindAllByUserId(userId int) []model.Book {
 	db := DbConnect()
-	user := model.User{}
-	book := model.Book{}
+	var books []model.Book
 
-	// ユーザーを取得する
-	db.Where("id = ?", userId).First(&user)
 	// ユーザーが登録している本一覧を取得
-	err := db.Model(&user).Association("Books").Find(&book)
+	err := db.Joins("inner join user_books on books.id = user_books.book_id").
+		Joins("inner join users on user_books.user_id = ?", userId).
+		Group("books.id").
+		Find(&books)
 
-	fmt.Println()
 	if err != nil {
 		fmt.Println("aaa")
 	}
 
-	return book
+	return books
 }
