@@ -2,7 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	res "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
 	"net/http/httptest"
@@ -11,7 +13,7 @@ import (
 )
 
 // テストで期待するレスポンスボディJSON文字列のファイルパス
-const expectedSearchBooksJson = "../tests/expected/api/userBookHandler/200_search_books.json"
+const expectedSearchBooksJson = "../tests/expected/api/userBookHandler/200_search_books_response.json"
 
 // BookUseCaseMock : BookUseCaseInterfaceを実装しているモック
 type BookUseCaseMock struct {}
@@ -68,17 +70,12 @@ func TestBookHandlerSearchBooks(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	// []byte型を構造体に格納
-	var searchBooksResponses googleBooksApi.SearchBooksResponses
-	if err := json.Unmarshal(responseBodyBytes, &searchBooksResponses); err != nil {
-		panic(err)
-	}
 
-	// レスポンスボディの結果をテスト
+	// レスポンスボディのjson文字列をテスト
 	test_assertion.CompareResponseBodyWithJsonFile(t, responseBodyBytes, expectedSearchBooksJson)
 }
 
-// TestBookHandlerSearchBooksWithoutRequestBody : リクエストボディにTitleが含まれていない場合
+// Handler層のSearchBooksメソッドの異常系テスト : リクエストボディにTitleが含まれていない場合
 func TestBookHandlerSearchBooksWithoutRequestBody(t *testing.T) {
 	bu := BookUseCaseMock{}
 	bh := NewBookHandler(bu)
@@ -94,8 +91,8 @@ func TestBookHandlerSearchBooksWithoutRequestBody(t *testing.T) {
 	// レスポンスを代入
 	response := w.Result()
 
-	// ステータスコードのテスト
-	if response.StatusCode != 200 {
+	// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
+	if response.StatusCode != 422 {
 		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
 	}
 
@@ -105,16 +102,49 @@ func TestBookHandlerSearchBooksWithoutRequestBody(t *testing.T) {
 		panic(err)
 	}
 	// []byte型を構造体に格納
-	var searchBooksResponses googleBooksApi.SearchBooksResponses
-	if err := json.Unmarshal(responseBodyBytes, &searchBooksResponses); err != nil {
+	var errorResponseBody res.ErrorResponseBody
+	if err := json.Unmarshal(responseBodyBytes, &errorResponseBody); err != nil {
 		panic(err)
 	}
 
-	// レスポンスボディの結果をテスト
-	test_assertion.CompareResponseBodyWithJsonFile(t, responseBodyBytes, expectedSearchBooksJson)
+	// レスポンスボディの結果をテスト(構造体に戻してテストしている)
+	assert.Equal(t, errorResponseBody.Message, "本のタイトルを入力してください")
 }
 
-// TestBookHandlerSearchBooksWithEmptyTitleParameter : リクエストボディのTitleの値が空の場合
+// Handler層のSearchBooksメソッドの異常系テスト : リクエストボディのTitleの値が空の場合
 func TestBookHandlerSearchBooksWithEmptyParameter(t *testing.T) {
+	bu := BookUseCaseMock{}
+	bh := NewBookHandler(bu)
 
+	// リクエストボディのTitleが空の場合
+	bodyReader := strings.NewReader(`{
+		"title": ""
+	}`)
+
+	r := httptest.NewRequest("GET", "/books/search", bodyReader)
+	w := httptest.NewRecorder()
+
+	bh.SearchBooks(w, r)
+
+	// レスポンスを代入
+	response := w.Result()
+
+	// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
+	if response.StatusCode != 422 {
+		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+	}
+
+	// レスポンスボディを[]byte型に変換
+	responseBodyBytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		panic(err)
+	}
+	// []byte型を構造体に格納
+	var errorResponseBody res.ErrorResponseBody
+	if err := json.Unmarshal(responseBodyBytes, &errorResponseBody); err != nil {
+		panic(err)
+	}
+
+	// レスポンスボディの結果をテスト(構造体に戻してテストしている)
+	assert.Equal(t, errorResponseBody.Message, "本のタイトルを入力してください")
 }
