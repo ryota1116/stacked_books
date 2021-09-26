@@ -2,13 +2,16 @@ package handler
 
 import (
 	"encoding/json"
-		"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
+
+// テストで期待するレスポンスボディJSON文字列のファイルパス
+const expectedSearchBooksJson = "../tests/expected/api/userBookHandler/200_search_books.json"
 
 // BookUseCaseMock : BookUseCaseInterfaceを実装しているモック
 type BookUseCaseMock struct {}
@@ -36,12 +39,8 @@ func (bu BookUseCaseMock) SearchBooks(requestParameter googleBooksApi.RequestPar
 	}, nil
 }
 
-// ExpectedSearchBooksResponse : 外部APIを用いた書籍検索のレスポンスボディ期待値
-const ExpectedSearchBooksResponse = `[{"title":"リーダブルコード","authors":["Dustin Boswell","Trevor Foucher"],"description":"読んでわかるコードの重要性と方法について解説","isbn_10":"4873115655","isbn_13":"9784873115658","page_count":237,"created_at":"2012-06"},{"title":"ExcelVBAを実務で使い倒す技術","authors":["高橋宣成"],"description":"本書では、VBAを実務の現場で活かすための知識(テクニック)と知恵(考え方とコツ)を教えます!","isbn_10":"4798049999","isbn_13":"9784798049991","page_count":289,"created_at":"2017-04"}]`
-
 // TestBookHandlerSearchBooks : Handler層のSearchBooksメソッドの正常系テスト
 func TestBookHandlerSearchBooks(t *testing.T) {
-
 	bu := BookUseCaseMock{}
 	bh := NewBookHandler(bu)
 
@@ -76,12 +75,43 @@ func TestBookHandlerSearchBooks(t *testing.T) {
 	}
 
 	// レスポンスボディの結果をテスト
-	assert.Equal(t, string(responseBodyBytes), ExpectedSearchBooksResponse)
+	test_assertion.CompareResponseBodyWithJsonFile(t, responseBodyBytes, expectedSearchBooksJson)
 }
 
-// TestBookHandlerSearchBooksWithoutRequestBody : リクエストボディが無い場合、
+// TestBookHandlerSearchBooksWithoutRequestBody : リクエストボディにTitleが含まれていない場合
 func TestBookHandlerSearchBooksWithoutRequestBody(t *testing.T) {
+	bu := BookUseCaseMock{}
+	bh := NewBookHandler(bu)
 
+	// リクエストボディにTitleが含まれていない場合
+	bodyReader := strings.NewReader(`{}`)
+
+	r := httptest.NewRequest("GET", "/books/search", bodyReader)
+	w := httptest.NewRecorder()
+
+	bh.SearchBooks(w, r)
+
+	// レスポンスを代入
+	response := w.Result()
+
+	// ステータスコードのテスト
+	if response.StatusCode != 200 {
+		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+	}
+
+	// レスポンスボディを[]byte型に変換
+	responseBodyBytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		panic(err)
+	}
+	// []byte型を構造体に格納
+	var searchBooksResponses googleBooksApi.SearchBooksResponses
+	if err := json.Unmarshal(responseBodyBytes, &searchBooksResponses); err != nil {
+		panic(err)
+	}
+
+	// レスポンスボディの結果をテスト
+	test_assertion.CompareResponseBodyWithJsonFile(t, responseBodyBytes, expectedSearchBooksJson)
 }
 
 // TestBookHandlerSearchBooksWithEmptyTitleParameter : リクエストボディのTitleの値が空の場合
