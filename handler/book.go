@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"github.com/ryota1116/stacked_books/handler/http/request"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
@@ -26,12 +27,24 @@ func NewBookHandler(bu usecase.BookUseCaseInterface) BookHandlerInterface {
 func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
 	// 
 	var requestParameter googleBooksApi.RequestParameter
-	responseBodyBytes, err := ioutil.ReadAll(r.Body)
+	requestBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
-	if err := json.Unmarshal(responseBodyBytes, &requestParameter); err != nil {
+	if err := json.Unmarshal(requestBodyBytes, &requestParameter); err != nil {
 		panic(err)
+	}
+
+	// リクエストボディのバリデーション
+	isValid, errMsg := request.BookHandlerFormValidator{GoogleBooksApiRequestBody: requestParameter}.Validate()
+	if !isValid {
+		w.WriteHeader(422)
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(errMsg)
+		if err != nil {
+			return
+		}
+		return
 	}
 
 	// 外部APIで書籍を検索
