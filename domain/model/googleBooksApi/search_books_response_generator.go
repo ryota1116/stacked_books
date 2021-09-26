@@ -5,9 +5,9 @@ type SearchBooksResponseGenerator struct {
 	ResponseBodyFromGoogleBooksAPI ResponseBodyFromGoogleBooksAPI `json:"response_body_from_google_books_api"`
 }
 
-// execute : GoogleBooksAPIのJSONレスポンスの構造体から、
+// Execute : GoogleBooksAPIのJSONレスポンスの構造体から、
 // 必要なフィールドだけをセットした書籍検索用のレスポンスボディ構造体を生成する
-func (sbrg SearchBooksResponseGenerator) execute() SearchBooksResponses {
+func (sbrg SearchBooksResponseGenerator) Execute() SearchBooksResponses {
 	// 書籍検索のレスポンスボディ構造体
 	var searchBooksResponses = SearchBooksResponses{}
 

@@ -15,7 +15,7 @@ type Client struct {
 }
 
 // SendRequest : GoogleBooksAPIにリクエストを送信する
-func (client Client) SendRequest(searchWord string) (SearchBooksResponses, error) {
+func (client Client) SendRequest(searchWord string) (ResponseBodyFromGoogleBooksAPI, error) {
 	// TODO: 以下の方法で「文字列を連結してURLを生成」したいけど上手くいかない
 	//var byteURL = make([]byte, 0, 100) // 100byte のキャパシティを確保
 	//byteURL = append(byteURL, []byte(URLForGoogleBooksAPI))
@@ -32,7 +32,7 @@ func (client Client) SendRequest(searchWord string) (SearchBooksResponses, error
 
 	if err != nil {
 		fmt.Println(err)
-		return SearchBooksResponses{}, err
+		return ResponseBodyFromGoogleBooksAPI{}, err
 		// fmt.Errorf("Unable to get this url : http status %d", res.StatusCode)
 	}
 
@@ -45,20 +45,15 @@ func (client Client) SendRequest(searchWord string) (SearchBooksResponses, error
 	// レスポンスボディを読み込む
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return SearchBooksResponses{}, err
+		return ResponseBodyFromGoogleBooksAPI{}, err
 	}
 
 	// JSONエンコードされたデータをparseして、構造体に格納する
 	var responseFromGoogleBooksAPI ResponseBodyFromGoogleBooksAPI
 	if err := json.Unmarshal(body, &responseFromGoogleBooksAPI); err != nil {
-		return SearchBooksResponses{}, err
+		return ResponseBodyFromGoogleBooksAPI{}, err
 	}
 
-	// GoogleBooksAPIのJSONレスポンスの構造体から、 書籍検索用のレスポンスボディ構造体を生成する
-	searchBooksResponse := SearchBooksResponseGenerator{
-		ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
-	}.execute()
-
 	// レスポンスボディを返す
-	return searchBooksResponse, nil
+	return responseFromGoogleBooksAPI, nil
 }
