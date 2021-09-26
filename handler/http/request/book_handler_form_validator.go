@@ -9,6 +9,7 @@ type BookHandlerFormValidator struct {
 	GoogleBooksApiRequestBody googleBooksApi.RequestParameter
 }
 
+// Validate : BookHandler.SearchBooksのリクエストボディのバリデーション
 func (bh BookHandlerFormValidator) Validate() (bool, response.ErrorResponseBody) {
 	if bh.GoogleBooksApiRequestBody.Title == "" {
 		return false, response.ErrorResponseBody{Message: "本のタイトルを入力してください"}
