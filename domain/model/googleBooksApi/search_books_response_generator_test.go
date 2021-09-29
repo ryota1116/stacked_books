@@ -87,7 +87,7 @@ func TestSearchBooksResponseGeneratorExecute(t *testing.T) {
       ]
 	}`)
 
-	// JSONエンコードされたデータをparseして、構造体に格納する
+	// JSONデータをparseして、構造体に格納する
 	var responseFromGoogleBooksAPI ResponseBodyFromGoogleBooksAPI
 	if err := json.Unmarshal(responseBody, &responseFromGoogleBooksAPI); err != nil {
 		t.Errorf(err.Error())
