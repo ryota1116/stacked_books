@@ -3,6 +3,7 @@ package persistence
 import (
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/UserBook"
 	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
@@ -41,4 +42,13 @@ func (userBookPersistence) ReadUserBooks(userId int) model.Book {
 	}
 
 	return book
+}
+
+func SearchUserBooksByStatus(userID int, status UserBook.Status)  {
+	db := DbConnect()
+	var books []model.Book
+
+	db.Joins("inner join books on books.id = user_books.book_id").
+		Where("user_id = ? AND status = ?", userID, status.Value).
+		Find(books)
 }
