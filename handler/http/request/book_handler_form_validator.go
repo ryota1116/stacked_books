@@ -1,12 +1,12 @@
 package request
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	searchBooksRequest "github.com/ryota1116/stacked_books/handler/http/request/book"
 	"github.com/ryota1116/stacked_books/handler/http/response"
 )
 
 type BookHandlerFormValidator struct {
-	GoogleBooksApiRequestBody googleBooksApi.RequestParameter
+	GoogleBooksApiRequestBody searchBooksRequest.RequestParameter
 }
 
 // Validate : BookHandler.SearchBooksのリクエストボディのバリデーション
