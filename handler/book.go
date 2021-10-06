@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
 	"github.com/ryota1116/stacked_books/handler/http/request"
+	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
@@ -25,7 +27,6 @@ func NewBookHandler(bu usecase.BookUseCaseInterface) BookHandlerInterface {
 
 // SearchBooks : 外部APIを用いた書籍検索のエンドポイント
 func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
-	// 
 	var requestParameter googleBooksApi.RequestParameter
 	requestBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -38,31 +39,27 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
 	// リクエストボディのバリデーション
 	isValid, errMsg := request.BookHandlerFormValidator{GoogleBooksApiRequestBody: requestParameter}.Validate()
 	if !isValid {
-		w.WriteHeader(422)
-		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(errMsg)
-		if err != nil {
-			return
+		// クライアントにHTTPレスポンスを返す
+		response := httpResponse.Response{
+			StatusCode:   http.StatusUnprocessableEntity,
+			ResponseBody: errMsg,
 		}
+		response.ReturnResponse(w)
 		return
 	}
 
 	// 外部APIで書籍を検索
 	searchBooksResult, err := bh.bookUseCase.SearchBooks(requestParameter)
-
+	// 外部APIリクエストでエラーが発生した場合
 	if err != nil {
-		err := json.NewEncoder(w).Encode("検索に失敗しました")
-		if err != nil {
-			return 
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Content-Type", "application/json")
+		httpResponse.Return500Response(w, errors.New("検索に失敗しました"))
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(searchBooksResult)
-	if err != nil {
-		return 
+	// 正常なレスポンス
+	response := httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: searchBooksResult,
 	}
-	w.Header().Set("Content-Type", "application/json")
+	response.ReturnResponse(w)
 }
