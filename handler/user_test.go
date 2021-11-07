@@ -5,6 +5,7 @@ import (
 	"github.com/magiconair/properties/assert"
 	"io/ioutil"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
