@@ -13,7 +13,5 @@ type UserBook struct {
 	Book		  Book		`json:"book"`
 }
 
-type UserBookParameter struct {
-	UserBook
-	Book
+	Book          Book      `json:"book"`
 }

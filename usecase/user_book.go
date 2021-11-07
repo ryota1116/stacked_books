@@ -24,14 +24,21 @@ func NewUserBookUseCase(br repository.BookRepository, ubr repository.UserBookRep
 	}
 }
 
-func (ubu userBookUseCase) RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter {
-	userBookParameter.Book = ubu.bookRepository.FindOrCreateByGoogleBooksId(userBookParameter.GoogleBooksId, userBookParameter)
-	userBook := ubu.userBookRepository.CreateOne(userBookParameter)
-	return userBook
+// RegisterUserBook : UserBooksレコードを作成する
+func (uub userBookUseCase) RegisterUserBook(userId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) dto.RegisterUserBookResponse {
+	// GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
+	book := uub.bookRepository.FindOrCreateByGoogleBooksId(registerUserBookRequestParameter)
+	// UserBooksレコードを作成する
+	userBook := uub.userBookRepository.CreateOne(userId, book.Id, registerUserBookRequestParameter)
+	// RegisterUserBookResponse構造体を生成する
+	userBookResponse := dto.BuildRegisterUserBookResponse(book, userBook)
+
+	return userBookResponse
 }
 
-func (ubu userBookUseCase) ReadUserBooks(userId int) model.Book {
-	userBooks := ubu.userBookRepository.ReadUserBooks(userId)
+// FindUserBooksByUserId : ログイン中のユーザーが登録している本の一覧を取得する
+func (ubu userBookUseCase) FindUserBooksByUserId(userId int) []model.Book {
+	userBooks := ubu.userBookRepository.FindAllByUserId(userId)
 	return userBooks
 }
 

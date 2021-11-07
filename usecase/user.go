@@ -70,7 +70,7 @@ func (uu userUseCase) FindOne(userId int) model.User {
 	return user
 }
 
-// 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本
+// GenerateToken : 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本
 // 多値でない(エラーの戻り値が無い)場合、その関数が失敗しないことを期待している？
 func GenerateToken(user model.User) (string, error) {
 	// 署名生成に使用するアルゴリズムにHS256を使用

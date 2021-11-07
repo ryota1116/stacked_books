@@ -1,5 +1,4 @@
-package handler
-
+package middleware
 
 import (
 	"encoding/json"
@@ -15,14 +14,14 @@ import (
 	"time"
 )
 
-type UserSessionHandlerMiddleWare struct {
-	userUseCase usecase.UserUseCase
-}
+const (
+	secretKey = "secretKey"
+)
 
-func NewUserSessionHandlerMiddleWare(uu usecase.UserUseCase) UserHandler {
-	return &userHandler{
-		userUseCase: uu,
-	}
+type userSessionHandlerMiddleWare struct {}
+
+func NewUserSessionHandlerMiddleWare() UserSessionHandlerMiddleWareInterface {
+	return userSessionHandlerMiddleWare{}
 }
 
 // 認証が通らないとメッセージとリターンを返す（認証失敗時にどのページに繊維するとかはどこで定義する？）
@@ -60,7 +59,7 @@ func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
 }
 
 // CurrentUser : セッションからログイン中のユーザー情報を取得する
-func CurrentUser(r *http.Request) model.User {
+func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
@@ -91,16 +90,14 @@ func CurrentUser(r *http.Request) model.User {
 	return model.User{}
 }
 
-func setUserSession(w http.ResponseWriter, user model.User) {
-	fmt.Println(user.Id)
+func SetUserSession(w http.ResponseWriter, user model.User) {
 	expiration := time.Now()
 	expiration.AddDate(0, 0, 7)
 	cookie := http.Cookie{
 		Name:       "user_id",
-		Value:      strconv.Itoa(user.Id),
+		Value:      strconv.Itoa(int(user.Id)),
 		Expires:    expiration,
 	}
-
 	//cookie := http.Cookie{
 	//	Name:       "user_session_key",
 	//	Value:      uuid.Generate(uuid.Bits),
@@ -108,8 +105,4 @@ func setUserSession(w http.ResponseWriter, user model.User) {
 	//}
 
 	http.SetCookie(w, &cookie)
-}
-
-func readUserSession(w http.ResponseWriter, r *http.Request)  {
-
 }

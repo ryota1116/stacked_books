@@ -30,27 +30,32 @@ func NewUserBookHandler(ubu usecase.UserBookUseCase) UserBookHandler {
 
 // RegisterUserBook : booksを参照→同じのあればそれを使って、user_booksを作成
 func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Request) {
-	//
-	bookParams := model.UserBookParameter{}
-	err := json.NewDecoder(r.Body).Decode(&bookParams)
+	registerUserBookRequestParams := dto.RegisterUserBookRequestParameter{}
+
+	err := json.NewDecoder(r.Body).Decode(&registerUserBookRequestParams)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	//認証
-	//if VerifyToken(w, r) {
-	//}
+	// ログイン中のユーザーを取得する
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	currentUser := ushm.CurrentUser(r)
 
-	dbBook := ubh.userBookUseCase.RegisterUserBook(bookParams)
+	// UserBooksレコードを作成する
+	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id, registerUserBookRequestParams)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dbBook)
 }
 
-func (ubh userBookHandler) ReadUserBooks(w http.ResponseWriter, r *http.Request) {
+// FindUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
+func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
-	user := CurrentUser(r)
-	userBooks := ubh.userBookUseCase.ReadUserBooks(user.Id)
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	user := ushm.CurrentUser(r)
+
+	userBooks := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(userBooks)
 	if err != nil {
