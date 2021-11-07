@@ -2,12 +2,14 @@ package usecase
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/UserBook"
 	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
 type UserBookUseCase interface {
 	RegisterUserBook(userBookParameter model.UserBookParameter) model.UserBookParameter
 	ReadUserBooks(userId int) model.Book
+	SearchUserBooksByStatus(userID int, status UserBook.Status) []model.UserBook
 }
 
 type userBookUseCase struct {
@@ -31,4 +33,8 @@ func (ubu userBookUseCase) RegisterUserBook(userBookParameter model.UserBookPara
 func (ubu userBookUseCase) ReadUserBooks(userId int) model.Book {
 	userBooks := ubu.userBookRepository.ReadUserBooks(userId)
 	return userBooks
+}
+
+func (ubu userBookUseCase) SearchUserBooksByStatus(userID int, status UserBook.Status) []model.UserBook {
+	return ubu.userBookRepository.FindUserBooksByStatus(userID, status)
 }

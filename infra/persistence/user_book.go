@@ -16,7 +16,7 @@ func NewUserBookPersistence() repository.UserBookRepository {
 func (userBookPersistence) CreateOne(userBookParameter model.UserBookParameter) model.UserBookParameter {
 	db := DbConnect()
 	db.Model(&model.UserBook{}).Create(map[string]interface{}{
-		"UserId": 1,
+		"UserId": userBookParameter.UserId,
 		"BookId": userBookParameter.BookId,
 		"status": userBookParameter.Status,
 		"memo": userBookParameter.Memo,
@@ -44,11 +44,14 @@ func (userBookPersistence) ReadUserBooks(userId int) model.Book {
 	return book
 }
 
-func SearchUserBooksByStatus(userID int, status UserBook.Status)  {
+// FindUserBooksByStatus : 読書ステータスでユーザーが登録している本一覧を取得する
+func (userBookPersistence) FindUserBooksByStatus(userID int, status UserBook.Status) []model.UserBook {
 	db := DbConnect()
-	var books []model.Book
+	var userBooks []model.UserBook
 
-	db.Joins("inner join books on books.id = user_books.book_id").
-		Where("user_id = ? AND status = ?", userID, status.Value).
-		Find(books)
+	db.Joins("Book").
+		Where("user_books.user_id = ? AND user_books.status = ?", userID, status.Value).
+		Find(&userBooks)
+
+	return userBooks
 }

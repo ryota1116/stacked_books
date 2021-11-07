@@ -46,7 +46,7 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 
 	dbUser := model.User{}
 	// emailでUserを取得
-	err := db.Debug().Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
+	err := db.Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
 	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
 
 	if err != nil {
