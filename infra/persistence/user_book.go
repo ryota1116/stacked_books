@@ -4,6 +4,7 @@ import (
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/model/dto"
 	"github.com/ryota1116/stacked_books/domain/repository"
+	"github.com/ryota1116/stacked_books/infra"
 )
 
 type userBookPersistence struct {}
@@ -14,8 +15,6 @@ func NewUserBookPersistence() repository.UserBookRepository {
 
 // CreateOne : UserBooksレコードを作成する
 func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) model.UserBook {
-	db := DbConnect()
-
 	userBook := model.UserBook{
 		UserId:    userId,
 		BookId:    bookId,
@@ -23,7 +22,7 @@ func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookReq
 		Memo:      registerUserBookRequestParameter.UserBook.Memo,
 	}
 
-	db.Create(&userBook)
+	infra.Db.Create(&userBook)
 
 	return userBook
 }
