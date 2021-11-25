@@ -1,10 +1,11 @@
 package persistence
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
 	"errors"
 	"fmt"
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/repository"
+	"github.com/ryota1116/stacked_books/infra"
 )
 
 // Userのインフラ層の構造体
@@ -26,8 +27,6 @@ func NewUserPersistence() repository.UserRepository {
 // }
 // インターフェイスの実装
 func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (model.User, error) {
-	db := DbConnect()
-
 	// TODO: playground/validationを使う
 	var err error
 	if user.UserName == "" {
@@ -36,17 +35,15 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (mo
 
 	user.Password = string(bcryptHashPassword)
 	// DBにユーザーを登録
-	db.Create(&user)
+	infra.Db.Create(&user)
 	fmt.Println(user)
 	return user, err
 }
 
 func (up userPersistence) SignIn(user model.User) (model.User, error) {
-	db := DbConnect()
-
 	dbUser := model.User{}
 	// emailでUserを取得
-	err := db.Debug().Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
+	err := infra.Db.Debug().Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
 	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
 
 	if err != nil {
@@ -58,10 +55,8 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 
 //Userを1件取得
 func (up userPersistence) FindOne(userId int) model.User {
-	db := DbConnect()
-
 	user := model.User{}
-	result := db.Debug().First(&user, userId)
+	result := infra.Db.Debug().First(&user, userId)
 
 	fmt.Println(&result)
 

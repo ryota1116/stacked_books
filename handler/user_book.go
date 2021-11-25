@@ -55,9 +55,17 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	currentUser := ushm.CurrentUser(r)
 
 	// UserBooksレコードを作成する
-	book, userBook := ubh.userBookUseCase.RegisterUserBook(
+	book, userBook, err := ubh.userBookUseCase.RegisterUserBook(
 		currentUser.Id,
-		registerUserBookRequestParams)
+		registerUserBookRequestParams);
+	// レコード作成失敗時のレスポンス
+	if err != nil {
+		httpResponse.Response{
+			StatusCode:   http.StatusBadRequest,
+			ResponseBody: err.Error(),
+		}.ReturnResponse(w)
+		return
+	}
 
 	// RegisterUserBookResponse構造体を生成する
 	registerUserBookResponse := dto.BuildRegisterUserBookResponse(book, userBook)

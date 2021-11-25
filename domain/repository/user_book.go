@@ -6,5 +6,5 @@ import (
 )
 
 type UserBookRepository interface {
-	CreateOne(int, int, dto.RegisterUserBookRequestParameter) model.UserBook
+	CreateOne(userId int, bookId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) (model.UserBook, error)
 }

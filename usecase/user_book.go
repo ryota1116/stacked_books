@@ -7,7 +7,7 @@ import (
 )
 
 type UserBookUseCase interface {
-	RegisterUserBook(int, dto.RegisterUserBookRequestParameter) (model.Book, model.UserBook)
+	RegisterUserBook(int, dto.RegisterUserBookRequestParameter) (model.Book, model.UserBook, error)
 }
 
 type userBookUseCase struct {
@@ -23,11 +23,11 @@ func NewUserBookUseCase(br repository.BookRepository, ubr repository.UserBookRep
 }
 
 // RegisterUserBook : UserBooksレコードを作成する
-func (uub userBookUseCase) RegisterUserBook(userId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) (model.Book, model.UserBook) {
+func (uub userBookUseCase) RegisterUserBook(userId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) (model.Book, model.UserBook, error) {
 	// GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
 	book := uub.bookRepository.FindOrCreateByGoogleBooksId(registerUserBookRequestParameter)
 	// UserBooksレコードを作成する
-	userBook := uub.userBookRepository.CreateOne(userId, book.Id, registerUserBookRequestParameter)
+	userBook, err := uub.userBookRepository.CreateOne(userId, book.Id, registerUserBookRequestParameter)
 
-	return book, userBook
+	return book, userBook, err
 }
