@@ -33,7 +33,6 @@ func DbConnect() {
 		configDB.Name)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
 	Db = db
 
 	if err != nil {
