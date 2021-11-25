@@ -14,7 +14,7 @@ func NewUserBookPersistence() repository.UserBookRepository {
 }
 
 // CreateOne : UserBooksレコードを作成する
-func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) model.UserBook {
+func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) (model.UserBook, error) {
 	userBook := model.UserBook{
 		UserId:    userId,
 		BookId:    bookId,
@@ -22,7 +22,9 @@ func (userBookPersistence) CreateOne(userId int, bookId int, registerUserBookReq
 		Memo:      registerUserBookRequestParameter.UserBook.Memo,
 	}
 
-	infra.Db.Create(&userBook)
-
-	return userBook
+	// Link : https://gorm.io/ja_JP/docs/error_handling.html
+	if err := infra.Db.Create(&userBook).Error; err != nil {
+		return userBook, err
+	}
+	return userBook, nil
 }
