@@ -9,7 +9,7 @@ import (
 type UserBookUseCase interface {
 	RegisterUserBook(int, dto.RegisterUserBookRequestParameter) dto.RegisterUserBookResponse
 	FindUserBooksByUserId(userId int) ([]model.Book, error)
-	GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request)
+	GetUserTotalReadingVolume(userId int) (int, error)
 }
 
 type userBookUseCase struct {
@@ -43,10 +43,13 @@ func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]model.Book, erro
 }
 
 // GetUserTotalReadingVolume : ユーザーの読書量を本の厚さ単位で取得する
-func (ubu userBookUseCase) GetUserTotalReadingVolume(userId int) int {
+func (ubu userBookUseCase) GetUserTotalReadingVolume(userId int) (int, error) {
 	// ユーザーの読了済みの本を全て取得する
 	readingStatus := model.UserBookStatus(model.Done).GetStatusInt()
-	userBooks := ubu.userBookRepository.FindUserBooksWithReadingStatus(userId, readingStatus)
+	userBooks, err := ubu.userBookRepository.FindUserBooksWithReadingStatus(userId, readingStatus)
+	if err != nil {
+		return 0, err
+	}
 
 	// ユーザーの読書量を計算する
 	var userTotalReadingVolume int
@@ -58,5 +61,5 @@ func (ubu userBookUseCase) GetUserTotalReadingVolume(userId int) int {
 		userTotalReadingVolume += readingVolumeCalculator.CalculateInMillimeters()
 	}
 
-	return userTotalReadingVolume
+	return userTotalReadingVolume, nil
 }

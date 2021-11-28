@@ -69,13 +69,23 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 // GetUserTotalReadingVolume : ユーザーの読書量を本の厚さ単位で取得する
 func (ubh userBookHandler) GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
-	user := CurrentUser(r)
-	// ユーザーの読書量を本の厚さ単位で取得する
-	TotalReadingVolume := ubh.userBookUseCase.GetUserTotalReadingVolume(user.Id)
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	user := ushm.CurrentUser(r)
 
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(TotalReadingVolume)
+	// ユーザーの読書量を本の厚さ単位で取得する
+	TotalReadingVolume, err := ubh.userBookUseCase.GetUserTotalReadingVolume(user.Id)
 	if err != nil {
+		httpResponse.Return500Response(w, err)
+	}
+
+	if err := json.NewEncoder(w).Encode(TotalReadingVolume); err != nil {
+		httpResponse.Return500Response(w, err)
 		return
 	}
+
+	// 正常なレスポンス
+	httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: TotalReadingVolume,
+	}.ReturnResponse(w)
 }
