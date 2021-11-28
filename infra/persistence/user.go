@@ -61,7 +61,7 @@ func (up userPersistence) FindOne(userId int) model.User {
 	db := DbConnect()
 
 	user := model.User{}
-	result := db.Debug().First(&user, userId)
+	result := db.First(&user, userId)
 
 	fmt.Println(&result)
 

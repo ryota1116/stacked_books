@@ -3,7 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/dto"
+	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 
 type UserBookHandler interface {
 	RegisterUserBook(w http.ResponseWriter, r *http.Request)
-	ReadUserBooks(w http.ResponseWriter, r *http.Request)
+	FindUserBooks(w http.ResponseWriter, r *http.Request)
 	GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request)
 }
 
@@ -27,30 +28,42 @@ func NewUserBookHandler(ubu usecase.UserBookUseCase) UserBookHandler {
 
 // RegisterUserBook : booksを参照→同じのあればそれを使って、user_booksを作成
 func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Request) {
-	//
-	bookParams := model.UserBookParameter{}
-	err := json.NewDecoder(r.Body).Decode(&bookParams)
+	registerUserBookRequestParams := dto.RegisterUserBookRequestParameter{}
+
+	err := json.NewDecoder(r.Body).Decode(&registerUserBookRequestParams)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	currentUser := middleware.CurrentUser(r)
+	// ログイン中のユーザーを取得する
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	currentUser := ushm.CurrentUser(r)
 
-	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id,bookParams)
+	// UserBooksレコードを作成する
+	dbBook := ubh.userBookUseCase.RegisterUserBook(currentUser.Id, registerUserBookRequestParams)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dbBook)
 }
 
-func (ubh userBookHandler) ReadUserBooks(w http.ResponseWriter, r *http.Request) {
+// FindUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
+func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
-	user := middleware.CurrentUser(r)
-	userBooks := ubh.userBookUseCase.ReadUserBooks(user.Id)
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(userBooks)
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	user := ushm.CurrentUser(r)
+
+	userBooks, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
 	if err != nil {
-		return 
+		httpResponse.Return500Response(w, err)
+		return
 	}
+
+	// 正常なレスポンス
+	response := httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: userBooks,
+	}
+	response.ReturnResponse(w)
 }
 
 // GetUserTotalReadingVolume : ユーザーの読書量を本の厚さ単位で取得する
