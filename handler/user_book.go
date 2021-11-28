@@ -51,7 +51,11 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 	ushm := middleware.NewUserSessionHandlerMiddleWare()
 	user := ushm.CurrentUser(r)
 
-	userBooks := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+	userBooks, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
 
 	// 正常なレスポンス
 	response := httpResponse.Response{
