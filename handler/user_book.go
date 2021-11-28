@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model/dto"
+	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
@@ -52,9 +53,10 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 
 	userBooks := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
 
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(userBooks)
-	if err != nil {
-		return 
+	// 正常なレスポンス
+	response := httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: userBooks,
 	}
+	response.ReturnResponse(w)
 }
