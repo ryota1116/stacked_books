@@ -3,8 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ryota1116/stacked_books/handler/http/request"
-	"github.com/ryota1116/stacked_books/handler/http/request/book"
+	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
 	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/handler/http/response/book"
 	"github.com/ryota1116/stacked_books/usecase"
@@ -28,7 +27,7 @@ func NewBookHandler(bu usecase.BookUseCaseInterface) BookHandlerInterface {
 
 // SearchBooks : 外部APIを用いた書籍検索のエンドポイント
 func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
-	var requestBody searchBooksRequest.RequestBody
+	var requestBody search_books.RequestBody
 	requestBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
@@ -38,13 +37,13 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	// リクエストボディのバリデーション
-	isValid, errMsg := request.BookHandlerFormValidator{
+	isValid, validMsg := search_books.FormValidator{
 		GoogleBooksApiRequestBody: requestBody}.Validate()
 	if !isValid {
 		// クライアントにHTTPレスポンスを返す
 		response := httpResponse.Response{
 			StatusCode:   http.StatusUnprocessableEntity,
-			ResponseBody: errMsg,
+			ResponseBody: validMsg,
 		}
 		response.ReturnResponse(w)
 		return

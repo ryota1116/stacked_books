@@ -2,10 +2,11 @@ package usecase
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
 )
 
 type BookUseCaseInterface interface {
-	SearchBooks(requestParameter googleBooksApi.RequestParameter) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error)
+	SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error)
 }
 
 type bookUseCase struct {
@@ -18,7 +19,7 @@ func NewBookUseCase() BookUseCaseInterface {
 }
 
 // SearchBooks : 外部APIを用いて書籍検索を行う
-func (bu bookUseCase) SearchBooks(requestParameter googleBooksApi.RequestParameter) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
+func (bu bookUseCase) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
 	// 外部APIで書籍を検索
 	// 書籍検索用のレスポンスボディ構造体のスライス型
 	responseFromGoogleBooksAPI, err := googleBooksApi.Client{}.SendRequest(requestParameter.Title)
