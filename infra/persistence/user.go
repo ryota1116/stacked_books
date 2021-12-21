@@ -1,10 +1,10 @@
 package persistence
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
 	"errors"
 	"fmt"
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/repository"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -35,7 +35,7 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (mo
 	if user.UserName == "" {
 		err = errors.New("ユーザー名を入力してください")
 	}
-	
+
 	user.Password = string(bcryptHashPassword)
 	// DBにユーザーを登録
 	db.Create(&user)
