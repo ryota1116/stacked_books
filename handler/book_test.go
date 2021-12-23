@@ -17,11 +17,11 @@ import (
 // テストで期待するレスポンスボディJSON文字列のファイルパス
 const expectedSearchBooksJson = "../tests/expected/api/bookHandler/200_search_books_response.json"
 
-// BookUseCaseMock : BookUseCaseInterfaceを実装しているモック
-type BookUseCaseMock struct {}
+// bookUseCaseMock : BookUseCaseInterfaceを実装しているモック
+type bookUseCaseMock struct {}
 
 // SearchBooks : インターフェイスを満たすためのメソッド
-func (bu BookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
+func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
 	return googleBooksApi.ResponseBodyFromGoogleBooksAPI{
 		Items: []googleBooksApi.Item{
 			{
@@ -76,7 +76,7 @@ func TestMain(m *testing.M) {
 
 // 外部APIを用いた書籍検索のエンドポイントのテスト
 func TestBookHandler_SearchBooks(t *testing.T) {
-	bh := NewBookHandler(BookUseCaseMock{})
+	bh := NewBookHandler(bookUseCaseMock{})
 
 	t.Run("正常系のテスト", func(t *testing.T) {
 		bodyReader := strings.NewReader(`{
@@ -87,7 +87,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		// handler/book.goのSearchBooksメソッドを呼び出し、
-		// その中でBookUseCaseMockのSearchBooksメソッドが呼び出されている
+		// その中でbookUseCaseMockのSearchBooksメソッドが呼び出されている
 		bh.SearchBooks(w, r)
 
 		// レスポンスを代入
