@@ -10,9 +10,7 @@ import (
 // URLForGoogleBooksAPI :
 const URLForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
 
-type Client struct {
-
-}
+type Client struct {}
 
 // SendRequest : GoogleBooksAPIにリクエストを送信する
 func (client Client) SendRequest(searchWord string) (ResponseBodyFromGoogleBooksAPI, error) {
