@@ -2,7 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"errors"
+	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
+	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
+	"github.com/ryota1116/stacked_books/handler/http/response/book"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
@@ -24,32 +27,45 @@ func NewBookHandler(bu usecase.BookUseCaseInterface) BookHandlerInterface {
 
 // SearchBooks : 外部APIを用いた書籍検索のエンドポイント
 func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
-	//
-	var requestParameter googleBooksApi.RequestParameter
-	responseBodyBytes, err := ioutil.ReadAll(r.Body)
+	var requestBody search_books.RequestBody
+	requestBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
-	if err := json.Unmarshal(responseBodyBytes, &requestParameter); err != nil {
+	if err := json.Unmarshal(requestBodyBytes, &requestBody); err != nil {
 		panic(err)
+	}
+
+	// リクエストボディのバリデーション
+	isValid, validMsg := search_books.FormValidator{
+		GoogleBooksApiRequestBody: requestBody}.Validate()
+	if !isValid {
+		// クライアントにHTTPレスポンスを返す
+		response := httpResponse.Response{
+			StatusCode:   http.StatusUnprocessableEntity,
+			ResponseBody: validMsg,
+		}
+		response.ReturnResponse(w)
+		return
 	}
 
 	// 外部APIで書籍を検索
-	searchBooksResult, err := bh.bookUseCase.SearchBooks(requestParameter)
-
+	responseFromGoogleBooksAPI, err := bh.bookUseCase.SearchBooks(requestBody)
+	// 外部APIリクエストでエラーが発生した場合
 	if err != nil {
-		err := json.NewEncoder(w).Encode("検索に失敗しました")
-		if err != nil {
-			return
-		}
-		w.WriteHeader(http.StatusBadRequest)
-		w.Header().Set("Content-Type", "application/json")
+		httpResponse.Return500Response(w, errors.New("検索に失敗しました"))
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(searchBooksResult)
-	if err != nil {
-		return
+	// GoogleBooksAPIのJSONレスポンスの構造体から、 書籍検索用のHTTPレスポンスボディ構造体を生成する
+	searchBooksResponse := book.SearchBooksResponseGenerator{
+		ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
+	}.Execute()
+
+	// 正常なレスポンス
+	response := httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: searchBooksResponse,
 	}
-	w.Header().Set("Content-Type", "application/json")
+	response.ReturnResponse(w)
 }

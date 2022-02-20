@@ -57,7 +57,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 	bodyReader := strings.NewReader(`{
 		"user_name": "user_name",
 		"email": "user@example.jp",
-		"password": "password",
+		"password": "password"
 	}`)
 
 	// TODO: 書き換えてもエラーにならない
