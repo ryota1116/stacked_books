@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
 	"github.com/ryota1116/stacked_books/handler"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 	"github.com/ryota1116/stacked_books/usecase"
@@ -13,7 +14,8 @@ func HandleFunc() mux.Router {
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
 
-	bookUseCase := usecase.NewBookUseCase()
+
+	bookUseCase := usecase.NewBookUseCase(googleBooksApi.NewClient())
 	bookHandler := handler.NewBookHandler(bookUseCase)
 
 	router := mux.NewRouter().StrictSlash(true)

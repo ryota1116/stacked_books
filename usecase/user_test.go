@@ -72,17 +72,16 @@ func TestUserHandler_SignUp(t *testing.T) {
 }
 
 func TestUserHandler_SignIn(t *testing.T) {
-	ur := UserRepositoryMock{}
-	uu := NewUserUseCase(&ur)
-
-	user := model.User{
-		UserName:  "user_name",
-		Email:     "user@example.jp",
-		Password:  "password",
-	}
-
-	token, err := uu.SignUp(user)
-
+	//ur := UserRepositoryMock{}
+	//uu := NewUserUseCase(&ur)
+	//
+	//user := model.User{
+	//	UserName:  "user_name",
+	//	Email:     "user@example.jp",
+	//	Password:  "password",
+	//}
+	//
+	//token, err := uu.SignUp(user)
 }
 
 func TestUserHandler_ShowUser(t *testing.T) {
