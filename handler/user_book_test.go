@@ -5,6 +5,7 @@ import (
 	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -43,9 +44,27 @@ func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) 
 		}
 }
 
+type UserSessionHandlerMiddleWareMock struct {}
+
+func (UserSessionHandlerMiddleWareMock) CurrentUser(*http.Request) model.User {
+	return model.User{
+		Id:        1,
+		UserName:  "",
+		Email:     "",
+		Password:  "",
+		Avatar:    "",
+		Role:      0,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+		DeletedAt: nil,
+		Books:     nil,
+	}
+}
+
 func TestBookHandlerRegisterUserBook(t *testing.T) {
 	ubu := UserBookUseCaseMock{}
-	ubh := NewUserBookHandler(ubu)
+	ushmw := UserSessionHandlerMiddleWareMock{}
+	ubh := NewUserBookHandler(ubu, ushmw)
 
 	// リクエストボディを検証しているならこの記述が活きてくる気がするが、、
 	bodyReader := strings.NewReader(`{
@@ -69,8 +88,7 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 	r := httptest.NewRequest("GET", "/register/book", bodyReader)
 	w := httptest.NewRecorder()
 
-	// TODO: テスト時にCurrentUserメソッドでセッションからユーザー情報を取得するのどうやるか
-	r.Header.Add("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJfM0BleGFtcGxlLmNvbSIsImV4cCI6MTYzMjQ5ODY2MCwiaWF0IjoxNjMyMjM5NDYwLCJwYXNzd29yZCI6IiQyYSQxMCRZU0FzTmo5UldPekZDRmpLRmdDNXJlQ0JEVVROSnIyZVh1YUdxT2RWV25RWU5EenkyNk0wZSIsInVzZXJJZCI6M30.FsyIcmFk5BVl32OVordFlF2EAIj6CaqwfUudrKU5b9Y")
+	r.Header.Add("Authorization", "")
 
 	// この中でUserBookUseCaseMockのRegisterUserBookが実行される
 	ubh.RegisterUserBook(w, r)
