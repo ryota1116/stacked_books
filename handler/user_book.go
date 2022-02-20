@@ -16,11 +16,15 @@ type UserBookHandler interface {
 
 type userBookHandler struct {
 	userBookUseCase usecase.UserBookUseCase
+	userSessionHandlerMiddleWare middleware.UserSessionHandlerMiddleWareInterface
 }
 
-func NewUserBookHandler(ubu usecase.UserBookUseCase) UserBookHandler {
+func NewUserBookHandler(
+	ubu usecase.UserBookUseCase,
+	ushmw middleware.UserSessionHandlerMiddleWareInterface) UserBookHandler {
 	return &userBookHandler{
 		userBookUseCase: ubu,
+		userSessionHandlerMiddleWare: ushmw,
 	}
 }
 
@@ -51,8 +55,7 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	}
 
 	// ログイン中のユーザーを取得する
-	ushm := middleware.NewUserSessionHandlerMiddleWare()
-	currentUser := ushm.CurrentUser(r)
+	currentUser := ubh.userSessionHandlerMiddleWare.CurrentUser(r)
 
 	// UserBooksレコードを作成する
 	book, userBook := ubh.userBookUseCase.RegisterUserBook(

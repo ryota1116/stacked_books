@@ -5,7 +5,6 @@ import (
 	"github.com/magiconair/properties/assert"
 	"io/ioutil"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -30,11 +29,20 @@ func (uu *UserUseCaseMock) SignUp(user model.User) (model.User, error) {
 	}, nil
 }
 
-func (uu *UserUseCaseMock) SignIn(user model.User) (string, error) {
-	return string("token"), nil
+func (uu *UserUseCaseMock) SignIn(user model.User) (model.User, error) {
+	return model.User{
+		Id:        1,
+		UserName:  "user_name",
+		Email:     "user@example.jp",
+		Password:  "password",
+		Avatar:    "",
+		Role:      0,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+	}, nil
 }
 
-func (uu *UserUseCaseMock) ShowUser(params map[string]string) model.User {
+func (uu *UserUseCaseMock) FindOne(int) model.User {
 	return model.User{
 		Id:        1,
 		UserName:  "user_name",

@@ -7,6 +7,7 @@ type SearchBooksResponseGenerator struct {
 	ResponseBodyFromGoogleBooksAPI googleBooksApi.ResponseBodyFromGoogleBooksAPI `json:"response_body_from_google_books_api"`
 }
 
+// SearchBooksResponses : 書籍検索用のレスポンスボディ構造体のコレクション
 type SearchBooksResponses []SearchBooksResponse
 
 // SearchBooksResponse : 書籍検索用のレスポンスボディ構造体。

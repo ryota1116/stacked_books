@@ -1,8 +1,9 @@
-package googleBooksApi
+package book
 
 import (
 	"encoding/json"
 	"github.com/google/go-cmp/cmp"
+	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
 	"testing"
 )
 
@@ -88,7 +89,7 @@ func TestSearchBooksResponseGeneratorExecute(t *testing.T) {
 	}`)
 
 	// JSONデータをparseして、構造体に格納する
-	var responseFromGoogleBooksAPI ResponseBodyFromGoogleBooksAPI
+	var responseFromGoogleBooksAPI googleBooksApi.ResponseBodyFromGoogleBooksAPI
 	if err := json.Unmarshal(responseBody, &responseFromGoogleBooksAPI); err != nil {
 		t.Errorf(err.Error())
 	}

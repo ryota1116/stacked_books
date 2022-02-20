@@ -38,7 +38,7 @@ func (ur *UserRepositoryMock) SignIn(user model.User) (model.User, error) {
 	}, nil
 }
 
-func (ur *UserRepositoryMock) ShowUser(params map[string]string) model.User {
+func (ur *UserRepositoryMock) FindOne(int) model.User {
 	return model.User{
 		Id:        1,
 		UserName:  "user",
@@ -61,27 +61,60 @@ func TestUserHandler_SignUp(t *testing.T) {
 		Password:  "password",
 	}
 	// SignUpメソッドの返り値を格納
-	dbUser, err := uu.SignUp(user)
+	user, err := uu.SignUp(user)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, dbUser.Id, int64(1), `ユーザーIDが正しいこと`)
-	assert.Equal(t, dbUser.UserName, "user_name", `ユーザー名が正しいこと`)
-	assert.Equal(t, dbUser.Email, "user@example.jp", `ユーザー名が正しいこと`)
-	assert.Equal(t, dbUser.Password, "password", `ユーザー名が正しいこと`)
+
+	expected := model.User{
+		Id:        1,
+		UserName:  user.UserName,
+		Email:     user.Email,
+		Password:  user.Password,
+		Avatar:    "",
+		Role:      0,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+	}
+
+	assert.Equal(
+		t,
+		expected,
+		user,
+		"テストに失敗しました。")
 }
 
 func TestUserHandler_SignIn(t *testing.T) {
-	//ur := UserRepositoryMock{}
-	//uu := NewUserUseCase(&ur)
-	//
-	//user := model.User{
-	//	UserName:  "user_name",
-	//	Email:     "user@example.jp",
-	//	Password:  "password",
-	//}
-	//
-	//token, err := uu.SignUp(user)
+	ur := UserRepositoryMock{}
+	uu := NewUserUseCase(&ur)
+
+	user := model.User{
+		UserName:  "user_name",
+		Email:     "user@example.jp",
+		Password:  "password",
+	}
+
+	user, err := uu.SignIn(user)
+	if err != nil {
+		t.Errorf("テストに失敗しました。エラーメッセージ: %s", err)
+	}
+
+	expected := model.User{
+		Id:        1,
+		UserName:  "user",
+		Email:     "user@example.jp",
+		Password:  "password",
+		Avatar:    "",
+		Role:      0,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+	}
+
+	assert.Equal(
+		t,
+		expected,
+		user,
+		"テストに失敗しました。")
 }
 
 func TestUserHandler_ShowUser(t *testing.T) {
