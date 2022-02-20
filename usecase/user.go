@@ -50,6 +50,8 @@ func (uu userUseCase) SignUp(user model.User) (model.User, error) {
 	//return dbErr
 }
 
+
+// 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
 func (uu userUseCase) SignIn(user model.User) (model.User, error) {
 	dbUser, err := uu.userRepository.SignIn(user)
 

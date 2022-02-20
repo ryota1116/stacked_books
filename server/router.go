@@ -14,6 +14,10 @@ func HandleFunc() mux.Router {
 	userUseCase := usecase.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
 
+	bookPersistence := persistence.NewBookPersistence()
+	userBookPersistence := persistence.NewUserBookPersistence()
+	userBookUseCase := usecase.NewUserBookUseCase(bookPersistence, userBookPersistence)
+	userBookHandler := handler.NewUserBookHandler(userBookUseCase)
 
 	bookUseCase := usecase.NewBookUseCase(googleBooksApi.NewClient())
 	bookHandler := handler.NewBookHandler(bookUseCase)
@@ -26,6 +30,9 @@ func HandleFunc() mux.Router {
 
 	// 外部APIを用いた書籍検索のエンドポイント
 	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET")
+
+	// ユーザーと書籍を紐付ける
+	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
 
 	return *router
 }

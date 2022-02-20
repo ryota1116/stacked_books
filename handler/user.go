@@ -45,7 +45,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// アプリ側のバリデーションエラーを受け取り、JSONでレスポンスする
+	// アプリケーションのバリデーションエラーを受け取り、JSONでレスポンスする
 	code, errmap := model.UserValidate(user)
 	if len(errmap) != 0 {
 		errResponse := model.RespondErrJson(code, errmap)
@@ -71,7 +71,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	dbUser, err := uh.userUseCase.SignIn(user)
 	// tokenを返す
 	token, err := usecase.GenerateToken(dbUser)
-	// Userの情報を赤書
+	// Userの情報をセット
 	middleware.SetUserSession(w, dbUser)
 
 	if err != nil {
