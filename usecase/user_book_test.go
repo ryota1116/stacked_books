@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/google/go-cmp/cmp"
 	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/model/dto"
+	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/expected/api/user_book_use_case"
 	"strings"
 	"testing"
@@ -13,13 +13,13 @@ import (
 
 type BookRepositoryMock struct {}
 
-func (BookRepositoryMock) FindOrCreateByGoogleBooksId(dto.RegisterUserBookRequestParameter) model.Book {
+func (BookRepositoryMock) FindOrCreateByGoogleBooksId(body RegisterUserBooks.RequestBody) model.Book {
 	return model.Book{
 		GoogleBooksId:  "Wx1dLwEACAAJ",
 		Title:          "リーダブルコード",
 		Description:    "読んでわかるコードの重要性と方法について解説",
-		Isbn_10:        "4873115655",
-		Isbn_13:        "9784873115658",
+		Isbn10:        "4873115655",
+		Isbn13:        "9784873115658",
 		PageCount:      237,
 		PublishedYear:  2012,
 		PublishedMonth: 6,
@@ -29,11 +29,12 @@ func (BookRepositoryMock) FindOrCreateByGoogleBooksId(dto.RegisterUserBookReques
 
 type UserBookRepositoryMock struct {}
 
-func (UserBookRepositoryMock) CreateOne(int, int, dto.RegisterUserBookRequestParameter) model.UserBook {
+func (UserBookRepositoryMock) CreateOne(userId int, bookId int, requestBody RegisterUserBooks.RequestBody) model.UserBook {
 	return model.UserBook{
+		Id:        1,
 		UserId:    1,
 		BookId:    1,
-		Status:    0,
+		Status:    1,
 		Memo:      "メモメモメモ",
 	}
 }
@@ -44,7 +45,6 @@ func TestUserBookUseCaseRegisterUserBook(t *testing.T) {
 	ubrm := UserBookRepositoryMock{}
 	ubu := NewUserBookUseCase(brm, ubrm)
 
-	// 構造体の中身を検証しているならこの記述が活きてくる気がするが、、
 	bodyReader := strings.NewReader(`{
 		"google_books_id": "Wx1dLwEACAAJ",
 		"title": "リーダブルコード",
@@ -60,20 +60,22 @@ func TestUserBookUseCaseRegisterUserBook(t *testing.T) {
 		"memo": "メモメモメモ"
 	}`)
 
-	// json文字列をRegisterUserBookRequestParameter構造体に変換
-	registerUserBookRequestParams := dto.RegisterUserBookRequestParameter{}
-	err := json.NewDecoder(bodyReader).Decode(&registerUserBookRequestParams)
+	// json文字列をリクエストボディに変換
+	requestBody := RegisterUserBooks.RequestBody{}
+	err := json.NewDecoder(bodyReader).Decode(&requestBody)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	expected := user_book_use_case.ExpectedRegisterUserBookResponse
-
 	// userBookUseCaseのRegisterUserBookを実行
-	userBookResponse := ubu.RegisterUserBook(1, registerUserBookRequestParams)
+	book, userBook := ubu.RegisterUserBook(1, requestBody)
 
 	// 戻り値である構造体が正しいことをテスト
-	if diff := cmp.Diff(userBookResponse, expected); diff != "" {
+	if diff := cmp.Diff(book, user_book_use_case.ExpectedBookStructForRegisterUserBook); diff != "" {
+		t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
+	}
+
+	if diff := cmp.Diff(userBook, user_book_use_case.ExpectedUserBookStructForRegisterUserBook); diff != "" {
 		t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
 	}
 }

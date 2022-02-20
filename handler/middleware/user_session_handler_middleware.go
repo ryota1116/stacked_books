@@ -20,6 +20,8 @@ const (
 
 type userSessionHandlerMiddleWare struct {}
 
+// TODO: ミドルウェアとしながらもリクエスト処理の前後に挟んでいないので、
+// TODO: ミドルウェアとすべきもの、すべきでないものを分けた上で改修すること。
 func NewUserSessionHandlerMiddleWare() UserSessionHandlerMiddleWareInterface {
 	return userSessionHandlerMiddleWare{}
 }

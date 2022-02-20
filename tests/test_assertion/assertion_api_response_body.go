@@ -18,11 +18,11 @@ func CompareResponseBodyWithJsonFile(t *testing.T, responseBodyBytes []byte, fil
 	}
 
 	// ファイルの中身を読み込む
-	byte, err := ioutil.ReadFile(filePath)
+	readFile, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		t.Fatalf("unexpected error while opening file '%#v'", err)
 	}
 
 	// JSON文字列の比較
-	assert.JSONEq(t, string(byte), actual.String())
+	assert.JSONEq(t, string(readFile), actual.String())
 }

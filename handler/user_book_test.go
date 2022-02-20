@@ -1,12 +1,14 @@
 package handler
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model/dto"
+	"github.com/ryota1116/stacked_books/domain/model"
+	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 // テストで期待するレスポンスボディJSON文字列のファイルパス
@@ -14,24 +16,31 @@ const expectedRegisterUserBookJson = "../tests/expected/api/userBookHandler/200_
 
 type UserBookUseCaseMock struct {}
 
-func (UserBookUseCaseMock) RegisterUserBook(int, dto.RegisterUserBookRequestParameter) dto.RegisterUserBookResponse {
-	return dto.RegisterUserBookResponse{
-		Book:     dto.Book{
+func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) (model.Book, model.UserBook) {
+	return model.Book{
+			Id:             1,
 			GoogleBooksId:  "Wx1dLwEACAAJ",
 			Title:          "リーダブルコード",
 			Description:    "読んでわかるコードの重要性と方法について解説",
-			Isbn_10:        "4873115655",
-			Isbn_13:        "9784873115658",
+			Image:          "",
+			Isbn10:         "4873115655",
+			Isbn13:         "9784873115658",
 			PageCount:      237,
 			PublishedYear:  2012,
 			PublishedMonth: 6,
 			PublishedDate:  0,
-		},
-		UserBook: dto.UserBook{
-			Status: 0,
-			Memo:   "メモメモメモ",
-		},
-	}
+			CreatedAt:      time.Time{},
+			UpdatedAt:      time.Time{},
+	}, model.UserBook{
+			Id:        1,
+			UserId:    1,
+			BookId:    1,
+			Status:    1,
+			Memo:      "メモメモメモ",
+			CreatedAt: time.Time{},
+			UpdatedAt: time.Time{},
+			Book:      model.Book{},
+		}
 }
 
 func TestBookHandlerRegisterUserBook(t *testing.T) {
@@ -40,18 +49,21 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 
 	// リクエストボディを検証しているならこの記述が活きてくる気がするが、、
 	bodyReader := strings.NewReader(`{
-		"google_books_id": "Wx1dLwEACAAJ",
-		"title": "リーダブルコード",
-		"authors": ["Dustin Boswell","Trevor Foucher"],
-		"description": "読んでわかるコードの重要性と方法について解説",
-		"isbn_10": "4873115655",
-		"isbn_13": "9784873115658",
-		"page_count": 237,
-		"published_year": 2012,
-		"published_month": 6,
-	
-		"status": 0,
-		"memo": "メモメモメモ"
+		"book" :{
+			"google_books_id": "Wx1dLwEACAAJ",
+			"title": "リーダブルコード",
+			"authors": ["Dustin Boswell","Trevor Foucher"],
+			"description": "読んでわかるコードの重要性と方法について解説",
+			"isbn_10": "4873115655",
+			"isbn_13": "9784873115658",
+			"page_count": 237,
+			"published_year": 2012,
+			"published_month": 6
+		},
+		"user_book" :{
+			"status": 1,
+			"memo": "メモメモメモ"
+		}
 	}`)
 
 	r := httptest.NewRequest("GET", "/register/book", bodyReader)

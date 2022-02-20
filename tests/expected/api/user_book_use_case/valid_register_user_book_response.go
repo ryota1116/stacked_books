@@ -1,23 +1,29 @@
 package user_book_use_case
 
-import "github.com/ryota1116/stacked_books/domain/model/dto"
+import (
+	"github.com/ryota1116/stacked_books/domain/model"
+)
 
-// ExpectedRegisterUserBookResponse : userBookUseCaseのRegisterUserBookの戻り値で期待する構造体
+// ExpectedBookStructForRegisterUserBook userBookUseCase.RegisterUserBookの戻り値で期待するBook構造体
 // 構造体を定数constに格納することは出来ないので、変数宣言している
-var ExpectedRegisterUserBookResponse = dto.RegisterUserBookResponse{
-	Book: dto.Book{
-		GoogleBooksId:  "Wx1dLwEACAAJ",
-		Title:          "リーダブルコード",
-		Description:    "読んでわかるコードの重要性と方法について解説",
-		Isbn_10:        "4873115655",
-		Isbn_13:        "9784873115658",
-		PageCount:      237,
-		PublishedYear:  2012,
-		PublishedMonth: 6,
-		PublishedDate:  0,
-	},
-	UserBook: dto.UserBook{
-		Status: 0,
-		Memo:   "メモメモメモ",
-	},
+var ExpectedBookStructForRegisterUserBook = model.Book{
+	GoogleBooksId:  "Wx1dLwEACAAJ",
+	Title:          "リーダブルコード",
+	Description:    "読んでわかるコードの重要性と方法について解説",
+	Isbn10:        "4873115655",
+	Isbn13:        "9784873115658",
+	PageCount:      237,
+	PublishedYear:  2012,
+	PublishedMonth: 6,
+	PublishedDate:  0,
+}
+
+// ExpectedUserBookStructForRegisterUserBook userBookUseCase.RegisterUserBookの戻り値で期待するUserBook構造体
+// 構造体を定数constに格納することは出来ないので、変数宣言している
+var ExpectedUserBookStructForRegisterUserBook = model.UserBook{
+	Id:     1,
+	UserId: 1,
+	BookId: 1,
+	Status: 1,
+	Memo:   "メモメモメモ",
 }
