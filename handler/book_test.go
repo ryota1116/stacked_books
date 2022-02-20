@@ -69,9 +69,12 @@ func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody)
 }
 
 func TestMain(m *testing.M) {
-	status := m.Run() // テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）。また、各ユニットテストの中でテストデータをinsertすれば良さそう。
+	// テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）
+	// また、各ユニットテストの中でテストデータをinsertすれば良さそう。
+	status := m.Run()
 
-	os.Exit(status)   // 0が渡れば成功する。プロセスのkillも実行される。
+	// 0が渡れば成功する。プロセスのkillも実行される。
+	os.Exit(status)
 }
 
 // 外部APIを用いた書籍検索のエンドポイントのテスト
@@ -83,7 +86,10 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 			"title": "リーダブルコード"
 		}`)
 
-		r := httptest.NewRequest("GET", "/books/search", bodyReader)
+		r := httptest.NewRequest(
+			"GET",
+			"/books/search",
+			bodyReader)
 		w := httptest.NewRecorder()
 
 		// handler/book.goのSearchBooksメソッドを呼び出し、
@@ -154,6 +160,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 		// レスポンスを代入
 		response := w.Result()
 
+		// NOTE: ステータスコード422はHandlerが返しているから、Handlerの責務としてテストして良さそう。
 		// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
 		if response.StatusCode != 422 {
 			t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
@@ -170,6 +177,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 			panic(err)
 		}
 
+		// TODO: バリデーションメッセージはValidatorが返しているから、Handlerの責務ではない。
 		// レスポンスボディの結果をテスト(構造体に戻してテストしている)
 		assert.Equal(t, errorResponseBody.Message, "本のタイトルを入力してください")
 	})
