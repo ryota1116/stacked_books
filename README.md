@@ -63,3 +63,9 @@ https://www.figma.com/file/OTN0BtC3RrgPhMgW9wILm2/Stacked_Books?node-id=0%3A1
 
 ## ER図
 https://drive.google.com/file/d/1uspJ44TKzTZGpcBljSUNiJvVqTQJt1qT/view?usp=sharing
+
+## フロントエンド
+https://github.com/ryota1116/stacked_books_ui
+
+## API定義
+https://github.com/ryota1116/stacked_books_api_definition

@@ -4,14 +4,15 @@ import (
 	"time"
 )
 
+// Book : 本のドメインモデル
 type Book struct {
 	Id            int       `json:"id" gorm:"primaryKey;"`
 	GoogleBooksId string    `json:"google_books_id"`
 	Title         string    `json:"title"`
 	Description   string    `json:"description"`
 	Image         string    `json:"image"`
-	Isbn_10        string    `json:"isbn_10"`
-	Isbn_13        string    `json:"isbn_13"`
+	Isbn10        string    `json:"isbn_10"`
+	Isbn13        string    `json:"isbn_13"`
 	PageCount     int       `json:"page_count"`
 	PublishedYear   int 	`json:"published_year"`
 	PublishedMonth   int 	`json:"published_month"`
