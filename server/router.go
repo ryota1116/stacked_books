@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
 	"github.com/ryota1116/stacked_books/handler"
+	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 	"github.com/ryota1116/stacked_books/usecase"
 )
@@ -17,7 +18,8 @@ func HandleFunc() mux.Router {
 	bookPersistence := persistence.NewBookPersistence()
 	userBookPersistence := persistence.NewUserBookPersistence()
 	userBookUseCase := usecase.NewUserBookUseCase(bookPersistence, userBookPersistence)
-	userBookHandler := handler.NewUserBookHandler(userBookUseCase)
+	userSessionHandlerMiddleWare := middleware.NewUserSessionHandlerMiddleWare()
+	userBookHandler := handler.NewUserBookHandler(userBookUseCase, userSessionHandlerMiddleWare)
 
 	bookUseCase := usecase.NewBookUseCase(googleBooksApi.NewClient())
 	bookHandler := handler.NewBookHandler(bookUseCase)
@@ -33,6 +35,8 @@ func HandleFunc() mux.Router {
 
 	// ユーザーと書籍を紐付ける
 	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
+	// ログイン中のユーザーが登録している本の一覧を取得する
+	router.HandleFunc("/user/books", userBookHandler.FindUserBooks).Methods("GET")
 
 	return *router
 }

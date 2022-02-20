@@ -12,6 +12,7 @@ import (
 
 type UserBookHandler interface {
 	RegisterUserBook(w http.ResponseWriter, r *http.Request)
+	FindUserBooks(w http.ResponseWriter, r *http.Request)
 }
 
 type userBookHandler struct {
@@ -69,4 +70,24 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 		StatusCode:   http.StatusOK,
 		ResponseBody: response,
 	}.ReturnResponse(w)
+}
+
+// FindUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
+func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request) {
+	// セッション情報からUserを取得
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	user := ushm.CurrentUser(r)
+
+	userBooks, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
+
+	// 正常なレスポンス
+	response := httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: userBooks,
+	}
+	response.ReturnResponse(w)
 }

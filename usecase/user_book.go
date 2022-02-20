@@ -8,6 +8,7 @@ import (
 
 type UserBookUseCase interface {
 	RegisterUserBook(int, RegisterUserBooks.RequestBody) (model.Book, model.UserBook)
+	FindUserBooksByUserId(userId int) ([]model.Book, error)
 }
 
 type userBookUseCase struct {
@@ -30,4 +31,10 @@ func (uub userBookUseCase) RegisterUserBook(userId int, requestBody RegisterUser
 	userBook := uub.userBookRepository.CreateOne(userId, book.Id, requestBody)
 
 	return book, userBook
+}
+
+// FindUserBooksByUserId : ログイン中のユーザーが登録している本の一覧を取得する
+func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]model.Book, error) {
+	userBooks, err := ubu.userBookRepository.FindAllByUserId(userId)
+	return userBooks, err
 }

@@ -86,7 +86,6 @@ func GenerateToken(user model.User) (string, error) {
 		"password": user.Password, // パスワード
 	}
 	fmt.Println(token)
-	fmt.Println(token.Claims)
 
 	// TODO: シークレットキーを環境変数で持たせる
 	// link: https://qiita.com/po3rin/items/740445d21487dfcb5d9f

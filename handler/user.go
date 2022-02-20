@@ -41,7 +41,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// リクエストをUserの構造体に変換
 	user := model.User{}
-	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
+	if err := json.Unmarshal(responseBodyBytes, user); err != nil {
 		panic(err)
 	}
 
@@ -71,12 +71,11 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	dbUser, err := uh.userUseCase.SignIn(user)
 	// tokenを返す
 	token, err := usecase.GenerateToken(dbUser)
-	// Userの情報をセット
-	middleware.SetUserSession(w, dbUser)
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
+
 		// Userの情報をセット
 		middleware.SetUserSession(w, dbUser)
 		w.WriteHeader(http.StatusOK)

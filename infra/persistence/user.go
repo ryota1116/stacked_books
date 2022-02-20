@@ -1,10 +1,10 @@
 package persistence
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
 	"errors"
 	"fmt"
+	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/repository"
 )
 
 // Userのインフラ層の構造体
@@ -61,7 +61,7 @@ func (up userPersistence) FindOne(userId int) model.User {
 	db := DbConnect()
 
 	user := model.User{}
-	result := db.Debug().First(&user, userId)
+	result := db.First(&user, userId)
 
 	fmt.Println(&result)
 
