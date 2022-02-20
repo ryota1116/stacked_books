@@ -31,6 +31,7 @@ func (rbh FormValidator) Validate() (bool, response.ErrorResponseBody) {
 		return false, response.ErrorResponseBody{Message: "本のページ数は1ページ以上で入力してください。"}
 	}
 
+	// Contain関数を作成する https://zenn.dev/glassonion1/articles/7c7830a269909c
 	isValidStatus := func() bool {
 		for _, bookStatus := range UserBook.GetBookStatuses() {
 			if rbh.RequestBody.UserBook.Status == bookStatus {
