@@ -2,12 +2,12 @@ package usecase
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/model/dto"
 	"github.com/ryota1116/stacked_books/domain/repository"
+	"github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 )
 
 type UserBookUseCase interface {
-	RegisterUserBook(int, dto.RegisterUserBookRequestParameter) (model.Book, model.UserBook)
+	RegisterUserBook(int, RegisterUserBooks.RequestBody) (model.Book, model.UserBook)
 }
 
 type userBookUseCase struct {
@@ -23,11 +23,11 @@ func NewUserBookUseCase(br repository.BookRepository, ubr repository.UserBookRep
 }
 
 // RegisterUserBook : UserBooksレコードを作成する
-func (uub userBookUseCase) RegisterUserBook(userId int, registerUserBookRequestParameter dto.RegisterUserBookRequestParameter) (model.Book, model.UserBook) {
+func (uub userBookUseCase) RegisterUserBook(userId int, requestBody RegisterUserBooks.RequestBody) (model.Book, model.UserBook) {
 	// GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
-	book := uub.bookRepository.FindOrCreateByGoogleBooksId(registerUserBookRequestParameter)
+	book := uub.bookRepository.FindOrCreateByGoogleBooksId(requestBody)
 	// UserBooksレコードを作成する
-	userBook := uub.userBookRepository.CreateOne(userId, book.Id, registerUserBookRequestParameter)
+	userBook := uub.userBookRepository.CreateOne(userId, book.Id, requestBody)
 
 	return book, userBook
 }
