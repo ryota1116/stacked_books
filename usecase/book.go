@@ -12,17 +12,20 @@ type BookUseCaseInterface interface {
 type bookUseCase struct {
 	// BookRepositoryを使う必要が出たときにコメントアウト外す
 	// bookRepository repository.BookRepository
+	googleBooksAPIClient googleBooksApi.IGoogleBooksAPIClient
 }
 
-func NewBookUseCase() BookUseCaseInterface {
-	return &bookUseCase{}
+func NewBookUseCase(client googleBooksApi.IGoogleBooksAPIClient) BookUseCaseInterface {
+	return &bookUseCase{
+		client,
+	}
 }
 
 // SearchBooks : 外部APIを用いて書籍検索を行う
 func (bu bookUseCase) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
 	// 外部APIで書籍を検索
 	// 書籍検索用のレスポンスボディ構造体のスライス型
-	responseFromGoogleBooksAPI, err := googleBooksApi.Client{}.SendRequest(requestParameter.Title)
+	responseFromGoogleBooksAPI, err := bu.googleBooksAPIClient.SendRequest(requestParameter.Title)
 	if err != nil {
 		return responseFromGoogleBooksAPI, err
 	}

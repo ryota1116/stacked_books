@@ -1,19 +1,45 @@
 package usecase
 
 import (
+	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
 	"os"
 	"testing"
 )
 
-type googleBooksAPIClientMock struct {
-	
-}
+//  IGoogleBooksAPIClientのモック
+type googleBooksAPIClientMock struct {}
 
-func (client googleBooksApi.Client) SendRequest(searchWord string) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
+// IGoogleBooksAPIClient.SendRequestをモックしている
+func (client googleBooksAPIClientMock) SendRequest(searchWord string) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
 	return googleBooksApi.ResponseBodyFromGoogleBooksAPI{
-
-	}
+		Items:  []googleBooksApi.Item{
+			googleBooksApi.Item{
+				ID:         "Wx1dLwEACAAJ",
+				VolumeInfo: googleBooksApi.VolumeInfo{
+					Title:               "リーダブルコード",
+					Authors:             []string{
+						"Dustin Boswell",
+						"Trevor Foucher",
+					},
+					PublishedDate:       "2012-06",
+					Description:         "読んでわかるコードの重要性と方法について解説",
+					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
+						{
+							Type:       "ISBN_10",
+							Identifier: "4873115655",
+						},
+						{
+							Type:       "ISBN_13",
+							Identifier: "9784873115658",
+						},
+					},
+					PageCount:           237,
+				},
+			},
+		},
+	}, nil
 }
 
 func TestMain(m *testing.M) {
@@ -24,11 +50,48 @@ func TestMain(m *testing.M) {
 
 // インターフェイスを満たしているかテストする？(メソッドが変わった時に)
 // => それは型付けで担保できるのでは？
-func SearchBooksTest()  {
-
-}
-
-// ユースケース層のSearchBooksメソッドのテスト
 func TestBookUseCase_SearchBooks(t *testing.T) {
+	useCase := NewBookUseCase(googleBooksAPIClientMock{})
 
+	expected := googleBooksApi.ResponseBodyFromGoogleBooksAPI{
+		Items:  []googleBooksApi.Item{
+			googleBooksApi.Item{
+				ID:         "Wx1dLwEACAAJ",
+				VolumeInfo: googleBooksApi.VolumeInfo{
+					Title:               "リーダブルコード",
+					Authors:             []string{
+						"Dustin Boswell",
+						"Trevor Foucher",
+					},
+					PublishedDate:       "2012-06",
+					Description:         "読んでわかるコードの重要性と方法について解説",
+					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
+						{
+							Type:       "ISBN_10",
+							Identifier: "4873115655",
+						},
+						{
+							Type:       "ISBN_13",
+							Identifier: "9784873115658",
+						},
+					},
+					PageCount:           237,
+				},
+			},
+		},
+	}
+
+	t.Run("正常系のテスト", func(t *testing.T) {
+		requestBody := search_books.RequestBody{Title: "リーダブルコード"}
+
+		responseFromGoogleBooksAPI, err := useCase.SearchBooks(requestBody)
+		if err != nil {
+			t.Errorf(`テストが失敗しました。エラーメッセージ: %d`, err)
+		}
+
+		assert.Equal(
+			t,
+			responseFromGoogleBooksAPI,
+			expected)
+	})
 }
