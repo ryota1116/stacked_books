@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/UserBook"
 	"github.com/ryota1116/stacked_books/domain/repository"
 	"github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 )
@@ -42,4 +43,16 @@ func (userBookPersistence) FindAllByUserId(userId int) ([]model.Book, error){
 	}
 
 	return books, nil
+}
+
+// FindUserBooksByStatus : 読書ステータスでユーザーが登録している本一覧を取得する
+func (userBookPersistence) FindUserBooksByStatus(userID int, status UserBook.Status) []model.UserBook {
+	db := DbConnect()
+	var userBooks []model.UserBook
+
+	db.Joins("Book").
+		Where("user_books.user_id = ? AND user_books.status = ?", userID, status.Value).
+		Find(&userBooks)
+
+	return userBooks
 }

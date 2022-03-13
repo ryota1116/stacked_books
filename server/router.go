@@ -38,5 +38,7 @@ func HandleFunc() mux.Router {
 	// ログイン中のユーザーが登録している本の一覧を取得する
 	router.HandleFunc("/user/books", userBookHandler.FindUserBooks).Methods("GET")
 
+	router.HandleFunc("/user/books/status", userBookHandler.SearchUserBooksByStatus).Methods("GET")
+
 	return *router
 }

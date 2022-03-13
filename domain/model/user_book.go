@@ -11,6 +11,5 @@ type UserBook struct {
 	Memo          string    `json:"memo"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-
-	Book          Book      `json:"book"`
+	Book		  Book		`json:"book"`
 }

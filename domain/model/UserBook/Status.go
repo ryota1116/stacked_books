@@ -4,18 +4,18 @@ package UserBook
 const (
 	// WantToRead : 読みたい（= 1）
 	WantToRead int = iota + 1
-	// READING : 読書中（= 2）
-	READING
-	// DONE : 読了（= 3）
-	DONE
+	// Reading : 読書中（= 2）
+	Reading
+	// Done : 読了（= 3）
+	Done
 )
 
 // GetBookStatuses : 本の読書ステータス一覧を取得する
 func GetBookStatuses() []int {
 	return []int{
 		WantToRead,
-		READING,
-		DONE,
+		Reading,
+		Done,
 	}
 }
 
