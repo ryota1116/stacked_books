@@ -6,6 +6,7 @@ import (
 )
 
 // TODO: アプリケーション側でunique制約を付けるには？（DBにアクセスする必要が出てくる）
+// TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、 persistence/user/entity.go?を作成する。
 type User struct {
 	Id        int       `json:"id" gorm:"primaryKey"`
 	UserName  string    `json:"user_name" validate:"required,max=255"`

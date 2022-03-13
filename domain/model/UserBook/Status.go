@@ -2,17 +2,21 @@ package UserBook
 
 // 本の読書ステータスのEnum
 const (
-	// WANT_TO_READ : 読みたい（= 1）
-	WANT_TO_READ int = iota + 1
-	// READING : 読書中（= 2）
-	READING
-	// DONE : 読了（= 3）
-	DONE
+	// WantToRead : 読みたい（= 1）
+	WantToRead int = iota + 1
+	// Reading : 読書中（= 2）
+	Reading
+	// Done : 読了（= 3）
+	Done
 )
 
 // GetBookStatuses : 本の読書ステータス一覧を取得する
 func GetBookStatuses() []int {
-	return []int{WANT_TO_READ,READING,DONE}
+	return []int{
+		WantToRead,
+		Reading,
+		Done,
+	}
 }
 
 // Status : ユーザーが登録している本の読書ステータス

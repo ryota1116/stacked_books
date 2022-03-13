@@ -4,6 +4,10 @@ import (
 	"time"
 )
 
+
+// Book : 本のドメインモデル
+// TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、persistence/book/entity.go?を作成する。
+// NOTE: Isbn_10カラムを取得する場合フィールドをIsbn_10にする必要がある(=>Isbn10では取得できない)
 type Book struct {
 	Id            int       `json:"id" gorm:"primaryKey;"`
 	GoogleBooksId string    `json:"google_books_id"`

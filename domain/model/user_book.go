@@ -2,6 +2,7 @@ package model
 
 import "time"
 
+// TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、 persistence/user_book/entity.go?を作成する。
 type UserBook struct {
 	Id            int       `json:"id" gorm:"primaryKey"`
 	UserId        int       `json:"user_id"`
@@ -11,7 +12,4 @@ type UserBook struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	Book		  Book		`json:"book"`
-}
-
-	Book          Book      `json:"book"`
 }
