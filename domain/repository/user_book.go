@@ -8,4 +8,5 @@ import (
 type UserBookRepository interface {
 	CreateOne(int, int, RegisterUserBooks.RequestBody) model.UserBook
 	FindAllByUserId(userId int) ([]model.Book, error)
+	FindUserBooksWithReadingStatus(userId int, readingStatus int) ([]model.Book, error)
 }

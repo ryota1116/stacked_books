@@ -13,6 +13,7 @@ import (
 type UserBookHandler interface {
 	RegisterUserBook(w http.ResponseWriter, r *http.Request)
 	FindUserBooks(w http.ResponseWriter, r *http.Request)
+	GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request)
 }
 
 type userBookHandler struct {
@@ -90,4 +91,28 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 		ResponseBody: userBooks,
 	}
 	response.ReturnResponse(w)
+}
+
+// GetUserTotalReadingVolume : ユーザーの読書量を本の厚さ単位で取得する
+func (ubh userBookHandler) GetUserTotalReadingVolume(w http.ResponseWriter, r *http.Request) {
+	// セッション情報からUserを取得
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
+	user := ushm.CurrentUser(r)
+
+	// ユーザーの読書量を本の厚さ単位で取得する
+	TotalReadingVolume, err := ubh.userBookUseCase.GetUserTotalReadingVolume(user.Id)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+	}
+
+	if err := json.NewEncoder(w).Encode(TotalReadingVolume); err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
+
+	// 正常なレスポンス
+	httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: TotalReadingVolume,
+	}.ReturnResponse(w)
 }

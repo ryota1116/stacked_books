@@ -43,3 +43,19 @@ func (userBookPersistence) FindAllByUserId(userId int) ([]model.Book, error){
 
 	return books, nil
 }
+
+func (userBookPersistence) FindUserBooksWithReadingStatus(userId int, readingStatus int) ([]model.Book, error) {
+	db := DbConnect()
+	var books []model.Book
+
+	// 特定の読書ステータスに紐付くBooks一覧を取得
+	if err := db.Find(&books).
+		Joins("JOIN user_books ON user_books.user_id = users.id AND user_books.status = ?",
+			readingStatus).
+		Where("users.id = ?", userId).Error;
+	err != nil {
+		return books, err
+	}
+
+	return books, nil
+}
