@@ -1,6 +1,6 @@
 package search_books
 
-// RequestBody : 書籍検索用のリクエストボディ構造体
-type RequestBody struct {
+// RequestParameter : 書籍検索用のリクエストパラメーター構造体
+type RequestParameter struct {
 	Title	string	`json:"title"`
 }

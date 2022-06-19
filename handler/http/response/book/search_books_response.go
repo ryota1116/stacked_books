@@ -8,20 +8,24 @@ type SearchBooksResponseGenerator struct {
 }
 
 // SearchBooksResponses : 書籍検索用のレスポンスボディ構造体のコレクション
-type SearchBooksResponses []SearchBooksResponse
+type SearchBooksResponses struct {
+	TypeName `json:"books"`
+}
+
+type TypeName []SearchBooksResponse
 
 // SearchBooksResponse : 書籍検索用のレスポンスボディ構造体。
 // GoogleBooksAPIを叩いた時に取得したJSONレスポンスのうち、
 // 必要なフィールドだけをセットしたレスポンスボディの構造体。
 type SearchBooksResponse struct {
-	GoogleBooksId string    `json:"google_books_id"`
+	GoogleBooksId string    `json:"googleBooksId"`
 	Title	string			`json:"title"`
 	Authors	[]string		`json:"authors"`
 	Description	string		`json:"description"`
-	Isbn10 string			`json:"isbn_10"`
-	Isbn13 string			`json:"isbn_13"`
-	PageCount int 			`json:"page_count"`
-	RegisteredAt string	    `json:"created_at"`
+	Isbn10 string			`json:"isbn10"`
+	Isbn13 string			`json:"isbn13"`
+	PageCount int 			`json:"pageCount"`
+	RegisteredAt string	    `json:"publishedAt"`
 }
 
 
@@ -29,7 +33,8 @@ type SearchBooksResponse struct {
 // 必要なフィールドだけをセットした書籍検索用のレスポンスボディ構造体を生成する
 func (sbrg SearchBooksResponseGenerator) Execute() SearchBooksResponses {
 	// 書籍検索のレスポンスボディ構造体
-	var searchBooksResponses = SearchBooksResponses{}
+
+	var typeName = TypeName{}
 
 	// GoogleBooksAPIのJSONレスポンスから、書籍検索用のレスポンスボディ構造体を生成する
 	// 検索結果一覧が配列で返ってくるため、slice型に格納して返す
@@ -55,8 +60,10 @@ func (sbrg SearchBooksResponseGenerator) Execute() SearchBooksResponses {
 			}
 		}
 
-		searchBooksResponses = append(searchBooksResponses, searchBooksResponse)
+		typeName = append(typeName, searchBooksResponse)
 	}
+
+	var searchBooksResponses = SearchBooksResponses{typeName}
 
 	return searchBooksResponses
 }

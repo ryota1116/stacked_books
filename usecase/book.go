@@ -6,7 +6,7 @@ import (
 )
 
 type BookUseCaseInterface interface {
-	SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error)
+	SearchBooks(requestParameter search_books.RequestParameter) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error)
 }
 
 type bookUseCase struct {
@@ -22,7 +22,7 @@ func NewBookUseCase(client googleBooksApi.IGoogleBooksAPIClient) BookUseCaseInte
 }
 
 // SearchBooks : 外部APIを用いて書籍検索を行う
-func (bu bookUseCase) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
+func (bu bookUseCase) SearchBooks(requestParameter search_books.RequestParameter) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
 	// 外部APIで書籍を検索
 	// 書籍検索用のレスポンスボディ構造体のスライス型
 	responseFromGoogleBooksAPI, err := bu.googleBooksAPIClient.SendRequest(requestParameter.Title)

@@ -1,12 +1,12 @@
 package search_books
 
 type FormValidator struct {
-	GoogleBooksApiRequestBody RequestBody
+	GoogleBooksApiRequestParameter RequestParameter
 }
 
-// Validate : BookHandler.SearchBooksのリクエストボディのバリデーション
+// Validate : BookHandler.SearchBooksのリクエストパラメーターのバリデーション
 func (bh FormValidator) Validate() (bool, ValidationError) {
-	if bh.GoogleBooksApiRequestBody.Title == "" {
+	if bh.GoogleBooksApiRequestParameter.Title == "" {
 		return false, ValidationError{Message: "本のタイトルを入力してください"}
 	}
 
