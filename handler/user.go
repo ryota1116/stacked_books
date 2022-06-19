@@ -67,6 +67,17 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, Origin, X-Csrftoken, Accept, Cookie")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3002")
+	w.Header().Set("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	user := model.User{}
 	json.NewDecoder(r.Body).Decode(&user)
 

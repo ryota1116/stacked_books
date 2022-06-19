@@ -26,12 +26,12 @@ func HandleFunc() mux.Router {
 
 	router := mux.NewRouter().StrictSlash(true)
 	// エンドポイント(リクエストを処理して、レスポンスを返す)
-	router.HandleFunc("/signup", userHandler.SignUp).Methods("POST")
-	router.HandleFunc("/signin", userHandler.SignIn).Methods("POST")
+	router.HandleFunc("/signup", userHandler.SignUp).Methods("POST", "OPTIONS")
+	router.HandleFunc("/signin", userHandler.SignIn).Methods("POST", "OPTIONS")
 	router.HandleFunc("/user/{userId:[0-9]+}", userHandler.ShowUser).Methods("GET")
 
 	// 外部APIを用いた書籍検索のエンドポイント
-	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET")
+	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET", "OPTIONS")
 
 	// ユーザーと書籍を紐付ける
 	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
