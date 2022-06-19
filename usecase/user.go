@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/repository"
+	userDto "github.com/ryota1116/stacked_books/usecase/user"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -16,7 +17,7 @@ const (
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
 	SignUp(user model.User) (model.User, error)
-	SignIn(user model.User) (model.User, error)
+	SignIn(user model.User) (userDto.SignInDto, error)
 	FindOne(userId int) model.User
 }
 
@@ -52,17 +53,21 @@ func (uu userUseCase) SignUp(user model.User) (model.User, error) {
 
 
 // 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
-func (uu userUseCase) SignIn(user model.User) (model.User, error) {
+func (uu userUseCase) SignIn(user model.User) (userDto.SignInDto, error) {
 	dbUser, err := uu.userRepository.SignIn(user)
+
+	signInDto := userDto.SignInDtoGenerator{
+		User: dbUser,
+	}.Execute()
 
 	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
-		return user, err
+		return signInDto, err
 	} else {
 		fmt.Println("ログインできました")
 	}
 
-	return dbUser, err
+	return signInDto, err
 }
 
 func (uu userUseCase) FindOne(userId int) model.User {
@@ -72,7 +77,7 @@ func (uu userUseCase) FindOne(userId int) model.User {
 
 // GenerateToken : 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本
 // 多値でない(エラーの戻り値が無い)場合、その関数が失敗しないことを期待している？
-func GenerateToken(user model.User) (string, error) {
+func GenerateToken(user userDto.SignInDto) (string, error) {
 	// 署名生成に使用するアルゴリズムにHS256を使用
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
 	fmt.Println(token)

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
+	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
+	sir "github.com/ryota1116/stacked_books/handler/http/response/user"
 	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
@@ -41,7 +43,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	// リクエストをUserの構造体に変換
 	user := model.User{}
-	if err := json.Unmarshal(responseBodyBytes, user); err != nil {
+	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
 		panic(err)
 	}
 
@@ -68,19 +70,26 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	user := model.User{}
 	json.NewDecoder(r.Body).Decode(&user)
 
-	dbUser, err := uh.userUseCase.SignIn(user)
+	userDto, err := uh.userUseCase.SignIn(user)
 	// tokenを返す
-	token, err := usecase.GenerateToken(dbUser)
+	token, err := usecase.GenerateToken(userDto)
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-
 		// Userの情報をセット
-		middleware.SetUserSession(w, dbUser)
-		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(token) // 生成したトークンをリクエストボディで返してみる
+		middleware.SetUserSession(w, userDto)
+
+		signInResponse := sir.SignInResponseGenerator{
+			UserDto: userDto,
+			Token: token,
+		}.Execute()
+
+		response := httpResponse.Response{
+			StatusCode:   http.StatusOK,
+			ResponseBody: signInResponse,
+		}
+		response.ReturnResponse(w)
 	}
 }
 

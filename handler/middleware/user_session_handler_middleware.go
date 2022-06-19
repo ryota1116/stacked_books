@@ -9,6 +9,7 @@ import (
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 	"github.com/ryota1116/stacked_books/usecase"
+	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
 	"strconv"
 	"time"
@@ -92,7 +93,7 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 	return model.User{}
 }
 
-func SetUserSession(w http.ResponseWriter, user model.User) {
+func SetUserSession(w http.ResponseWriter, user user.SignInDto) {
 	expiration := time.Now()
 	expiration.AddDate(0, 0, 7)
 	cookie := http.Cookie{
