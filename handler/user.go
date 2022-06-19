@@ -6,7 +6,6 @@ import (
 	"github.com/ryota1116/stacked_books/domain/model"
 	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	sir "github.com/ryota1116/stacked_books/handler/http/response/user"
-	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"io/ioutil"
 	"net/http"
@@ -88,9 +87,6 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		// Userの情報をセット
-		middleware.SetUserSession(w, userDto)
-
 		signInResponse := sir.SignInResponseGenerator{
 			UserDto: userDto,
 			Token: token,

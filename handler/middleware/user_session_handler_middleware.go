@@ -27,6 +27,7 @@ func NewUserSessionHandlerMiddleWare() UserSessionHandlerMiddleWareInterface {
 	return userSessionHandlerMiddleWare{}
 }
 
+// 消していいかも
 // 認証が通らないとメッセージとリターンを返す（認証失敗時にどのページに繊維するとかはどこで定義する？）
 // https://journal.lampetty.net/entry/implementing-middleware-with-http-package-in-go
 func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
@@ -95,11 +96,12 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 
 func SetUserSession(w http.ResponseWriter, user user.SignInDto) {
 	expiration := time.Now()
-	expiration.AddDate(0, 0, 7)
+	expiration.AddDate(0, 0, 7) // 7日間有効 // TODO: 短くする
 	cookie := http.Cookie{
 		Name:       "user_id",
 		Value:      strconv.Itoa(int(user.Id)),
 		Expires:    expiration,
+		HttpOnly:   true,
 	}
 	//cookie := http.Cookie{
 	//	Name:       "user_session_key",
