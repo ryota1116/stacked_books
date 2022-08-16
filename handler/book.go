@@ -24,10 +24,10 @@ func NewBookHandler(bu usecase.BookUseCaseInterface) BookHandlerInterface {
 }
 
 // SearchBooks : 外部APIを用いた書籍検索のエンドポイント
-func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
+func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, Origin, X-Csrftoken, Accept, Cookie")
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3002")
-	w.Header().Set("Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -62,15 +62,11 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	// GoogleBooksAPIのJSONレスポンスの構造体から、 書籍検索用のHTTPレスポンスボディ構造体を生成する
-	searchBooksResponse := book.SearchBooksResponseGenerator{
-		ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
-	}.Execute()
-
-	// 正常なレスポンス
-	response := httpResponse.Response{
-		StatusCode:   http.StatusOK,
-		ResponseBody: searchBooksResponse,
-	}
-	response.ReturnResponse(w)
+	httpResponse.Response{
+		StatusCode: http.StatusOK,
+		// GoogleBooksAPIのJSONレスポンスの構造体から、 書籍検索用のHTTPレスポンスボディ構造体を生成する
+		ResponseBody: book.SearchBooksResponseGenerator{
+			ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
+		}.Execute(),
+	}.ReturnResponse(w)
 }

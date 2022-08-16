@@ -14,11 +14,9 @@ type SignUpResponse struct {
 }
 
 func (sirg SignUpResponseGenerator) Execute() SignUpResponse {
-	var signUpResponse = SignUpResponse{
+	return SignUpResponse{
 		UserName: sirg.UserDto.UserName,
 		Email:    sirg.UserDto.Email,
 		Token:    sirg.Token,
 	}
-
-	return signUpResponse
 }
