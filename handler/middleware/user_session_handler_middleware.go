@@ -19,7 +19,7 @@ const (
 	secretKey = "secretKey"
 )
 
-type userSessionHandlerMiddleWare struct {}
+type userSessionHandlerMiddleWare struct{}
 
 // TODO: ミドルウェアとしながらもリクエスト処理の前後に挟んでいないので、
 // TODO: ミドルウェアとすべきもの、すべきでないものを分けた上で改修すること。
@@ -94,14 +94,14 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 	return model.User{}
 }
 
-func SetUserSession(w http.ResponseWriter, user user.SignInDto) {
+func SetUserSession(w http.ResponseWriter, user user.UserDto) {
 	expiration := time.Now()
 	expiration.AddDate(0, 0, 7) // 7日間有効 // TODO: 短くする
 	cookie := http.Cookie{
-		Name:       "user_id",
-		Value:      strconv.Itoa(int(user.Id)),
-		Expires:    expiration,
-		HttpOnly:   true,
+		Name:     "user_id",
+		Value:    strconv.Itoa(int(user.Id)),
+		Expires:  expiration,
+		HttpOnly: true,
 	}
 	//cookie := http.Cookie{
 	//	Name:       "user_session_key",
