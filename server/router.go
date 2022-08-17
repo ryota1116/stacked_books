@@ -5,7 +5,9 @@ import (
 	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
 	"github.com/ryota1116/stacked_books/handler"
 	"github.com/ryota1116/stacked_books/handler/middleware"
-	"github.com/ryota1116/stacked_books/infra/persistence"
+	book2 "github.com/ryota1116/stacked_books/infra/persistence/book"
+	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
+	userbook2 "github.com/ryota1116/stacked_books/infra/persistence/userbook"
 	"github.com/ryota1116/stacked_books/usecase/book"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"github.com/ryota1116/stacked_books/usecase/userbook"
@@ -13,12 +15,12 @@ import (
 
 // webサーバーに接続する
 func HandleFunc() mux.Router {
-	userPersistence := persistence.NewUserPersistence()
+	userPersistence := user2.NewUserPersistence()
 	userUseCase := user.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
 
-	bookPersistence := persistence.NewBookPersistence()
-	userBookPersistence := persistence.NewUserBookPersistence()
+	bookPersistence := book2.NewBookPersistence()
+	userBookPersistence := userbook2.NewUserBookPersistence()
 	userBookUseCase := userbook.NewUserBookUseCase(bookPersistence, userBookPersistence)
 	userSessionHandlerMiddleWare := middleware.NewUserSessionHandlerMiddleWare()
 	userBookHandler := handler.NewUserBookHandler(userBookUseCase, userSessionHandlerMiddleWare)

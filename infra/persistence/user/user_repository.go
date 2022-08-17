@@ -1,10 +1,11 @@
-package persistence
+package user
 
 import (
 	"errors"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/repository"
+	"github.com/ryota1116/stacked_books/infra/persistence"
 )
 
 // Userのインフラ層の構造体
@@ -26,7 +27,7 @@ func NewUserPersistence() repository.UserRepository {
 // }
 // インターフェイスの実装
 func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (model.User, error) {
-	db := DbConnect()
+	db := persistence.DbConnect()
 
 	// TODO: playground/validationを使う
 	var err error
@@ -42,7 +43,7 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (mo
 }
 
 func (up userPersistence) SignIn(user model.User) (model.User, error) {
-	db := DbConnect()
+	db := persistence.DbConnect()
 
 	dbUser := model.User{}
 	// emailでUserを取得
@@ -58,7 +59,7 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 
 //Userを1件取得
 func (up userPersistence) FindOne(userId int) model.User {
-	db := DbConnect()
+	db := persistence.DbConnect()
 
 	user := model.User{}
 	result := db.First(&user, userId)

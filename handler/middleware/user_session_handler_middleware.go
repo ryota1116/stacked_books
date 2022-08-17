@@ -7,7 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/infra/persistence"
+	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
 	"strconv"
@@ -73,7 +73,7 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 		return []byte(secretKey), nil
 	})
 
-	userPersistence := persistence.NewUserPersistence()
+	userPersistence := user2.NewUserPersistence()
 	userUseCase := user.NewUserUseCase(userPersistence)
 
 	//TODO: Goではmodel.Userまたはnilみたいな戻り値は設定できない？

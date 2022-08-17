@@ -1,12 +1,13 @@
-package persistence
+package userbook
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/repository"
 	"github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
+	"github.com/ryota1116/stacked_books/infra/persistence"
 )
 
-type userBookPersistence struct {}
+type userBookPersistence struct{}
 
 func NewUserBookPersistence() repository.UserBookRepository {
 	return &userBookPersistence{}
@@ -14,13 +15,13 @@ func NewUserBookPersistence() repository.UserBookRepository {
 
 // CreateOne : UserBooksレコードを作成する
 func (userBookPersistence) CreateOne(userId int, bookId int, requestBody RegisterUserBooks.RequestBody) model.UserBook {
-	db := DbConnect()
+	db := persistence.DbConnect()
 
 	userBook := model.UserBook{
-		UserId:    userId,
-		BookId:    bookId,
-		Status:    requestBody.UserBook.Status,
-		Memo:      requestBody.UserBook.Memo,
+		UserId: userId,
+		BookId: bookId,
+		Status: requestBody.UserBook.Status,
+		Memo:   requestBody.UserBook.Memo,
 	}
 
 	db.Create(&userBook)
@@ -29,8 +30,8 @@ func (userBookPersistence) CreateOne(userId int, bookId int, requestBody Registe
 }
 
 // FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
-func (userBookPersistence) FindAllByUserId(userId int) ([]model.Book, error){
-	db := DbConnect()
+func (userBookPersistence) FindAllByUserId(userId int) ([]model.Book, error) {
+	db := persistence.DbConnect()
 	var books []model.Book
 
 	// ユーザーが登録している本一覧を取得
