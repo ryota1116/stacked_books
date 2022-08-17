@@ -8,7 +8,7 @@ type RegisterUserBookResponseGenerator struct {
 }
 
 type RegisterUserBookResponse struct {
-	Book     Book     `json:"book"`
+	Book     Book     `json:"user_book"`
 	UserBook UserBook `json:"user_book"`
 }
 

@@ -18,7 +18,7 @@ import (
 const expectedSearchBooksJson = "../tests/expected/api/bookHandler/200_search_books_response.json"
 
 // bookUseCaseMock : BookUseCaseInterfaceを実装しているモック
-type bookUseCaseMock struct {}
+type bookUseCaseMock struct{}
 
 // SearchBooks : インターフェイスを満たすためのメソッド
 func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
@@ -27,17 +27,17 @@ func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody)
 			{
 				ID: "Wx1dLwEACAAJ",
 				VolumeInfo: googleBooksApi.VolumeInfo{
-					Title:               "リーダブルコード",
-					Authors:             []string{"Dustin Boswell", "Trevor Foucher"},
-					PublishedDate:       "2012-06",
-					Description:         "読んでわかるコードの重要性と方法について解説",
+					Title:         "リーダブルコード",
+					Authors:       []string{"Dustin Boswell", "Trevor Foucher"},
+					PublishedDate: "2012-06",
+					Description:   "読んでわかるコードの重要性と方法について解説",
 					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
 						{
-							Type: "ISBN_10",
+							Type:       "ISBN_10",
 							Identifier: "4873115655",
 						},
 						{
-							Type: "ISBN_13",
+							Type:       "ISBN_13",
 							Identifier: "9784873115658",
 						},
 					},
@@ -47,17 +47,17 @@ func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody)
 			{
 				ID: "n6YqDwAAQBAJ",
 				VolumeInfo: googleBooksApi.VolumeInfo{
-					Title:               "ExcelVBAを実務で使い倒す技術",
-					Authors:             []string{"高橋宣成"},
-					PublishedDate:       "2017-04",
-					Description:         "本書では、VBAを実務の現場で活かすための知識(テクニック)と知恵(考え方とコツ)を教えます!",
+					Title:         "ExcelVBAを実務で使い倒す技術",
+					Authors:       []string{"高橋宣成"},
+					PublishedDate: "2017-04",
+					Description:   "本書では、VBAを実務の現場で活かすための知識(テクニック)と知恵(考え方とコツ)を教えます!",
 					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
 						{
-							Type: "ISBN_10",
+							Type:       "ISBN_10",
 							Identifier: "4798049999",
 						},
 						{
-							Type: "ISBN_13",
+							Type:       "ISBN_13",
 							Identifier: "9784798049991",
 						},
 					},
@@ -92,7 +92,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 			bodyReader)
 		w := httptest.NewRecorder()
 
-		// handler/book.goのSearchBooksメソッドを呼び出し、
+		// handler/user_book.goのSearchBooksメソッドを呼び出し、
 		// その中でbookUseCaseMockのSearchBooksメソッドが呼び出されている
 		bh.SearchBooks(w, r)
 

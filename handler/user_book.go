@@ -5,6 +5,7 @@ import (
 	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/handler/http/response/user_book"
+	"github.com/ryota1116/stacked_books/handler/http/response/user_book/find_user_books"
 	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase"
 	"net/http"
@@ -80,7 +81,7 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 	ushm := middleware.NewUserSessionHandlerMiddleWare()
 	user := ushm.CurrentUser(r)
 
-	userBooks, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+	userBooksDto, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -88,8 +89,10 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 
 	// 正常なレスポンス
 	response := httpResponse.Response{
-		StatusCode:   http.StatusOK,
-		ResponseBody: userBooks,
+		StatusCode: http.StatusOK,
+		ResponseBody: find_user_books.FindUserBooksResponseGenerator{
+			UserBooksDto: userBooksDto,
+		}.Execute(),
 	}
 	response.ReturnResponse(w)
 }

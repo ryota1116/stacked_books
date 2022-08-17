@@ -34,7 +34,7 @@ func HandleFunc() mux.Router {
 	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET", "OPTIONS")
 
 	// ユーザーと書籍を紐付ける
-	router.HandleFunc("/register/book", userBookHandler.RegisterUserBook).Methods("POST")
+	router.HandleFunc("/register/user_book", userBookHandler.RegisterUserBook).Methods("POST")
 	// ログイン中のユーザーが登録している本の一覧を取得する
 	router.HandleFunc("/user/books", userBookHandler.FindUserBooks).Methods("GET")
 

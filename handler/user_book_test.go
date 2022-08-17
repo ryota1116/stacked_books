@@ -15,7 +15,7 @@ import (
 // テストで期待するレスポンスボディJSON文字列のファイルパス
 const expectedRegisterUserBookJson = "../tests/expected/api/userBookHandler/200_register_user_book.json"
 
-type UserBookUseCaseMock struct {}
+type UserBookUseCaseMock struct{}
 
 func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) (model.Book, model.UserBook) {
 	return model.Book{
@@ -24,15 +24,15 @@ func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) 
 			Title:          "リーダブルコード",
 			Description:    "読んでわかるコードの重要性と方法について解説",
 			Image:          "",
-			Isbn_10:         "4873115655",
-			Isbn_13:         "9784873115658",
+			Isbn_10:        "4873115655",
+			Isbn_13:        "9784873115658",
 			PageCount:      237,
 			PublishedYear:  2012,
 			PublishedMonth: 6,
 			PublishedDate:  0,
 			CreatedAt:      time.Time{},
 			UpdatedAt:      time.Time{},
-	}, model.UserBook{
+		}, model.UserBook{
 			Id:        1,
 			UserId:    1,
 			BookId:    1,
@@ -49,7 +49,7 @@ func (m UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]model.Book, er
 	panic("implement me")
 }
 
-type UserSessionHandlerMiddleWareMock struct {}
+type UserSessionHandlerMiddleWareMock struct{}
 
 func (UserSessionHandlerMiddleWareMock) CurrentUser(*http.Request) model.User {
 	return model.User{
@@ -73,7 +73,7 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 
 	// リクエストボディを検証しているならこの記述が活きてくる気がするが、、
 	bodyReader := strings.NewReader(`{
-		"book" :{
+		"user_book" :{
 			"google_books_id": "Wx1dLwEACAAJ",
 			"title": "リーダブルコード",
 			"authors": ["Dustin Boswell","Trevor Foucher"],
@@ -90,7 +90,7 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 		}
 	}`)
 
-	r := httptest.NewRequest("GET", "/register/book", bodyReader)
+	r := httptest.NewRequest("GET", "/register/user_book", bodyReader)
 	w := httptest.NewRecorder()
 
 	r.Header.Add("Authorization", "")
