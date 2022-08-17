@@ -1,4 +1,4 @@
-package usecase
+package book
 
 import (
 	"github.com/magiconair/properties/assert"
@@ -9,22 +9,22 @@ import (
 )
 
 //  IGoogleBooksAPIClientのモック
-type googleBooksAPIClientMock struct {}
+type googleBooksAPIClientMock struct{}
 
 // IGoogleBooksAPIClient.SendRequestをモックしている
 func (client googleBooksAPIClientMock) SendRequest(searchWord string) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
 	return googleBooksApi.ResponseBodyFromGoogleBooksAPI{
-		Items:  []googleBooksApi.Item{
+		Items: []googleBooksApi.Item{
 			googleBooksApi.Item{
-				ID:         "Wx1dLwEACAAJ",
+				ID: "Wx1dLwEACAAJ",
 				VolumeInfo: googleBooksApi.VolumeInfo{
-					Title:               "リーダブルコード",
-					Authors:             []string{
+					Title: "リーダブルコード",
+					Authors: []string{
 						"Dustin Boswell",
 						"Trevor Foucher",
 					},
-					PublishedDate:       "2012-06",
-					Description:         "読んでわかるコードの重要性と方法について解説",
+					PublishedDate: "2012-06",
+					Description:   "読んでわかるコードの重要性と方法について解説",
 					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
 						{
 							Type:       "ISBN_10",
@@ -35,7 +35,7 @@ func (client googleBooksAPIClientMock) SendRequest(searchWord string) (googleBoo
 							Identifier: "9784873115658",
 						},
 					},
-					PageCount:           237,
+					PageCount: 237,
 				},
 			},
 		},
@@ -45,7 +45,7 @@ func (client googleBooksAPIClientMock) SendRequest(searchWord string) (googleBoo
 func TestMain(m *testing.M) {
 	status := m.Run() // テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）。また、各ユニットテストの中でテストデータをinsertすれば良さそう。
 
-	os.Exit(status)   // 0が渡れば成功する。プロセスのkillも実行される。
+	os.Exit(status) // 0が渡れば成功する。プロセスのkillも実行される。
 }
 
 // インターフェイスを満たしているかテストする？(メソッドが変わった時に)
@@ -54,17 +54,17 @@ func TestBookUseCase_SearchBooks(t *testing.T) {
 	useCase := NewBookUseCase(googleBooksAPIClientMock{})
 
 	expected := googleBooksApi.ResponseBodyFromGoogleBooksAPI{
-		Items:  []googleBooksApi.Item{
+		Items: []googleBooksApi.Item{
 			googleBooksApi.Item{
-				ID:         "Wx1dLwEACAAJ",
+				ID: "Wx1dLwEACAAJ",
 				VolumeInfo: googleBooksApi.VolumeInfo{
-					Title:               "リーダブルコード",
-					Authors:             []string{
+					Title: "リーダブルコード",
+					Authors: []string{
 						"Dustin Boswell",
 						"Trevor Foucher",
 					},
-					PublishedDate:       "2012-06",
-					Description:         "読んでわかるコードの重要性と方法について解説",
+					PublishedDate: "2012-06",
+					Description:   "読んでわかるコードの重要性と方法について解説",
 					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
 						{
 							Type:       "ISBN_10",
@@ -75,7 +75,7 @@ func TestBookUseCase_SearchBooks(t *testing.T) {
 							Identifier: "9784873115658",
 						},
 					},
-					PageCount:           237,
+					PageCount: 237,
 				},
 			},
 		},

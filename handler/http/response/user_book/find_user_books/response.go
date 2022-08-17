@@ -1,11 +1,11 @@
 package find_user_books
 
 import (
-	"github.com/ryota1116/stacked_books/usecase/user_book"
+	"github.com/ryota1116/stacked_books/usecase/userbook"
 )
 
 type FindUserBooksResponseGenerator struct {
-	UserBooksDto []user_book.UserBookDto
+	UserBooksDto []userbook.UserBookDto
 }
 
 type FindUserBooksResponse struct {

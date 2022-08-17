@@ -1,4 +1,4 @@
-package usecase
+package user
 
 import (
 	"github.com/magiconair/properties/assert"
@@ -56,9 +56,9 @@ func TestUserHandler_SignUp(t *testing.T) {
 	uu := NewUserUseCase(&ur)
 
 	user := model.User{
-		UserName:  "user_name",
-		Email:     "user@example.jp",
-		Password:  "password",
+		UserName: "user_name",
+		Email:    "user@example.jp",
+		Password: "password",
 	}
 	// SignUpメソッドの返り値を格納
 	user, err := uu.SignUp(user)
@@ -89,9 +89,9 @@ func TestUserHandler_SignIn(t *testing.T) {
 	uu := NewUserUseCase(&ur)
 
 	user := model.User{
-		UserName:  "user_name",
-		Email:     "user@example.jp",
-		Password:  "password",
+		UserName: "user_name",
+		Email:    "user@example.jp",
+		Password: "password",
 	}
 
 	user, err := uu.SignIn(user)

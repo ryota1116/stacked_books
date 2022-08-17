@@ -6,22 +6,24 @@ import (
 	"github.com/ryota1116/stacked_books/handler"
 	"github.com/ryota1116/stacked_books/handler/middleware"
 	"github.com/ryota1116/stacked_books/infra/persistence"
-	"github.com/ryota1116/stacked_books/usecase"
+	"github.com/ryota1116/stacked_books/usecase/book"
+	"github.com/ryota1116/stacked_books/usecase/user"
+	"github.com/ryota1116/stacked_books/usecase/userbook"
 )
 
 // webサーバーに接続する
 func HandleFunc() mux.Router {
 	userPersistence := persistence.NewUserPersistence()
-	userUseCase := usecase.NewUserUseCase(userPersistence)
+	userUseCase := user.NewUserUseCase(userPersistence)
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	bookPersistence := persistence.NewBookPersistence()
 	userBookPersistence := persistence.NewUserBookPersistence()
-	userBookUseCase := usecase.NewUserBookUseCase(bookPersistence, userBookPersistence)
+	userBookUseCase := userbook.NewUserBookUseCase(bookPersistence, userBookPersistence)
 	userSessionHandlerMiddleWare := middleware.NewUserSessionHandlerMiddleWare()
 	userBookHandler := handler.NewUserBookHandler(userBookUseCase, userSessionHandlerMiddleWare)
 
-	bookUseCase := usecase.NewBookUseCase(googleBooksApi.NewClient())
+	bookUseCase := book.NewBookUseCase(googleBooksApi.NewClient())
 	bookHandler := handler.NewBookHandler(bookUseCase)
 
 	router := mux.NewRouter().StrictSlash(true)
@@ -34,7 +36,7 @@ func HandleFunc() mux.Router {
 	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET", "OPTIONS")
 
 	// ユーザーと書籍を紐付ける
-	router.HandleFunc("/register/user_book", userBookHandler.RegisterUserBook).Methods("POST")
+	router.HandleFunc("/register/userbook", userBookHandler.RegisterUserBook).Methods("POST")
 	// ログイン中のユーザーが登録している本の一覧を取得する
 	router.HandleFunc("/user/books", userBookHandler.FindUserBooks).Methods("GET")
 

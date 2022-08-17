@@ -8,8 +8,8 @@ type RegisterUserBookResponseGenerator struct {
 }
 
 type RegisterUserBookResponse struct {
-	Book     Book     `json:"user_book"`
-	UserBook UserBook `json:"user_book"`
+	Book     Book     `json:"userbook"`
+	UserBook UserBook `json:"userbook"`
 }
 
 type Book struct {

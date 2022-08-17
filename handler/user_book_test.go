@@ -73,7 +73,7 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 
 	// リクエストボディを検証しているならこの記述が活きてくる気がするが、、
 	bodyReader := strings.NewReader(`{
-		"user_book" :{
+		"userbook" :{
 			"google_books_id": "Wx1dLwEACAAJ",
 			"title": "リーダブルコード",
 			"authors": ["Dustin Boswell","Trevor Foucher"],
@@ -84,13 +84,13 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 			"published_year": 2012,
 			"published_month": 6
 		},
-		"user_book" :{
+		"userbook" :{
 			"status": 1,
 			"memo": "メモメモメモ"
 		}
 	}`)
 
-	r := httptest.NewRequest("GET", "/register/user_book", bodyReader)
+	r := httptest.NewRequest("GET", "/register/userbook", bodyReader)
 	w := httptest.NewRecorder()
 
 	r.Header.Add("Authorization", "")

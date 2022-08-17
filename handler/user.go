@@ -5,7 +5,7 @@ import (
 	"github.com/ryota1116/stacked_books/domain/model"
 	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	ur "github.com/ryota1116/stacked_books/handler/http/response/user"
-	"github.com/ryota1116/stacked_books/usecase"
+	"github.com/ryota1116/stacked_books/usecase/user"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,12 +21,12 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	userUseCase usecase.UserUseCase
+	userUseCase user.UserUseCase
 }
 
 // Userデータに関するHandlerを生成
 // userHandlerをinterface型(UserHandler)にした
-func NewUserHandler(uu usecase.UserUseCase) UserHandler {
+func NewUserHandler(uu user.UserUseCase) UserHandler {
 	return &userHandler{
 		userUseCase: uu,
 	}
@@ -53,7 +53,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := usecase.GenerateToken(userDto)
+	token, err := user.GenerateToken(userDto)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -89,7 +89,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := usecase.GenerateToken(userDto)
+	token, err := user.GenerateToken(userDto)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return

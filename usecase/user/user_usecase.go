@@ -1,11 +1,10 @@
-package usecase
+package user
 
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/repository"
-	dto "github.com/ryota1116/stacked_books/usecase/user"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -16,8 +15,8 @@ const (
 
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
-	SignUp(user model.User) (dto.UserDto, error)
-	SignIn(user model.User) (dto.UserDto, error)
+	SignUp(user model.User) (UserDto, error)
+	SignIn(user model.User) (UserDto, error)
 	FindOne(userId int) model.User
 }
 
@@ -35,7 +34,7 @@ func NewUserUseCase(ur repository.UserRepository) UserUseCase {
 	}
 }
 
-func (uu userUseCase) SignUp(user model.User) (dto.UserDto, error) {
+func (uu userUseCase) SignUp(user model.User) (UserDto, error) {
 	// bcryptを使ってパスワードをハッシュ化する
 	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -45,7 +44,7 @@ func (uu userUseCase) SignUp(user model.User) (dto.UserDto, error) {
 
 	dbUser, err := uu.userRepository.SignUp(user, bcryptHashPassword)
 
-	userDto := dto.UserDtoGenerator{
+	userDto := UserDtoGenerator{
 		User: dbUser,
 	}.Execute()
 
@@ -53,10 +52,10 @@ func (uu userUseCase) SignUp(user model.User) (dto.UserDto, error) {
 }
 
 // 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
-func (uu userUseCase) SignIn(user model.User) (dto.UserDto, error) {
+func (uu userUseCase) SignIn(user model.User) (UserDto, error) {
 	dbUser, err := uu.userRepository.SignIn(user)
 
-	userDto := dto.UserDtoGenerator{
+	userDto := UserDtoGenerator{
 		User: dbUser,
 	}.Execute()
 
@@ -77,7 +76,7 @@ func (uu userUseCase) FindOne(userId int) model.User {
 
 // GenerateToken : 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本
 // 多値でない(エラーの戻り値が無い)場合、その関数が失敗しないことを期待している？
-func GenerateToken(user dto.UserDto) (string, error) {
+func GenerateToken(user UserDto) (string, error) {
 	// 署名生成に使用するアルゴリズムにHS256を使用
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
 	fmt.Println(token)

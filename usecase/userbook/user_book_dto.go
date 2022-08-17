@@ -1,4 +1,4 @@
-package user_book
+package userbook
 
 import "github.com/ryota1116/stacked_books/domain/model"
 

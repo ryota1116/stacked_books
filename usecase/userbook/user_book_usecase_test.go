@@ -1,4 +1,4 @@
-package usecase
+package userbook
 
 import (
 	"encoding/json"
@@ -11,15 +11,15 @@ import (
 	"testing"
 )
 
-type BookRepositoryMock struct {}
+type BookRepositoryMock struct{}
 
 func (BookRepositoryMock) FindOrCreateByGoogleBooksId(body RegisterUserBooks.RequestBody) model.Book {
 	return model.Book{
 		GoogleBooksId:  "Wx1dLwEACAAJ",
 		Title:          "リーダブルコード",
 		Description:    "読んでわかるコードの重要性と方法について解説",
-		Isbn10:        "4873115655",
-		Isbn13:        "9784873115658",
+		Isbn10:         "4873115655",
+		Isbn13:         "9784873115658",
 		PageCount:      237,
 		PublishedYear:  2012,
 		PublishedMonth: 6,
@@ -27,15 +27,15 @@ func (BookRepositoryMock) FindOrCreateByGoogleBooksId(body RegisterUserBooks.Req
 	}
 }
 
-type UserBookRepositoryMock struct {}
+type UserBookRepositoryMock struct{}
 
 func (UserBookRepositoryMock) CreateOne(userId int, bookId int, requestBody RegisterUserBooks.RequestBody) model.UserBook {
 	return model.UserBook{
-		Id:        1,
-		UserId:    1,
-		BookId:    1,
-		Status:    1,
-		Memo:      "メモメモメモ",
+		Id:     1,
+		UserId: 1,
+		BookId: 1,
+		Status: 1,
+		Memo:   "メモメモメモ",
 	}
 }
 

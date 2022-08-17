@@ -1,15 +1,14 @@
-package usecase
+package userbook
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/domain/repository"
 	"github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
-	"github.com/ryota1116/stacked_books/usecase/user_book"
 )
 
 type UserBookUseCase interface {
 	RegisterUserBook(int, RegisterUserBooks.RequestBody) (model.Book, model.UserBook)
-	FindUserBooksByUserId(userId int) ([]user_book.UserBookDto, error)
+	FindUserBooksByUserId(userId int) ([]UserBookDto, error)
 }
 
 type userBookUseCase struct {
@@ -35,11 +34,11 @@ func (ubu userBookUseCase) RegisterUserBook(userId int, requestBody RegisterUser
 }
 
 // FindUserBooksByUserId : ログイン中のユーザーが登録している本の一覧を取得する
-func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]user_book.UserBookDto, error) {
+func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]UserBookDto, error) {
 	books, err := ubu.userBookRepository.FindAllByUserId(userId)
 
 	// DTOに変換
-	userBooks := user_book.DtoGenerator{Books: books}.Execute()
+	userBooks := DtoGenerator{Books: books}.Execute()
 
 	return userBooks, err
 }

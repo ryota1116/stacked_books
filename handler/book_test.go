@@ -92,7 +92,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 			bodyReader)
 		w := httptest.NewRecorder()
 
-		// handler/user_book.goのSearchBooksメソッドを呼び出し、
+		// handler/userbook.goのSearchBooksメソッドを呼び出し、
 		// その中でbookUseCaseMockのSearchBooksメソッドが呼び出されている
 		bh.SearchBooks(w, r)
 

@@ -5,7 +5,7 @@ import (
 	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
 	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/handler/http/response/book"
-	"github.com/ryota1116/stacked_books/usecase"
+	book2 "github.com/ryota1116/stacked_books/usecase/book"
 	"net/http"
 )
 
@@ -14,10 +14,10 @@ type BookHandlerInterface interface {
 }
 
 type bookHandler struct {
-	bookUseCase usecase.BookUseCaseInterface
+	bookUseCase book2.BookUseCaseInterface
 }
 
-func NewBookHandler(bu usecase.BookUseCaseInterface) BookHandlerInterface {
+func NewBookHandler(bu book2.BookUseCaseInterface) BookHandlerInterface {
 	return &bookHandler{
 		bookUseCase: bu,
 	}

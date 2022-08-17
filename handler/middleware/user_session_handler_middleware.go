@@ -8,7 +8,6 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/ryota1116/stacked_books/domain/model"
 	"github.com/ryota1116/stacked_books/infra/persistence"
-	"github.com/ryota1116/stacked_books/usecase"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
 	"strconv"
@@ -75,7 +74,7 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 	})
 
 	userPersistence := persistence.NewUserPersistence()
-	userUseCase := usecase.NewUserUseCase(userPersistence)
+	userUseCase := user.NewUserUseCase(userPersistence)
 
 	//TODO: Goではmodel.Userまたはnilみたいな戻り値は設定できない？
 	if err == nil && parsedToken.Valid {

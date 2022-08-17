@@ -7,7 +7,7 @@ import (
 	"github.com/ryota1116/stacked_books/handler/http/response/user_book"
 	"github.com/ryota1116/stacked_books/handler/http/response/user_book/find_user_books"
 	"github.com/ryota1116/stacked_books/handler/middleware"
-	"github.com/ryota1116/stacked_books/usecase"
+	user_book2 "github.com/ryota1116/stacked_books/usecase/userbook"
 	"net/http"
 )
 
@@ -17,12 +17,12 @@ type UserBookHandler interface {
 }
 
 type userBookHandler struct {
-	userBookUseCase              usecase.UserBookUseCase
+	userBookUseCase              user_book2.UserBookUseCase
 	userSessionHandlerMiddleWare middleware.UserSessionHandlerMiddleWareInterface
 }
 
 func NewUserBookHandler(
-	ubu usecase.UserBookUseCase,
+	ubu user_book2.UserBookUseCase,
 	ushmw middleware.UserSessionHandlerMiddleWareInterface) UserBookHandler {
 	return &userBookHandler{
 		userBookUseCase:              ubu,
@@ -64,8 +64,6 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 		currentUser.Id,
 		requestBody)
 
-	// 書籍登録用のレスポンス構造体を生成する
-
 	httpResponse.Response{
 		StatusCode: http.StatusOK,
 		ResponseBody: user_book.RegisterUserBookResponseGenerator{
@@ -87,12 +85,10 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// 正常なレスポンス
-	response := httpResponse.Response{
+	httpResponse.Response{
 		StatusCode: http.StatusOK,
 		ResponseBody: find_user_books.FindUserBooksResponseGenerator{
 			UserBooksDto: userBooksDto,
 		}.Execute(),
-	}
-	response.ReturnResponse(w)
+	}.ReturnResponse(w)
 }
