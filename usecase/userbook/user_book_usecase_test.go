@@ -4,22 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/go-cmp/cmp"
-	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/book"
+	"github.com/ryota1116/stacked_books/domain/model/userbook"
 	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/expected/api/user_book_use_case"
 	"strings"
 	"testing"
+	"time"
 )
 
 type BookRepositoryMock struct{}
 
-func (BookRepositoryMock) FindOrCreateByGoogleBooksId(body RegisterUserBooks.RequestBody) model.Book {
-	return model.Book{
+func (BookRepositoryMock) FindOrCreateByGoogleBooksId(body RegisterUserBooks.RequestBody) book.Book {
+	return book.Book{
 		GoogleBooksId:  "Wx1dLwEACAAJ",
 		Title:          "リーダブルコード",
 		Description:    "読んでわかるコードの重要性と方法について解説",
-		Isbn10:         "4873115655",
-		Isbn13:         "9784873115658",
+		Isbn_10:        "4873115655",
+		Isbn_13:        "9784873115658",
 		PageCount:      237,
 		PublishedYear:  2012,
 		PublishedMonth: 6,
@@ -29,14 +31,36 @@ func (BookRepositoryMock) FindOrCreateByGoogleBooksId(body RegisterUserBooks.Req
 
 type UserBookRepositoryMock struct{}
 
-func (UserBookRepositoryMock) CreateOne(userId int, bookId int, requestBody RegisterUserBooks.RequestBody) model.UserBook {
-	return model.UserBook{
+func (UserBookRepositoryMock) CreateOne(userId int, bookId int, requestBody RegisterUserBooks.RequestBody) userbook.UserBook {
+	return userbook.UserBook{
 		Id:     1,
 		UserId: 1,
 		BookId: 1,
 		Status: 1,
 		Memo:   "メモメモメモ",
 	}
+}
+
+func (UserBookRepositoryMock) FindAllByUserId(userId int) ([]book.Book, error) {
+	var books []book.Book
+	books = append(books, book.Book{
+		Id:             1,
+		GoogleBooksId:  "test",
+		Title:          "タイトル",
+		Description:    "説明文です",
+		Image:          "",
+		Isbn_10:        "",
+		Isbn_13:        "",
+		PageCount:      100,
+		PublishedYear:  2022,
+		PublishedMonth: 8,
+		PublishedDate:  10,
+		CreatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
+		UpdatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
+		Users:          nil,
+	})
+
+	return books, nil
 }
 
 // UserBookUseCaseのRegisterUserBookの正常系テスト

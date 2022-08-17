@@ -1,4 +1,4 @@
-package googleBooksApi
+package google_books_api
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ type IGoogleBooksAPIClient interface {
 	SendRequest(searchWord string) (ResponseBodyFromGoogleBooksAPI, error)
 }
 
-type Client struct {}
+type Client struct{}
 
 func NewClient() IGoogleBooksAPIClient {
 	return Client{}

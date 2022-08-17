@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	"github.com/ryota1116/stacked_books/domain/model"
+	user3 "github.com/ryota1116/stacked_books/domain/model/user"
 	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
@@ -62,7 +62,7 @@ func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
 }
 
 // CurrentUser : セッションからログイン中のユーザー情報を取得する
-func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
+func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) user3.User {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
@@ -90,7 +90,7 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) model.User {
 			return userUseCase.FindOne(1)
 		}
 	}
-	return model.User{}
+	return user3.User{}
 }
 
 func SetUserSession(w http.ResponseWriter, user user.UserDto) {

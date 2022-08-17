@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/magiconair/properties/assert"
-	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/user"
 	_ "github.com/ryota1116/stacked_books/domain/repository"
 	_ "net/http/httptest"
 	"testing"
@@ -12,8 +12,8 @@ import (
 type UserRepositoryMock struct {
 }
 
-func (ur *UserRepositoryMock) SignUp(user model.User, bcryptHashPassword []byte) (model.User, error) {
-	return model.User{
+func (ur *UserRepositoryMock) SignUp(user user.User, bcryptHashPassword []byte) (user.User, error) {
+	return user.User{
 		Id:        1,
 		UserName:  user.UserName,
 		Email:     user.Email,
@@ -25,8 +25,8 @@ func (ur *UserRepositoryMock) SignUp(user model.User, bcryptHashPassword []byte)
 	}, nil
 }
 
-func (ur *UserRepositoryMock) SignIn(user model.User) (model.User, error) {
-	return model.User{
+func (ur *UserRepositoryMock) SignIn(user user.User) (user.User, error) {
+	return user.User{
 		Id:        1,
 		UserName:  "user",
 		Email:     "user@example.jp",
@@ -38,8 +38,8 @@ func (ur *UserRepositoryMock) SignIn(user model.User) (model.User, error) {
 	}, nil
 }
 
-func (ur *UserRepositoryMock) FindOne(int) model.User {
-	return model.User{
+func (ur *UserRepositoryMock) FindOne(int) user.User {
+	return user.User{
 		Id:        1,
 		UserName:  "user",
 		Email:     "user@example.jp",
@@ -55,7 +55,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 	ur := UserRepositoryMock{}
 	uu := NewUserUseCase(&ur)
 
-	user := model.User{
+	user := user.User{
 		UserName: "user_name",
 		Email:    "user@example.jp",
 		Password: "password",
@@ -66,7 +66,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := model.User{
+	expected := user.User{
 		Id:        1,
 		UserName:  user.UserName,
 		Email:     user.Email,
@@ -88,7 +88,7 @@ func TestUserHandler_SignIn(t *testing.T) {
 	ur := UserRepositoryMock{}
 	uu := NewUserUseCase(&ur)
 
-	user := model.User{
+	user := user.User{
 		UserName: "user_name",
 		Email:    "user@example.jp",
 		Password: "password",
@@ -99,7 +99,7 @@ func TestUserHandler_SignIn(t *testing.T) {
 		t.Errorf("テストに失敗しました。エラーメッセージ: %s", err)
 	}
 
-	expected := model.User{
+	expected := user.User{
 		Id:        1,
 		UserName:  "user",
 		Email:     "user@example.jp",

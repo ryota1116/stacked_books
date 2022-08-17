@@ -1,7 +1,9 @@
 package handler
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model"
+	"github.com/ryota1116/stacked_books/domain/model/book"
+	"github.com/ryota1116/stacked_books/domain/model/user"
+	"github.com/ryota1116/stacked_books/domain/model/userbook"
 	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
@@ -17,8 +19,8 @@ const expectedRegisterUserBookJson = "../tests/expected/api/userBookHandler/200_
 
 type UserBookUseCaseMock struct{}
 
-func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) (model.Book, model.UserBook) {
-	return model.Book{
+func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) (book.Book, userbook.UserBook) {
+	return book.Book{
 			Id:             1,
 			GoogleBooksId:  "Wx1dLwEACAAJ",
 			Title:          "リーダブルコード",
@@ -32,7 +34,7 @@ func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) 
 			PublishedDate:  0,
 			CreatedAt:      time.Time{},
 			UpdatedAt:      time.Time{},
-		}, model.UserBook{
+		}, userbook.UserBook{
 			Id:        1,
 			UserId:    1,
 			BookId:    1,
@@ -40,19 +42,19 @@ func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) 
 			Memo:      "メモメモメモ",
 			CreatedAt: time.Time{},
 			UpdatedAt: time.Time{},
-			Book:      model.Book{},
+			Book:      book.Book{},
 		}
 }
 
-func (m UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]model.Book, error) {
+func (m UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]book.Book, error) {
 	// 現状テストで使ってないから、空のままにしている
 	panic("implement me")
 }
 
 type UserSessionHandlerMiddleWareMock struct{}
 
-func (UserSessionHandlerMiddleWareMock) CurrentUser(*http.Request) model.User {
-	return model.User{
+func (UserSessionHandlerMiddleWareMock) CurrentUser(*http.Request) user.User {
+	return user.User{
 		Id:        1,
 		UserName:  "",
 		Email:     "",

@@ -3,21 +3,21 @@ package handler
 import (
 	"encoding/json"
 	"github.com/magiconair/properties/assert"
+	"github.com/ryota1116/stacked_books/domain/model/user"
 	"io/ioutil"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/ryota1116/stacked_books/domain/model"
 )
 
 // モックを導入
 type UserUseCaseMock struct {
 }
+
 // モック型でプロダクションコードの
-func (uu *UserUseCaseMock) SignUp(user model.User) (model.User, error) {
-	return model.User{
+func (uu *UserUseCaseMock) SignUp(user user.User) (user.User, error) {
+	return user.User{
 		Id:        1,
 		UserName:  "user_name",
 		Email:     "user@example.jp",
@@ -29,8 +29,8 @@ func (uu *UserUseCaseMock) SignUp(user model.User) (model.User, error) {
 	}, nil
 }
 
-func (uu *UserUseCaseMock) SignIn(user model.User) (model.User, error) {
-	return model.User{
+func (uu *UserUseCaseMock) SignIn(user user.User) (user.User, error) {
+	return user.User{
 		Id:        1,
 		UserName:  "user_name",
 		Email:     "user@example.jp",
@@ -42,8 +42,8 @@ func (uu *UserUseCaseMock) SignIn(user model.User) (model.User, error) {
 	}, nil
 }
 
-func (uu *UserUseCaseMock) FindOne(int) model.User {
-	return model.User{
+func (uu *UserUseCaseMock) FindOne(int) user.User {
+	return user.User{
 		Id:        1,
 		UserName:  "user_name",
 		Email:     "user@example.jp",
@@ -87,7 +87,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 	}
 
 	// []byte型を構造体に格納
-	var user model.User
+	var user user.User
 	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
 		panic(err)
 	}
@@ -124,5 +124,3 @@ func TestUserHandler_SignIn(t *testing.T) {
 
 func TestUserHandler_ShowUser(t *testing.T) {
 }
-
-

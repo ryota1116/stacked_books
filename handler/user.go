@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/ryota1116/stacked_books/domain/model"
+	user2 "github.com/ryota1116/stacked_books/domain/model/user"
 	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
 	ur "github.com/ryota1116/stacked_books/handler/http/response/user"
 	"github.com/ryota1116/stacked_books/usecase/user"
@@ -41,7 +41,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// リクエストをUserの構造体に変換
-	user := model.User{}
+	user := user2.User{}
 	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -80,7 +80,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := model.User{}
+	user := user2.User{}
 	json.NewDecoder(r.Body).Decode(&user)
 
 	userDto, err := uh.userUseCase.SignIn(user)
@@ -105,7 +105,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	user := model.User{}
+	user := user2.User{}
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		return

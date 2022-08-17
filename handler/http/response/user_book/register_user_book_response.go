@@ -1,10 +1,13 @@
 package user_book
 
-import "github.com/ryota1116/stacked_books/domain/model"
+import (
+	"github.com/ryota1116/stacked_books/domain/model/book"
+	"github.com/ryota1116/stacked_books/domain/model/userbook"
+)
 
 type RegisterUserBookResponseGenerator struct {
-	model.Book
-	model.UserBook
+	book.Book
+	userbook.UserBook
 }
 
 type RegisterUserBookResponse struct {

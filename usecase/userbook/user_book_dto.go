@@ -1,9 +1,11 @@
 package userbook
 
-import "github.com/ryota1116/stacked_books/domain/model"
+import (
+	"github.com/ryota1116/stacked_books/domain/model/book"
+)
 
 type DtoGenerator struct {
-	Books []model.Book
+	Books []book.Book
 }
 
 type UserBookDto struct {

@@ -7,6 +7,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	jatranslations "github.com/go-playground/validator/v10/translations/ja"
+	"github.com/ryota1116/stacked_books/domain/model/user"
 )
 
 // use a single instance , it caches struct info
@@ -18,9 +19,10 @@ var (
 type Error struct {
 	Messages []string `json:"error_message"`
 }
+
 ////エラーレスポンス用の構造体
 type ErrResponse struct {
-	Code int `json:"code"`
+	Code   int `json:"code"`
 	Errors Error
 }
 
@@ -38,7 +40,7 @@ func RespondErrJson(code int, errmap map[string]string) ErrResponse {
 
 // TODO: 最終的に全構造体のバリデーションを１つのメソッドに集約させる
 // Userストラクト用のバリデーター
-func UserValidate(user User) (int, map[string]string) {
+func UserValidate(user user.User) (int, map[string]string) {
 	translator := ja.New()
 	uni := ut.New(translator, translator)
 
@@ -54,7 +56,7 @@ func UserValidate(user User) (int, map[string]string) {
 	return code, errmap
 }
 
-func translateAll(trans ut.Translator, user User) (int, map[string]string) {
+func translateAll(trans ut.Translator, user user.User) (int, map[string]string) {
 	var code int
 	errmap := map[string]string{}
 
@@ -71,7 +73,7 @@ func translateAll(trans ut.Translator, user User) (int, map[string]string) {
 	return code, errmap
 }
 
-func translateIndividual(trans ut.Translator, user User) {
+func translateIndividual(trans ut.Translator, user user.User) {
 	err := validate.Struct(user)
 	if err != nil {
 
@@ -83,7 +85,7 @@ func translateIndividual(trans ut.Translator, user User) {
 	}
 }
 
-func translateOverride(trans ut.Translator, user User) {
+func translateOverride(trans ut.Translator, user user.User) {
 	validate.RegisterTranslation("required", trans, func(ut ut.Translator) error {
 		return ut.Add("required", "{0} must have a value!", true) // see universal-translator for details
 	}, func(ut ut.Translator, fe validator.FieldError) string {

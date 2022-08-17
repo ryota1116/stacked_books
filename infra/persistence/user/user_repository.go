@@ -3,8 +3,7 @@ package user
 import (
 	"errors"
 	"fmt"
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
+	"github.com/ryota1116/stacked_books/domain/model/user"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 )
 
@@ -15,7 +14,7 @@ type userPersistence struct{}
 // 戻り値がinterface型(UserRepository)でなければエラーになる = userPersistence{}をinterface型にした
 // インターフェースの中にある同じ名前のメソッドを全て実装すれば、自動的にインターフェイスが実装されたことになる(実装しないとエラーになる)
 // 今回で言えば、インターフェイス型UserRepositoryのSignUp, SignIn, ShowUser
-func NewUserPersistence() repository.UserRepository {
+func NewUserPersistence() user.UserRepository {
 	// TODO: ここだけ直す！！！
 	// https://qiita.com/tono-maron/items/345c433b86f74d314c8d#interface%E3%81%AB%E6%85%A3%E3%82%8C%E3%82%8B
 	return &userPersistence{}
@@ -26,7 +25,7 @@ func NewUserPersistence() repository.UserRepository {
 // 	関数の中身
 // }
 // インターフェイスの実装
-func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (model.User, error) {
+func (up userPersistence) SignUp(user user.User, bcryptHashPassword []byte) (user.User, error) {
 	db := persistence.DbConnect()
 
 	// TODO: playground/validationを使う
@@ -42,10 +41,10 @@ func (up userPersistence) SignUp(user model.User, bcryptHashPassword []byte) (mo
 	return user, err
 }
 
-func (up userPersistence) SignIn(user model.User) (model.User, error) {
+func (up userPersistence) SignIn(user user.User) (user.User, error) {
 	db := persistence.DbConnect()
 
-	dbUser := model.User{}
+	dbUser := user.User{}
 	// emailでUserを取得
 	err := db.Debug().Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
 	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
@@ -58,10 +57,10 @@ func (up userPersistence) SignIn(user model.User) (model.User, error) {
 }
 
 //Userを1件取得
-func (up userPersistence) FindOne(userId int) model.User {
+func (up userPersistence) FindOne(userId int) user.User {
 	db := persistence.DbConnect()
 
-	user := model.User{}
+	user := user.User{}
 	result := db.First(&user, userId)
 
 	fmt.Println(&result)

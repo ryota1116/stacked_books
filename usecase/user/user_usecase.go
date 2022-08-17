@@ -3,8 +3,7 @@ package user
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/ryota1116/stacked_books/domain/model"
-	"github.com/ryota1116/stacked_books/domain/repository"
+	"github.com/ryota1116/stacked_books/domain/model/user"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -15,26 +14,26 @@ const (
 
 // UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
-	SignUp(user model.User) (UserDto, error)
-	SignIn(user model.User) (UserDto, error)
-	FindOne(userId int) model.User
+	SignUp(user user.User) (UserDto, error)
+	SignIn(user user.User) (UserDto, error)
+	FindOne(userId int) user.User
 }
 
 // TODO: 依存する方向てきな？
 type userUseCase struct {
-	userRepository repository.UserRepository
+	userRepository user.UserRepository
 }
 
 // Userデータに関するUseCaseを生成
 // 戻り値にInterface型を指定
 //
-func NewUserUseCase(ur repository.UserRepository) UserUseCase {
+func NewUserUseCase(ur user.UserRepository) UserUseCase {
 	return &userUseCase{
 		userRepository: ur,
 	}
 }
 
-func (uu userUseCase) SignUp(user model.User) (UserDto, error) {
+func (uu userUseCase) SignUp(user user.User) (UserDto, error) {
 	// bcryptを使ってパスワードをハッシュ化する
 	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -52,7 +51,7 @@ func (uu userUseCase) SignUp(user model.User) (UserDto, error) {
 }
 
 // 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
-func (uu userUseCase) SignIn(user model.User) (UserDto, error) {
+func (uu userUseCase) SignIn(user user.User) (UserDto, error) {
 	dbUser, err := uu.userRepository.SignIn(user)
 
 	userDto := UserDtoGenerator{
@@ -69,7 +68,7 @@ func (uu userUseCase) SignIn(user model.User) (UserDto, error) {
 	return userDto, err
 }
 
-func (uu userUseCase) FindOne(userId int) model.User {
+func (uu userUseCase) FindOne(userId int) user.User {
 	user := uu.userRepository.FindOne(userId)
 	return user
 }

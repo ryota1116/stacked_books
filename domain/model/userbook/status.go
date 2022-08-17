@@ -1,4 +1,4 @@
-package UserBook
+package userbook
 
 // 本の読書ステータスのEnum
 const (
@@ -21,5 +21,5 @@ func GetBookStatuses() []int {
 
 // Status : ユーザーが登録している本の読書ステータス
 type Status struct {
-	Value	int	`json:"status"`
+	Value int `json:"status"`
 }

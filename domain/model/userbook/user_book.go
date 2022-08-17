@@ -1,6 +1,9 @@
-package model
+package userbook
 
-import "time"
+import (
+	"github.com/ryota1116/stacked_books/domain/model/book"
+	"time"
+)
 
 // TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、 persistence/userbook/entity.go?を作成する。
 type UserBook struct {
@@ -12,5 +15,5 @@ type UserBook struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
-	Book Book `json:"userbook"`
+	Book book.Book `json:"userbook"`
 }

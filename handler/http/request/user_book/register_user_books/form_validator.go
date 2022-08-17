@@ -2,7 +2,7 @@ package RegisterUserBooks
 
 import (
 	"fmt"
-	"github.com/ryota1116/stacked_books/domain/model/UserBook"
+	"github.com/ryota1116/stacked_books/domain/model/userbook"
 	"github.com/ryota1116/stacked_books/handler/http/response"
 	"unicode/utf8"
 )
@@ -33,7 +33,7 @@ func (rbh FormValidator) Validate() (bool, response.ErrorResponseBody) {
 
 	// Contain関数を作成する https://zenn.dev/glassonion1/articles/7c7830a269909c
 	isValidStatus := func() bool {
-		for _, bookStatus := range UserBook.GetBookStatuses() {
+		for _, bookStatus := range userbook.GetBookStatuses() {
 			if rbh.RequestBody.UserBook.Status == bookStatus {
 				return true
 			}

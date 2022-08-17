@@ -1,4 +1,4 @@
-package googleBooksApi
+package google_books_api
 
 // ResponseBodyFromGoogleBooksAPI : GoogleBooksAPIを叩いた時のJSONレスポンスを格納する構造体
 type ResponseBodyFromGoogleBooksAPI struct {
@@ -6,17 +6,17 @@ type ResponseBodyFromGoogleBooksAPI struct {
 }
 
 type Item struct {
-	ID         string `json:"id"`
+	ID         string     `json:"id"`
 	VolumeInfo VolumeInfo `json:"volumeInfo"`
 }
 
 type VolumeInfo struct {
-	Title               string   `json:"title"`
-	Authors             []string `json:"authors"`
-	PublishedDate       string   `json:"publishedDate"`
-	Description         string   `json:"description"`
+	Title               string               `json:"title"`
+	Authors             []string             `json:"authors"`
+	PublishedDate       string               `json:"publishedDate"`
+	Description         string               `json:"description"`
 	IndustryIdentifiers []IndustryIdentifier `json:"industryIdentifiers"`
-	PageCount           int    `json:"pageCount"`
+	PageCount           int                  `json:"pageCount"`
 }
 
 type IndustryIdentifier struct {

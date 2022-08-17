@@ -2,7 +2,7 @@ package book
 
 import (
 	"github.com/magiconair/properties/assert"
-	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
 	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
 	"os"
 	"testing"
@@ -12,12 +12,12 @@ import (
 type googleBooksAPIClientMock struct{}
 
 // IGoogleBooksAPIClient.SendRequestをモックしている
-func (client googleBooksAPIClientMock) SendRequest(searchWord string) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
-	return googleBooksApi.ResponseBodyFromGoogleBooksAPI{
-		Items: []googleBooksApi.Item{
-			googleBooksApi.Item{
+func (client googleBooksAPIClientMock) SendRequest(searchWord string) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
+	return google_books_api.ResponseBodyFromGoogleBooksAPI{
+		Items: []google_books_api.Item{
+			google_books_api.Item{
 				ID: "Wx1dLwEACAAJ",
-				VolumeInfo: googleBooksApi.VolumeInfo{
+				VolumeInfo: google_books_api.VolumeInfo{
 					Title: "リーダブルコード",
 					Authors: []string{
 						"Dustin Boswell",
@@ -25,7 +25,7 @@ func (client googleBooksAPIClientMock) SendRequest(searchWord string) (googleBoo
 					},
 					PublishedDate: "2012-06",
 					Description:   "読んでわかるコードの重要性と方法について解説",
-					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
+					IndustryIdentifiers: []google_books_api.IndustryIdentifier{
 						{
 							Type:       "ISBN_10",
 							Identifier: "4873115655",
@@ -53,11 +53,11 @@ func TestMain(m *testing.M) {
 func TestBookUseCase_SearchBooks(t *testing.T) {
 	useCase := NewBookUseCase(googleBooksAPIClientMock{})
 
-	expected := googleBooksApi.ResponseBodyFromGoogleBooksAPI{
-		Items: []googleBooksApi.Item{
-			googleBooksApi.Item{
+	expected := google_books_api.ResponseBodyFromGoogleBooksAPI{
+		Items: []google_books_api.Item{
+			google_books_api.Item{
 				ID: "Wx1dLwEACAAJ",
-				VolumeInfo: googleBooksApi.VolumeInfo{
+				VolumeInfo: google_books_api.VolumeInfo{
 					Title: "リーダブルコード",
 					Authors: []string{
 						"Dustin Boswell",
@@ -65,7 +65,7 @@ func TestBookUseCase_SearchBooks(t *testing.T) {
 					},
 					PublishedDate: "2012-06",
 					Description:   "読んでわかるコードの重要性と方法について解説",
-					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
+					IndustryIdentifiers: []google_books_api.IndustryIdentifier{
 						{
 							Type:       "ISBN_10",
 							Identifier: "4873115655",

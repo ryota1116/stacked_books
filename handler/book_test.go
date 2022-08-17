@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/magiconair/properties/assert"
-	"github.com/ryota1116/stacked_books/domain/model/googleBooksApi"
+	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
 	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
 	res "github.com/ryota1116/stacked_books/handler/http/response"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
@@ -21,17 +21,17 @@ const expectedSearchBooksJson = "../tests/expected/api/bookHandler/200_search_bo
 type bookUseCaseMock struct{}
 
 // SearchBooks : インターフェイスを満たすためのメソッド
-func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody) (googleBooksApi.ResponseBodyFromGoogleBooksAPI, error) {
-	return googleBooksApi.ResponseBodyFromGoogleBooksAPI{
-		Items: []googleBooksApi.Item{
+func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
+	return google_books_api.ResponseBodyFromGoogleBooksAPI{
+		Items: []google_books_api.Item{
 			{
 				ID: "Wx1dLwEACAAJ",
-				VolumeInfo: googleBooksApi.VolumeInfo{
+				VolumeInfo: google_books_api.VolumeInfo{
 					Title:         "リーダブルコード",
 					Authors:       []string{"Dustin Boswell", "Trevor Foucher"},
 					PublishedDate: "2012-06",
 					Description:   "読んでわかるコードの重要性と方法について解説",
-					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
+					IndustryIdentifiers: []google_books_api.IndustryIdentifier{
 						{
 							Type:       "ISBN_10",
 							Identifier: "4873115655",
@@ -46,12 +46,12 @@ func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody)
 			},
 			{
 				ID: "n6YqDwAAQBAJ",
-				VolumeInfo: googleBooksApi.VolumeInfo{
+				VolumeInfo: google_books_api.VolumeInfo{
 					Title:         "ExcelVBAを実務で使い倒す技術",
 					Authors:       []string{"高橋宣成"},
 					PublishedDate: "2017-04",
 					Description:   "本書では、VBAを実務の現場で活かすための知識(テクニック)と知恵(考え方とコツ)を教えます!",
-					IndustryIdentifiers: []googleBooksApi.IndustryIdentifier{
+					IndustryIdentifiers: []google_books_api.IndustryIdentifier{
 						{
 							Type:       "ISBN_10",
 							Identifier: "4798049999",
