@@ -2,8 +2,7 @@ package user
 
 import (
 	"github.com/magiconair/properties/assert"
-	"github.com/ryota1116/stacked_books/domain/model/user"
-	_ "github.com/ryota1116/stacked_books/domain/repository"
+	modelUser "github.com/ryota1116/stacked_books/domain/model/user"
 	_ "net/http/httptest"
 	"testing"
 	"time"
@@ -12,8 +11,8 @@ import (
 type UserRepositoryMock struct {
 }
 
-func (ur *UserRepositoryMock) SignUp(user user.User, bcryptHashPassword []byte) (user.User, error) {
-	return user.User{
+func (UserRepositoryMock) Create(user modelUser.User) (modelUser.User, error) {
+	return modelUser.User{
 		Id:        1,
 		UserName:  user.UserName,
 		Email:     user.Email,
@@ -25,8 +24,8 @@ func (ur *UserRepositoryMock) SignUp(user user.User, bcryptHashPassword []byte) 
 	}, nil
 }
 
-func (ur *UserRepositoryMock) SignIn(user user.User) (user.User, error) {
-	return user.User{
+func (UserRepositoryMock) FindOneByEmail(email string) (modelUser.User, error) {
+	return modelUser.User{
 		Id:        1,
 		UserName:  "user",
 		Email:     "user@example.jp",
@@ -38,8 +37,8 @@ func (ur *UserRepositoryMock) SignIn(user user.User) (user.User, error) {
 	}, nil
 }
 
-func (ur *UserRepositoryMock) FindOne(int) user.User {
-	return user.User{
+func (UserRepositoryMock) FindOne(userId int) modelUser.User {
+	return modelUser.User{
 		Id:        1,
 		UserName:  "user",
 		Email:     "user@example.jp",
@@ -55,18 +54,18 @@ func TestUserHandler_SignUp(t *testing.T) {
 	ur := UserRepositoryMock{}
 	uu := NewUserUseCase(&ur)
 
-	user := user.User{
-		UserName: "user_name",
+	command := UserCreateCommand{
+		UserName: "user",
 		Email:    "user@example.jp",
 		Password: "password",
 	}
 	// SignUpメソッドの返り値を格納
-	user, err := uu.SignUp(user)
+	user, err := uu.SignUp(command)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	expected := user.User{
+	expected := modelUser.User{
 		Id:        1,
 		UserName:  user.UserName,
 		Email:     user.Email,
@@ -88,18 +87,12 @@ func TestUserHandler_SignIn(t *testing.T) {
 	ur := UserRepositoryMock{}
 	uu := NewUserUseCase(&ur)
 
-	user := user.User{
-		UserName: "user_name",
-		Email:    "user@example.jp",
-		Password: "password",
-	}
-
-	user, err := uu.SignIn(user)
+	user, err := uu.SignIn("user@example.jp", "password")
 	if err != nil {
 		t.Errorf("テストに失敗しました。エラーメッセージ: %s", err)
 	}
 
-	expected := user.User{
+	expected := modelUser.User{
 		Id:        1,
 		UserName:  "user",
 		Email:     "user@example.jp",

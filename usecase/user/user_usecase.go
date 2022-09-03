@@ -45,8 +45,6 @@ func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 		UserName: command.UserName,
 		Email:    command.Email,
 		Password: string(bcryptHashPassword),
-		Avatar:   command.Avatar,
-		Role:     command.Role,
 	}
 
 	savedUser, err := uu.userRepository.Create(u)

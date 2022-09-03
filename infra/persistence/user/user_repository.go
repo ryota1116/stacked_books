@@ -43,26 +43,26 @@ func (up userPersistence) Create(user user.User) (user.User, error) {
 func (up userPersistence) FindOneByEmail(email string) (user.User, error) {
 	db := persistence.DbConnect()
 
-	dbUser := user.User{}
+	u := user.User{}
 	// emailでUserを取得
-	err := db.Debug().Where("email = ?", email).First(&dbUser).Error // DBからユーザー取得
+	err := db.Debug().Where("email = ?", email).First(&u).Error // DBからユーザー取得
 	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	return dbUser, err
+	return u, err
 }
 
 // FindOne Userを1件取得
 func (up userPersistence) FindOne(userId int) user.User {
 	db := persistence.DbConnect()
 
-	user := user.User{}
-	result := db.First(&user, userId)
+	u := user.User{}
+	result := db.First(&u, userId)
 
 	fmt.Println(&result)
 
-	return user
+	return u
 }
