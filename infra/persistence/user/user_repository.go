@@ -10,7 +10,7 @@ import (
 // Userのインフラ層の構造体
 type userPersistence struct{}
 
-// Userデータに関するPersistenceを生成
+// NewUserPersistence Userデータに関するPersistenceを生成
 // 戻り値がinterface型(UserRepository)でなければエラーになる = userPersistence{}をinterface型にした
 // インターフェースの中にある同じ名前のメソッドを全て実装すれば、自動的にインターフェイスが実装されたことになる(実装しないとエラーになる)
 // 今回で言えば、インターフェイス型UserRepositoryのSignUp, SignIn, ShowUser
@@ -20,12 +20,12 @@ func NewUserPersistence() user.UserRepository {
 	return &userPersistence{}
 }
 
-// 構造体にインターフェイスを実装する書き方
+// Create 構造体にインターフェイスを実装する書き方
 // func (引数 構造体名) 関数名(){
 // 	関数の中身
 // }
 // インターフェイスの実装
-func (up userPersistence) SignUp(user user.User, bcryptHashPassword []byte) (user.User, error) {
+func (up userPersistence) Create(user user.User) (user.User, error) {
 	db := persistence.DbConnect()
 
 	// TODO: playground/validationを使う
@@ -34,19 +34,18 @@ func (up userPersistence) SignUp(user user.User, bcryptHashPassword []byte) (use
 		err = errors.New("ユーザー名を入力してください")
 	}
 
-	user.Password = string(bcryptHashPassword)
 	// DBにユーザーを登録
 	db.Create(&user)
-	fmt.Println(user)
+
 	return user, err
 }
 
-func (up userPersistence) SignIn(user user.User) (user.User, error) {
+func (up userPersistence) FindOneByEmail(email string) (user.User, error) {
 	db := persistence.DbConnect()
 
 	dbUser := user.User{}
 	// emailでUserを取得
-	err := db.Debug().Where("email = ?", user.Email).First(&dbUser).Error // DBからユーザー取得
+	err := db.Debug().Where("email = ?", email).First(&dbUser).Error // DBからユーザー取得
 	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
 
 	if err != nil {
@@ -56,7 +55,7 @@ func (up userPersistence) SignIn(user user.User) (user.User, error) {
 	return dbUser, err
 }
 
-//Userを1件取得
+// FindOne Userを1件取得
 func (up userPersistence) FindOne(userId int) user.User {
 	db := persistence.DbConnect()
 

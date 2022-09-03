@@ -3,11 +3,13 @@ package server
 import (
 	"github.com/gorilla/mux"
 	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
-	"github.com/ryota1116/stacked_books/handler"
-	"github.com/ryota1116/stacked_books/handler/middleware"
 	book2 "github.com/ryota1116/stacked_books/infra/persistence/book"
 	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
 	userbook2 "github.com/ryota1116/stacked_books/infra/persistence/userbook"
+	book3 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book"
+	user3 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/middleware"
 	"github.com/ryota1116/stacked_books/usecase/book"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"github.com/ryota1116/stacked_books/usecase/userbook"
@@ -17,16 +19,16 @@ import (
 func HandleFunc() mux.Router {
 	userPersistence := user2.NewUserPersistence()
 	userUseCase := user.NewUserUseCase(userPersistence)
-	userHandler := handler.NewUserHandler(userUseCase)
+	userHandler := user3.NewUserHandler(userUseCase)
 
 	bookPersistence := book2.NewBookPersistence()
 	userBookPersistence := userbook2.NewUserBookPersistence()
 	userBookUseCase := userbook.NewUserBookUseCase(bookPersistence, userBookPersistence)
 	userSessionHandlerMiddleWare := middleware.NewUserSessionHandlerMiddleWare()
-	userBookHandler := handler.NewUserBookHandler(userBookUseCase, userSessionHandlerMiddleWare)
+	userBookHandler := user_book.NewUserBookHandler(userBookUseCase, userSessionHandlerMiddleWare)
 
 	bookUseCase := book.NewBookUseCase(google_books_api.NewClient())
-	bookHandler := handler.NewBookHandler(bookUseCase)
+	bookHandler := book3.NewBookHandler(bookUseCase)
 
 	router := mux.NewRouter().StrictSlash(true)
 	// エンドポイント(リクエストを処理して、レスポンスを返す)

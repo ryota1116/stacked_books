@@ -12,9 +12,9 @@ type RequestBody struct {
 		PublishedYear  int    `json:"published_year"`
 		PublishedMonth int    `json:"published_month"`
 		PublishedDate  int    `json:"published_date"`
-	} `json:"userbook"`
+	} `json:"book"`
 	UserBook struct {
 		Status int    `json:"status"`
 		Memo   string `json:"memo"`
-	} `json:"userbook"`
+	} `json:"user_book"`
 }

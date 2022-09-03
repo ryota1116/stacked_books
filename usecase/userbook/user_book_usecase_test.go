@@ -6,7 +6,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
-	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/expected/api/user_book_use_case"
 	"strings"
 	"testing"

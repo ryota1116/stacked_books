@@ -3,7 +3,7 @@ package book
 import (
 	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
-	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
+	search_books2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book/search_books"
 	"os"
 	"testing"
 )
@@ -82,7 +82,7 @@ func TestBookUseCase_SearchBooks(t *testing.T) {
 	}
 
 	t.Run("正常系のテスト", func(t *testing.T) {
-		requestBody := search_books.RequestBody{Title: "リーダブルコード"}
+		requestBody := search_books2.RequestParameter{Title: "リーダブルコード"}
 
 		responseFromGoogleBooksAPI, err := useCase.SearchBooks(requestBody)
 		if err != nil {

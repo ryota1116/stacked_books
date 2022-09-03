@@ -1,11 +1,13 @@
-package handler
+package user
 
 import (
 	"encoding/json"
-	user2 "github.com/ryota1116/stacked_books/domain/model/user"
-	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
-	ur "github.com/ryota1116/stacked_books/handler/http/response/user"
-	"github.com/ryota1116/stacked_books/usecase/user"
+	modelUser "github.com/ryota1116/stacked_books/domain/model/user"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user/sign_in"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user/sign_up"
+	httpResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
+	user2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/user"
+	userUseCase "github.com/ryota1116/stacked_books/usecase/user"
 	"io/ioutil"
 	"net/http"
 )
@@ -21,18 +23,18 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	userUseCase user.UserUseCase
+	userUseCase userUseCase.UserUseCase
 }
 
-// Userデータに関するHandlerを生成
+// NewUserHandler Userデータに関するHandlerを生成
 // userHandlerをinterface型(UserHandler)にした
-func NewUserHandler(uu user.UserUseCase) UserHandler {
+func NewUserHandler(uu userUseCase.UserUseCase) UserHandler {
 	return &userHandler{
 		userUseCase: uu,
 	}
 }
 
-// uhはuserHandler型の構造体 → つまりUserHandler(インターフェイス型)
+// SignUp uhはuserHandler型の構造体 → つまりUserHandler(インターフェイス型)
 func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	responseBodyBytes, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -40,20 +42,25 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// リクエストをUserの構造体に変換
-	user := user2.User{}
-	if err := json.Unmarshal(responseBodyBytes, &user); err != nil {
+	requestBody := sign_up.RequestBody{}
+	if err := json.Unmarshal(responseBodyBytes, &requestBody); err != nil {
 		httpResponse.Return500Response(w, err)
 		return
 	}
 
-	userDto, err := uh.userUseCase.SignUp(user)
+	command := userUseCase.UserCreateCommand{
+		UserName: requestBody.UserName,
+		Email:    requestBody.Email,
+		Password: requestBody.Password,
+	}
+
+	userDto, err := uh.userUseCase.SignUp(command)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
 	}
 
-	token, err := user.GenerateToken(userDto)
+	token, err := userUseCase.GenerateToken(userDto)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -61,7 +68,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 	httpResponse.Response{
 		StatusCode: http.StatusOK,
-		ResponseBody: ur.SignUpResponseGenerator{
+		ResponseBody: user2.SignUpResponseGenerator{
 			UserDto: userDto,
 			Token:   token,
 		}.Execute(),
@@ -80,16 +87,16 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := user2.User{}
-	json.NewDecoder(r.Body).Decode(&user)
+	requestBody := sign_in.RequestBody{}
+	json.NewDecoder(r.Body).Decode(&requestBody)
 
-	userDto, err := uh.userUseCase.SignIn(user)
+	userDto, err := uh.userUseCase.SignIn(requestBody.Email, requestBody.Password)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
 	}
 
-	token, err := user.GenerateToken(userDto)
+	token, err := userUseCase.GenerateToken(userDto)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -97,7 +104,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	httpResponse.Response{
 		StatusCode: http.StatusOK,
-		ResponseBody: ur.SignInResponseGenerator{
+		ResponseBody: user2.SignInResponseGenerator{
 			UserDto: userDto,
 			Token:   token,
 		}.Execute(),
@@ -105,7 +112,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	user := user2.User{}
+	user := modelUser.User{}
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		return

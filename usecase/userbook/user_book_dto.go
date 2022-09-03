@@ -26,18 +26,18 @@ type UserBookDto struct {
 func (dto DtoGenerator) Execute() []UserBookDto {
 	var booksDto []UserBookDto
 
-	for _, book := range dto.Books {
+	for _, b := range dto.Books {
 		dto := UserBookDto{
-			ID:             book.Id,
-			GoogleBooksId:  book.GoogleBooksId,
-			Title:          book.Title,
-			Description:    book.Description,
-			Isbn10:         book.Isbn_10,
-			Isbn13:         book.Isbn_13,
-			PageCount:      book.PageCount,
-			PublishedYear:  book.PublishedYear,
-			PublishedMonth: book.PublishedMonth,
-			PublishedDate:  book.PublishedDate,
+			ID:             b.Id,
+			GoogleBooksId:  b.GoogleBooksId,
+			Title:          b.Title,
+			Description:    b.Description,
+			Isbn10:         b.Isbn_10,
+			Isbn13:         b.Isbn_13,
+			PageCount:      b.PageCount,
+			PublishedYear:  b.PublishedYear,
+			PublishedMonth: b.PublishedMonth,
+			PublishedDate:  b.PublishedDate,
 		}
 
 		booksDto = append(booksDto, dto)

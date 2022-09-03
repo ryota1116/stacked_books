@@ -3,7 +3,7 @@ package RegisterUserBooks
 import (
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
-	"github.com/ryota1116/stacked_books/handler/http/response"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"unicode/utf8"
 )
 

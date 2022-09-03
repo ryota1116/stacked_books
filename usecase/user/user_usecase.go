@@ -12,10 +12,10 @@ const (
 	secretKey = "secretKey"
 )
 
-// UserにおけるUseCaseのインターフェース
+// UserUseCase UserにおけるUseCaseのインターフェース
 type UserUseCase interface {
-	SignUp(user user.User) (UserDto, error)
-	SignIn(user user.User) (UserDto, error)
+	SignUp(command UserCreateCommand) (UserDto, error)
+	SignIn(email string, password string) (UserDto, error)
 	FindOne(userId int) user.User
 }
 
@@ -24,7 +24,7 @@ type userUseCase struct {
 	userRepository user.UserRepository
 }
 
-// Userデータに関するUseCaseを生成
+// NewUserUseCase Userデータに関するUseCaseを生成
 // 戻り値にInterface型を指定
 //
 func NewUserUseCase(ur user.UserRepository) UserUseCase {
@@ -33,32 +33,40 @@ func NewUserUseCase(ur user.UserRepository) UserUseCase {
 	}
 }
 
-func (uu userUseCase) SignUp(user user.User) (UserDto, error) {
+func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 	// bcryptを使ってパスワードをハッシュ化する
-	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(command.Password), bcrypt.DefaultCost)
 	if err != nil {
 		//return
 		fmt.Println(err)
 	}
 
-	dbUser, err := uu.userRepository.SignUp(user, bcryptHashPassword)
+	u := user.User{
+		UserName: command.UserName,
+		Email:    command.Email,
+		Password: string(bcryptHashPassword),
+		Avatar:   command.Avatar,
+		Role:     command.Role,
+	}
+
+	savedUser, err := uu.userRepository.Create(u)
 
 	userDto := UserDtoGenerator{
-		User: dbUser,
+		User: savedUser,
 	}.Execute()
 
 	return userDto, err
 }
 
-// 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
-func (uu userUseCase) SignIn(user user.User) (UserDto, error) {
-	dbUser, err := uu.userRepository.SignIn(user)
+// SignIn 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
+func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
+	dbUser, err := uu.userRepository.FindOneByEmail(email)
 
 	userDto := UserDtoGenerator{
 		User: dbUser,
 	}.Execute()
 
-	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
 		return userDto, err
 	} else {
@@ -69,8 +77,7 @@ func (uu userUseCase) SignIn(user user.User) (UserDto, error) {
 }
 
 func (uu userUseCase) FindOne(userId int) user.User {
-	user := uu.userRepository.FindOne(userId)
-	return user
+	return uu.userRepository.FindOne(userId)
 }
 
 // GenerateToken : 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本

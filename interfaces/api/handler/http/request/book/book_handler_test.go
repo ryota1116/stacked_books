@@ -1,11 +1,11 @@
-package handler
+package book
 
 import (
 	"encoding/json"
 	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
-	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
-	res "github.com/ryota1116/stacked_books/handler/http/response"
+	search_books2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book/search_books"
+	res "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
 	"net/http/httptest"
@@ -21,7 +21,7 @@ const expectedSearchBooksJson = "../tests/expected/api/bookHandler/200_search_bo
 type bookUseCaseMock struct{}
 
 // SearchBooks : インターフェイスを満たすためのメソッド
-func (bu bookUseCaseMock) SearchBooks(requestParameter search_books.RequestBody) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
+func (bu bookUseCaseMock) SearchBooks(requestParameter search_books2.RequestParameter) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
 	return google_books_api.ResponseBodyFromGoogleBooksAPI{
 		Items: []google_books_api.Item{
 			{

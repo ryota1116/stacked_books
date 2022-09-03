@@ -2,7 +2,6 @@ package book
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
-	"github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 )
 
@@ -13,10 +12,10 @@ func NewBookPersistence() book.BookRepository {
 }
 
 // FindOrCreateByGoogleBooksId : GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
-func (bookPersistence) FindOrCreateByGoogleBooksId(requestBody RegisterUserBooks.RequestBody) book.Book {
+func (bookPersistence) FindOrCreateByGoogleBooksId(GoogleBooksId string) book.Book {
 	db := persistence.DbConnect()
-	book := book.Book{}
-	db.Where(book.Book{GoogleBooksId: requestBody.Book.GoogleBooksId}).FirstOrCreate(&book)
+	b := book.Book{}
+	db.Where("google_books_id = ?", GoogleBooksId).FirstOrCreate(&b)
 
-	return book
+	return b
 }

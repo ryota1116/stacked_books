@@ -3,7 +3,6 @@ package userbook
 import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
-	"github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/infra/persistence"
 )
 
@@ -14,16 +13,8 @@ func NewUserBookPersistence() userbook.UserBookRepository {
 }
 
 // CreateOne : UserBooksレコードを作成する
-func (userBookPersistence) CreateOne(userId int, bookId int, requestBody RegisterUserBooks.RequestBody) userbook.UserBook {
+func (userBookPersistence) CreateOne(userBook userbook.UserBook) userbook.UserBook {
 	db := persistence.DbConnect()
-
-	userBook := userbook.UserBook{
-		UserId: userId,
-		BookId: bookId,
-		Status: requestBody.UserBook.Status,
-		Memo:   requestBody.UserBook.Memo,
-	}
-
 	db.Create(&userBook)
 
 	return userBook

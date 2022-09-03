@@ -1,10 +1,10 @@
-package handler
+package user_book
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/domain/model/user"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
-	RegisterUserBooks "github.com/ryota1116/stacked_books/handler/http/request/user_book/register_user_books"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
 	"net/http"

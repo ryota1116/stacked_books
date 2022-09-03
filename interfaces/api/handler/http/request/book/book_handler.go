@@ -1,10 +1,10 @@
-package handler
+package book
 
 import (
 	"errors"
-	"github.com/ryota1116/stacked_books/handler/http/request/book/search_books"
-	httpResponse "github.com/ryota1116/stacked_books/handler/http/response"
-	"github.com/ryota1116/stacked_books/handler/http/response/book"
+	search_books2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book/search_books"
+	httpResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/book"
 	book2 "github.com/ryota1116/stacked_books/usecase/book"
 	"net/http"
 )
@@ -37,12 +37,12 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// リクエストパラメーターを取得
-	var requestParameter = search_books.RequestParameter{
+	var requestParameter = search_books2.RequestParameter{
 		Title: r.FormValue("title"),
 	}
 
 	// リクエストボディのバリデーション
-	isValid, validMsg := search_books.FormValidator{
+	isValid, validMsg := search_books2.FormValidator{
 		GoogleBooksApiRequestParameter: requestParameter}.Validate()
 	if !isValid {
 		// クライアントにHTTPレスポンスを返す
@@ -55,7 +55,7 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 外部APIで書籍を検索
-	responseFromGoogleBooksAPI, err := bh.bookUseCase.SearchBooks(requestParameter)
+	responseFromGoogleBooksAPI, err := bh.bookUseCase.SearchBooks(requestParameter.Title)
 	// 外部APIリクエストでエラーが発生した場合
 	if err != nil {
 		httpResponse.Return500Response(w, errors.New("検索に失敗しました"))
