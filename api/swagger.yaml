@@ -78,11 +78,11 @@ paths:
                   id:
                     type: integer
                     example: 1
-                    description: UserBook Id
+                    description: userbook Id
                   name:
                     type: string
                     example: test user
-                    description: UserBook Name
+                    description: userbook Name
 
   /users/{userId}/books:
     get:
