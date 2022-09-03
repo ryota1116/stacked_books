@@ -99,19 +99,20 @@ func TestSearchBooksResponseGeneratorExecute(t *testing.T) {
 		ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
 	}.Execute()
 
+	var expectedSearchBooksResponse []SearchBooksResponse
+	expectedSearchBooksResponse = append(expectedSearchBooksResponse, SearchBooksResponse{
+		GoogleBooksId: "Wx1dLwEACAAJ",
+		Title:         "リーダブルコード",
+		Authors:       []string{"Dustin Boswell", "Trevor Foucher"},
+		Description:   "読んでわかるコードの重要性と方法について解説",
+		Isbn10:        "4873115655",
+		Isbn13:        "9784873115658",
+		PageCount:     237,
+		RegisteredAt:  "2012-06",
+	})
+
 	// 書籍検索用レスポンスボディ構造体の期待値
-	expected := SearchBooksResponses{
-		SearchBooksResponse{
-			GoogleBooksId: "Wx1dLwEACAAJ",
-			Title:         "リーダブルコード",
-			Authors:       []string{"Dustin Boswell", "Trevor Foucher"},
-			Description:   "読んでわかるコードの重要性と方法について解説",
-			Isbn10:        "4873115655",
-			Isbn13:        "9784873115658",
-			PageCount:     237,
-			RegisteredAt:  "2012-06",
-		},
-	}
+	expected := SearchBooksResponses{expectedSearchBooksResponse}
 
 	// google/go-cmpで構造体の中身までテストできる
 	if diff := cmp.Diff(searchBooksResponses, expected); diff != "" {
