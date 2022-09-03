@@ -4,8 +4,8 @@ import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/domain/model/user"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
-	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/register_user_books"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
+	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +19,8 @@ const expectedRegisterUserBookJson = "../tests/expected/api/userBookHandler/200_
 
 type UserBookUseCaseMock struct{}
 
-func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) (book.Book, userbook.UserBook) {
+// モック型でプロダクションコードの
+func (UserBookUseCaseMock) RegisterUserBook(command userBookUseCase.UserBookCreateCommand) (book.Book, userbook.UserBook) {
 	return book.Book{
 			Id:             1,
 			GoogleBooksId:  "Wx1dLwEACAAJ",
@@ -46,9 +47,22 @@ func (UserBookUseCaseMock) RegisterUserBook(int, RegisterUserBooks.RequestBody) 
 		}
 }
 
-func (m UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]book.Book, error) {
-	// 現状テストで使ってないから、空のままにしている
-	panic("implement me")
+func (UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]userBookUseCase.UserBookDto, error) {
+	var userBookDto []userBookUseCase.UserBookDto
+	userBookDto = append(userBookDto, userBookUseCase.UserBookDto{
+		ID:             1,
+		GoogleBooksId:  "",
+		Title:          "",
+		Description:    "",
+		Isbn10:         "",
+		Isbn13:         "",
+		PageCount:      0,
+		PublishedYear:  0,
+		PublishedMonth: 0,
+		PublishedDate:  0,
+	})
+
+	return userBookDto, nil
 }
 
 type UserSessionHandlerMiddleWareMock struct{}
@@ -106,6 +120,7 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 	// ステータスコードのテスト
 	if response.StatusCode != 200 {
 		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+		t.Errorf(`レスポンスボディは「 %s 」でした`, response.Body)
 	}
 
 	// レスポンスボディを[]byte型に変換

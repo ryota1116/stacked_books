@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
-	search_books2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book/search_books"
 	res "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"io/ioutil"
@@ -15,13 +14,13 @@ import (
 )
 
 // テストで期待するレスポンスボディJSON文字列のファイルパス
-const expectedSearchBooksJson = "../tests/expected/api/bookHandler/200_search_books_response.json"
+const expectedSearchBooksJson = "../tests/expected/api/book_handler/200_search_books_response.json"
 
 // bookUseCaseMock : BookUseCaseInterfaceを実装しているモック
 type bookUseCaseMock struct{}
 
 // SearchBooks : インターフェイスを満たすためのメソッド
-func (bu bookUseCaseMock) SearchBooks(requestParameter search_books2.RequestParameter) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
+func (bu bookUseCaseMock) SearchBooks(title string) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
 	return google_books_api.ResponseBodyFromGoogleBooksAPI{
 		Items: []google_books_api.Item{
 			{
@@ -164,6 +163,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 		// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
 		if response.StatusCode != 422 {
 			t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+			t.Errorf(`レスポンスボディは「 %s 」でした`, response.Body)
 		}
 
 		// レスポンスボディを[]byte型に変換

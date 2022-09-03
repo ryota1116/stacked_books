@@ -43,7 +43,9 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 
 	// リクエストボディのバリデーション
 	isValid, validMsg := search_books2.FormValidator{
-		GoogleBooksApiRequestParameter: requestParameter}.Validate()
+		GoogleBooksApiRequestParameter: requestParameter,
+	}.Validate()
+
 	if !isValid {
 		// クライアントにHTTPレスポンスを返す
 		response := httpResponse.Response{

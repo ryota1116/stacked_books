@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/user"
+	userUseCase "github.com/ryota1116/stacked_books/usecase/user"
 	"io/ioutil"
 	"net/http/httptest"
 	"strings"
@@ -16,29 +17,21 @@ type UserUseCaseMock struct {
 }
 
 // モック型でプロダクションコードの
-func (uu *UserUseCaseMock) SignUp(user user.User) (user.User, error) {
-	return user.User{
-		Id:        1,
-		UserName:  "user_name",
-		Email:     "user@example.jp",
-		Password:  "password",
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
+func (uu *UserUseCaseMock) SignUp(command userUseCase.UserCreateCommand) (userUseCase.UserDto, error) {
+	return userUseCase.UserDto{
+		Id:       1,
+		UserName: "user_name",
+		Email:    "user@example.jp",
+		Password: "password",
 	}, nil
 }
 
-func (uu *UserUseCaseMock) SignIn(user user.User) (user.User, error) {
-	return user.User{
-		Id:        1,
-		UserName:  "user_name",
-		Email:     "user@example.jp",
-		Password:  "password",
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
+func (uu *UserUseCaseMock) SignIn(email string, password string) (userUseCase.UserDto, error) {
+	return userUseCase.UserDto{
+		Id:       1,
+		UserName: "user_name",
+		Email:    "user@example.jp",
+		Password: "password",
 	}, nil
 }
 
@@ -117,6 +110,7 @@ func TestUserHandler_SignIn(t *testing.T) {
 	// ステータスコードのテスト
 	if response.StatusCode != 200 {
 		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+		t.Errorf(`レスポンスボディは「 %s 」でした`, response.Body)
 	}
 
 	//assert.Equal(t, &response.Body, "string", `ユーザーIDが正しいこと`)
