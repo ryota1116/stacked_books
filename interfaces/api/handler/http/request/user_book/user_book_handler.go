@@ -2,11 +2,11 @@ package user_book
 
 import (
 	"encoding/json"
-	RegisterUserBooks2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/register_user_books"
+	RegisterUserBooks "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/register_user_books"
 	httpResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/user_book"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/user_book/find_user_books"
-	middleware2 "github.com/ryota1116/stacked_books/interfaces/api/handler/middleware"
+	"github.com/ryota1116/stacked_books/interfaces/api/handler/middleware"
 	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
 	"net/http"
 )
@@ -18,12 +18,12 @@ type UserBookHandler interface {
 
 type userBookHandler struct {
 	userBookUseCase              userBookUseCase.UserBookUseCase
-	userSessionHandlerMiddleWare middleware2.UserSessionHandlerMiddleWareInterface
+	userSessionHandlerMiddleWare middleware.UserSessionHandlerMiddleWareInterface
 }
 
 func NewUserBookHandler(
 	ubu userBookUseCase.UserBookUseCase,
-	ushmw middleware2.UserSessionHandlerMiddleWareInterface) UserBookHandler {
+	ushmw middleware.UserSessionHandlerMiddleWareInterface) UserBookHandler {
 	return &userBookHandler{
 		userBookUseCase:              ubu,
 		userSessionHandlerMiddleWare: ushmw,
@@ -33,7 +33,7 @@ func NewUserBookHandler(
 // RegisterUserBook : booksを参照→同じのあればそれを使って、user_booksを作成
 func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Request) {
 	// JSONのリクエストボディを構造体に変換する
-	requestBody := RegisterUserBooks2.RequestBody{}
+	requestBody := RegisterUserBooks.RequestBody{}
 
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
@@ -45,7 +45,7 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	}
 
 	// リクエストボディ構造体のバリデーションを実行
-	isValid, errMsg := RegisterUserBooks2.FormValidator{
+	isValid, errMsg := RegisterUserBooks.FormValidator{
 		RequestBody: requestBody,
 	}.Validate()
 	if !isValid {
@@ -79,13 +79,13 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	}
 
 	// UserBooksレコードを作成する
-	book, userBook := ubh.userBookUseCase.RegisterUserBook(command)
+	bookDto, userBookDto := ubh.userBookUseCase.RegisterUserBook(command)
 
 	httpResponse.Response{
 		StatusCode: http.StatusOK,
 		ResponseBody: user_book.RegisterUserBookResponseGenerator{
-			Book:     book,
-			UserBook: userBook,
+			BookDto:     bookDto,
+			UserBookDto: userBookDto,
 		}.Execute(),
 	}.ReturnResponse(w)
 }
@@ -93,10 +93,10 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 // FindUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
 func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
-	ushm := middleware2.NewUserSessionHandlerMiddleWare()
+	ushm := middleware.NewUserSessionHandlerMiddleWare()
 	user := ushm.CurrentUser(r)
 
-	userBooksDto, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+	booksDto, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -105,7 +105,7 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 	httpResponse.Response{
 		StatusCode: http.StatusOK,
 		ResponseBody: find_user_books.FindUserBooksResponseGenerator{
-			UserBooksDto: userBooksDto,
+			BooksDto: booksDto,
 		}.Execute(),
 	}.ReturnResponse(w)
 }

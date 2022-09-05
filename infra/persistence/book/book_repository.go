@@ -19,3 +19,19 @@ func (bookPersistence) FindOrCreateByGoogleBooksId(GoogleBooksId string) book.Bo
 
 	return b
 }
+
+// FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
+func (bookPersistence) FindAllByUserId(userId int) ([]book.Book, error) {
+	db := persistence.DbConnect()
+	var books []book.Book
+
+	// ユーザーが登録している本一覧を取得
+	if err := db.Joins("inner join user_books on books.id = user_books.book_id").
+		Joins("inner join users on user_books.user_id = ?", userId).
+		Group("books.id").
+		Find(&books).Error; err != nil {
+		return books, err
+	}
+
+	return books, nil
+}

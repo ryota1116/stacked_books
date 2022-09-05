@@ -6,12 +6,12 @@ import (
 )
 
 type UserBook struct {
-	Id        int       `json:"id" gorm:"primaryKey"`
-	UserId    int       `json:"user_id"`
-	BookId    int       `json:"book_id"`
-	Status    int       `json:"status"`
-	Memo      string    `json:"memo"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Book      book.Book `json:"user_book"`
+	Id        int
+	UserId    int
+	BookId    int
+	Status    int
+	Memo      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Book      book.Book
 }

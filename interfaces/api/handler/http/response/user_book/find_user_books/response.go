@@ -1,18 +1,19 @@
 package find_user_books
 
 import (
-	"github.com/ryota1116/stacked_books/usecase/userbook"
+	"github.com/ryota1116/stacked_books/usecase/book"
 )
 
 type FindUserBooksResponseGenerator struct {
-	UserBooksDto []userbook.UserBookDto
+	BooksDto []book.BookDto
 }
 
 type FindUserBooksResponse struct {
-	UserBooks []UserBook `json:"user_books"`
+	Books []Book `json:"books"`
 }
 
-type UserBook struct {
+// TODO
+type Book struct {
 	ID             int    `json:"id"`
 	GoogleBooksId  string `json:"google_books_id"`
 	Title          string `json:"title"`
@@ -28,24 +29,24 @@ type UserBook struct {
 }
 
 func (fubrg FindUserBooksResponseGenerator) Execute() FindUserBooksResponse {
-	var userBooks []UserBook
+	var books []Book
 
-	for _, userBookDto := range fubrg.UserBooksDto {
-		userBook := UserBook{
-			ID:             userBookDto.ID,
-			GoogleBooksId:  userBookDto.GoogleBooksId,
-			Title:          userBookDto.Title,
-			Description:    userBookDto.Description,
-			Isbn10:         userBookDto.Isbn10,
-			Isbn13:         userBookDto.Isbn13,
-			PageCount:      userBookDto.PageCount,
-			PublishedYear:  userBookDto.PublishedYear,
-			PublishedMonth: userBookDto.PublishedMonth,
-			PublishedDate:  userBookDto.PublishedDate,
+	for _, bookDto := range fubrg.BooksDto {
+		userBook := Book{
+			ID:             bookDto.Id,
+			GoogleBooksId:  bookDto.GoogleBooksId,
+			Title:          bookDto.Title,
+			Description:    bookDto.Description,
+			Isbn10:         *bookDto.Isbn_10,
+			Isbn13:         *bookDto.Isbn_13,
+			PageCount:      *bookDto.PageCount,
+			PublishedYear:  *bookDto.PublishedYear,
+			PublishedMonth: *bookDto.PublishedMonth,
+			PublishedDate:  *bookDto.PublishedDate,
 		}
 
-		userBooks = append(userBooks, userBook)
+		books = append(books, userBook)
 	}
 
-	return FindUserBooksResponse{UserBooks: userBooks}
+	return FindUserBooksResponse{Books: books}
 }

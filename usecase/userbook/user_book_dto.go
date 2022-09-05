@@ -1,47 +1,32 @@
 package userbook
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model/book"
+	"github.com/ryota1116/stacked_books/domain/model/userbook"
+	"time"
 )
 
-type DtoGenerator struct {
-	Books []book.Book
+type UserBookDtoGenerator struct {
+	UserBook userbook.UserBook
 }
 
 type UserBookDto struct {
-	ID             int
-	GoogleBooksId  string
-	Title          string
-	Description    string
-	Isbn10         string
-	Isbn13         string
-	PageCount      int
-	PublishedYear  int
-	PublishedMonth int
-	PublishedDate  int
-	//Status int
-	//Memo   string
+	Id        int
+	UserId    int
+	BookId    int
+	Status    int
+	Memo      string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-func (dto DtoGenerator) Execute() []UserBookDto {
-	var booksDto []UserBookDto
-
-	for _, b := range dto.Books {
-		dto := UserBookDto{
-			ID:             b.Id,
-			GoogleBooksId:  b.GoogleBooksId,
-			Title:          b.Title,
-			Description:    b.Description,
-			Isbn10:         b.Isbn_10,
-			Isbn13:         b.Isbn_13,
-			PageCount:      b.PageCount,
-			PublishedYear:  b.PublishedYear,
-			PublishedMonth: b.PublishedMonth,
-			PublishedDate:  b.PublishedDate,
-		}
-
-		booksDto = append(booksDto, dto)
+func (dtog UserBookDtoGenerator) Execute() UserBookDto {
+	return UserBookDto{
+		Id:        dtog.UserBook.Id,
+		UserId:    dtog.UserBook.UserId,
+		BookId:    dtog.UserBook.BookId,
+		Status:    dtog.UserBook.Status,
+		Memo:      dtog.UserBook.Memo,
+		CreatedAt: dtog.UserBook.CreatedAt,
+		UpdatedAt: dtog.UserBook.UpdatedAt,
 	}
-
-	return booksDto
 }
