@@ -2,10 +2,10 @@ package server
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
-	book2 "github.com/ryota1116/stacked_books/infra/persistence/book"
-	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
-	userbook2 "github.com/ryota1116/stacked_books/infra/persistence/userbook"
+	book2 "github.com/ryota1116/stacked_books/infra/datasource/book"
+	user2 "github.com/ryota1116/stacked_books/infra/datasource/user"
+	userbook2 "github.com/ryota1116/stacked_books/infra/datasource/userbook"
+	"github.com/ryota1116/stacked_books/infra/externalapi/google-books-api"
 	book3 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book"
 	user3 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book"

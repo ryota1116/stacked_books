@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model/user"
-	"github.com/ryota1116/stacked_books/infra/persistence"
+	"github.com/ryota1116/stacked_books/infra/datasource"
 )
 
 // Userのインフラ層の構造体
@@ -26,7 +26,7 @@ func NewUserPersistence() user.UserRepository {
 // }
 // インターフェイスの実装
 func (up userPersistence) Create(user user.User) (user.User, error) {
-	db := persistence.DbConnect()
+	db := datasource.DbConnect()
 
 	// TODO: playground/validationを使う
 	var err error
@@ -41,7 +41,7 @@ func (up userPersistence) Create(user user.User) (user.User, error) {
 }
 
 func (up userPersistence) FindOneByEmail(email string) (user.User, error) {
-	db := persistence.DbConnect()
+	db := datasource.DbConnect()
 
 	u := user.User{}
 	// emailでUserを取得
@@ -57,7 +57,7 @@ func (up userPersistence) FindOneByEmail(email string) (user.User, error) {
 
 // FindOne Userを1件取得
 func (up userPersistence) FindOne(userId int) user.User {
-	db := persistence.DbConnect()
+	db := datasource.DbConnect()
 
 	u := user.User{}
 	result := db.First(&u, userId)

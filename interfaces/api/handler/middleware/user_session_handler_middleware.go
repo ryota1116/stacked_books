@@ -7,7 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	user3 "github.com/ryota1116/stacked_books/domain/model/user"
-	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
+	user2 "github.com/ryota1116/stacked_books/infra/datasource/user"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
 	"strconv"

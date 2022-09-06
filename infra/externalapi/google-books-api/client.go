@@ -2,26 +2,21 @@ package google_books_api
 
 import (
 	"encoding/json"
-	"fmt"
+	model "github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
 	"io/ioutil"
 	"net/http"
 )
 
-// URLForGoogleBooksAPI :
-const URLForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
+const urlForGoogleBooksAPI = "https://www.googleapis.com/books/v1/volumes?q="
 
-type IGoogleBooksAPIClient interface {
-	SendRequest(searchWord string) (ResponseBodyFromGoogleBooksAPI, error)
-}
+type googleBooksApiClient struct{}
 
-type Client struct{}
-
-func NewClient() IGoogleBooksAPIClient {
-	return Client{}
+func NewClient() model.GoogleBooksApiClientInterface {
+	return googleBooksApiClient{}
 }
 
 // SendRequest : GoogleBooksAPIにリクエストを送信する
-func (client Client) SendRequest(searchWord string) (ResponseBodyFromGoogleBooksAPI, error) {
+func (client googleBooksApiClient) SendRequest(searchWord string) (model.ResponseBodyFromGoogleBooksApi, error) {
 	// TODO: 以下の方法で「文字列を連結してURLを生成」したいけど上手くいかない
 	//var byteURL = make([]byte, 0, 100) // 100byte のキャパシティを確保
 	//byteURL = append(byteURL, []byte(URLForGoogleBooksAPI))
@@ -29,14 +24,13 @@ func (client Client) SendRequest(searchWord string) (ResponseBodyFromGoogleBooks
 	//searchURL := string(byteURL)
 
 	// 文字列を連結してURLを生成
-	searchURL := URLForGoogleBooksAPI + searchWord
+	searchURL := urlForGoogleBooksAPI + searchWord
 
 	// GoogleBooksAPIを叩く
 	res, err := http.Get(searchURL)
 
 	if err != nil {
-		fmt.Println(err)
-		return ResponseBodyFromGoogleBooksAPI{}, err
+		// return ResponseBodyFromGoogleBooksAPI{}, err
 		// fmt.Errorf("Unable to get this url : http status %d", res.StatusCode)
 	}
 
@@ -49,15 +43,14 @@ func (client Client) SendRequest(searchWord string) (ResponseBodyFromGoogleBooks
 	// レスポンスボディを読み込む
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return ResponseBodyFromGoogleBooksAPI{}, err
+		// return model.ResponseBodyFromGoogleBooksAPI{}, err
 	}
 
 	// JSONエンコードされたデータをparseして、構造体に格納する
-	var responseFromGoogleBooksAPI ResponseBodyFromGoogleBooksAPI
-	if err := json.Unmarshal(body, &responseFromGoogleBooksAPI); err != nil {
-		return ResponseBodyFromGoogleBooksAPI{}, err
+	var responseBodyFromGoogleBooksApi model.ResponseBodyFromGoogleBooksApi
+	if err := json.Unmarshal(body, &responseBodyFromGoogleBooksApi); err != nil {
+		return model.ResponseBodyFromGoogleBooksApi{}, err
 	}
 
-	// レスポンスボディを返す
-	return responseFromGoogleBooksAPI, nil
+	return responseBodyFromGoogleBooksApi, nil
 }
