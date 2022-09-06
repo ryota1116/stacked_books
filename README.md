@@ -58,14 +58,105 @@
 300ページ x 0.1mm/1ページ(※参考値) = 3cm<br>
 という計算から、読書量が3cm加算されるような設定となっています。
 
-## 画面遷移図
-https://www.figma.com/file/OTN0BtC3RrgPhMgW9wILm2/Stacked_Books?node-id=0%3A1
 
-## ER図
-https://drive.google.com/file/d/1uspJ44TKzTZGpcBljSUNiJvVqTQJt1qT/view?usp=sharing
+# 技術構成
+- バックエンド
+  - Golang: https://github.com/ryota1116/stacked_books
+  - パッケージ構成・アーキテクチャ: DDDを意識
+- フロントエンド
+  - React: https://github.com/ryota1116/stacked_books_ui
+- 画面遷移図: https://www.figma.com/file/OTN0BtC3RrgPhMgW9wILm2/Stacked_Books?node-id=0%3A1
+- ER図: https://drive.google.com/file/d/1uspJ44TKzTZGpcBljSUNiJvVqTQJt1qT/view?usp=sharing
+- API定義: https://github.com/ryota1116/stacked_books_api_definition
 
-## フロントエンド
-https://github.com/ryota1116/stacked_books_ui
+## 本リポジトリのディレクトリ構造
+- 一部集約に限定して記述している。
 
-## API定義
-https://github.com/ryota1116/stacked_books_api_definition
+```
+├── README.md
+├── cmd
+│   └── main.go
+├── db
+│   ├── migrate.go
+│   └── migrations
+│       ├── 000001_create_users_table.down.sql
+│       ├── 000001_create_users_table.up.sql
+│       └── ...
+├── domain
+│   └── model
+│       ├── book
+│       │   ├── book.go
+│       │   └── book_repository.go
+│       ├── searched_books
+│       │   └── google_books_api
+│       │       └── client_interface.go
+│       ├── user
+│       │   ├── user.go
+│       │   └── user_repository.go
+│       └── validator.go
+├── infra
+│   ├── datasource
+│   │   ├── book
+│   │   │   └── book_repository.go
+│   │   ├── user
+│   │   │   └── user_repository.go
+│   │   ├── db_connect.go
+│   └── externalapi
+│       └── google-books-api
+│           └── client.go
+├── interfaces
+│   └── api
+│       └── handler
+│           ├── http
+│           │   ├── request
+│           │   │   ├── book
+│           │   │   │   ├── book_handler.go
+│           │   │   │   ├── book_handler_test.go
+│           │   │   │   └── search_books
+│           │   │   │       ├── form_validator.go
+│           │   │   │       ├── request.go
+│           │   │   │       └── validation_error.go
+│           │   │   └── user
+│           │   │       ├── sign_in
+│           │   │       │   └── request.go
+│           │   │       ├── sign_up
+│           │   │       │   └── request.go
+│           │   │       ├── user_handler.go
+│           │   │       └── user_handler_test.go
+│           │   └── response
+│           │       ├── book
+│           │       │   ├── search_books_response.go
+│           │       │   └── search_books_response_generator_test.go
+│           │       ├── error_response_body.go
+│           │       └── response_handler.go
+│           │       └── user
+│           │           ├── sign_in_response.go
+│           │           └── sign_up_response.go
+│           └── middleware
+│               ├── user_session_handler_middleware.go
+│               └── user_session_handler_middleware_interface.go
+├── server
+│   ├── router.go
+│   └── server.go
+├── tests
+│   ├── expected
+│   │   └── api
+│   │       ├── book_handler
+│   │       │   └── 200_search_books_response.json
+│   │       └── userBookHandler
+│   │           └── 200_register_user_book.json
+│   ├── test_assertion
+│   │   └── assertion_api_response_body.go
+│   └── user_session_handler_middleware_test.go
+└── usecase
+    ├── book
+    │   ├── book_dto.go
+    │   ├── book_usecase.go
+    │   └── book_usecase_test.go
+    └── user
+        ├── user_create_command.go
+        ├── user_dto.go
+        ├── user_usecase.go
+        └── user_usecase_test.go
+
+```
