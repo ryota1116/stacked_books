@@ -62,7 +62,7 @@
 # 技術構成
 - バックエンド
   - Golang: https://github.com/ryota1116/stacked_books
-  - パッケージ構成・アーキテクチャ: DDDを意識
+  - パッケージ構成・アーキテクチャ: オニオンアーキテクチャを意識
 - フロントエンド
   - React: https://github.com/ryota1116/stacked_books_ui
 - 画面遷移図: https://www.figma.com/file/OTN0BtC3RrgPhMgW9wILm2/Stacked_Books?node-id=0%3A1
