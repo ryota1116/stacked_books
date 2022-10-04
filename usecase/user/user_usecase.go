@@ -58,13 +58,13 @@ func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 
 // SignIn 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
 func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
-	dbUser, err := uu.userRepository.FindOneByEmail(email)
+	user, err := uu.userRepository.FindOneByEmail(email)
 
 	userDto := UserDtoGenerator{
-		User: dbUser,
+		User: user,
 	}.Execute()
 
-	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
 		return userDto, err
 	} else {
