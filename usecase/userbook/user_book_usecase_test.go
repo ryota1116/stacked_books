@@ -10,33 +10,31 @@ import (
 
 type BookRepositoryMock struct{}
 
-func (BookRepositoryMock) FindOrCreateByGoogleBooksId(string) book.Book {
-	return book.Book{
-		GoogleBooksId:  "Wx1dLwEACAAJ",
-		Title:          "リーダブルコード",
-		Description:    "読んでわかるコードの重要性と方法について解説",
-		Isbn_10:        "4873115655",
-		Isbn_13:        "9784873115658",
-		PageCount:      237,
-		PublishedYear:  2012,
-		PublishedMonth: 6,
-		PublishedDate:  0,
-	}
-}
-
 type UserBookRepositoryMock struct{}
 
-func (UserBookRepositoryMock) CreateOne(userbook.UserBook) userbook.UserBook {
-	return userbook.UserBook{
-		Id:     1,
-		UserId: 1,
-		BookId: 1,
-		Status: 1,
-		Memo:   "メモメモメモ",
+func (BookRepositoryMock) FindOneByGoogleBooksId(GoogleBooksId string) book.Book {
+	return book.Book{
+		Id:             1,
+		GoogleBooksId:  "test",
+		Title:          "タイトル",
+		Description:    "説明文です",
+		Image:          "",
+		Isbn_10:        "",
+		Isbn_13:        "",
+		PageCount:      100,
+		PublishedYear:  2022,
+		PublishedMonth: 8,
+		PublishedDate:  10,
+		CreatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
+		UpdatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
 	}
 }
 
-func (UserBookRepositoryMock) FindAllByUserId(int) ([]book.Book, error) {
+func (BookRepositoryMock) Save(book2 book.Book) error {
+	return nil
+}
+
+func (BookRepositoryMock) FindAllByUserId(int) ([]book.Book, error) {
 	var books []book.Book
 	books = append(books, book.Book{
 		Id:             1,
@@ -55,6 +53,10 @@ func (UserBookRepositoryMock) FindAllByUserId(int) ([]book.Book, error) {
 	})
 
 	return books, nil
+}
+
+func (UserBookRepositoryMock) Save(userbook.UserBook) error {
+	return nil
 }
 
 // UserBookUseCaseのRegisterUserBookの正常系テスト
@@ -80,7 +82,7 @@ func TestUserBookUseCaseRegisterUserBook(t *testing.T) {
 	}
 
 	// userBookUseCaseのRegisterUserBookを実行
-	book, userBook := ubu.RegisterUserBook(command)
+	book, userBook, _ := ubu.RegisterUserBook(command)
 
 	// 戻り値である構造体が正しいことをテスト
 	if diff := cmp.Diff(book, expectedBook); diff != "" {

@@ -4,7 +4,7 @@ package user
 type UserRepository interface {
 	// *型名でポイント型になる
 	// *型名でUser型へのポイント型
-	Create(user User) (User, error)
+	Create(user User) error
 	FindOneByEmail(email string) (User, error)
-	FindOne(userId int) User
+	FindOne(userId int) (User, error)
 }

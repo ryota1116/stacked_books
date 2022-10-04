@@ -112,15 +112,20 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	user := modelUser.User{}
-	err := json.NewDecoder(r.Body).Decode(&user)
+	user1 := modelUser.User{}
+	err := json.NewDecoder(r.Body).Decode(&user1)
 	if err != nil {
 		return
 	}
 
-	user = uh.userUseCase.FindOne(user.Id)
+	userDto, err := uh.userUseCase.FindOne(user1.Id)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: userDto,
+	}.ReturnResponse(w)
 }

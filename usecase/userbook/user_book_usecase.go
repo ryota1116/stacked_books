@@ -7,7 +7,7 @@ import (
 )
 
 type UserBookUseCase interface {
-	RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto)
+	RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error)
 	FindUserBooksByUserId(userId int) ([]book.BookDto, error)
 }
 
@@ -24,9 +24,26 @@ func NewUserBookUseCase(br model.BookRepository, ubr userbook.UserBookRepository
 }
 
 // RegisterUserBook : UserBooksレコードを作成する
-func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto) {
+func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error) {
 	// GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
-	b := ubu.bookRepository.FindOrCreateByGoogleBooksId(command.Book.GoogleBooksId)
+	var b model.Book
+	b, err := ubu.bookRepository.FindOneByGoogleBooksId(command.Book.GoogleBooksId)
+	if err != nil {
+		b = model.Book{
+			GoogleBooksId:  command.Book.GoogleBooksId,
+			Title:          command.Book.Title,
+			Description:    command.Book.Description,
+			Isbn_10:        command.Book.Isbn10,
+			Isbn_13:        command.Book.Isbn13,
+			PageCount:      command.Book.PageCount,
+			PublishedYear:  command.Book.PublishedYear,
+			PublishedMonth: command.Book.PublishedMonth,
+			PublishedDate:  command.Book.PublishedDate,
+		}
+		if err := ubu.bookRepository.Save(b); err != nil {
+			return book.BookDto{}, UserBookDto{}, err
+		}
+	}
 
 	userBook := userbook.UserBook{
 		UserId: command.UserId,
@@ -36,10 +53,13 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 	}
 
 	// UserBooksレコードを作成する
-	savedUserBook := ubu.userBookRepository.CreateOne(userBook)
+	if err := ubu.userBookRepository.Save(userBook); err != nil {
+		return book.BookDto{}, UserBookDto{}, err
+	}
 
 	return book.BookDtoGenerator{Book: b}.Execute(),
-		UserBookDtoGenerator{UserBook: savedUserBook}.Execute()
+		UserBookDtoGenerator{UserBook: userBook}.Execute(),
+		nil
 }
 
 // FindUserBooksByUserId : ログイン中のユーザーが登録している本の一覧を取得する

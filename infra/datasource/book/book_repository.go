@@ -11,13 +11,23 @@ func NewBookPersistence() book.BookRepository {
 	return &bookPersistence{}
 }
 
-// FindOrCreateByGoogleBooksId : GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
-func (bookPersistence) FindOrCreateByGoogleBooksId(GoogleBooksId string) book.Book {
+func (bookPersistence) FindOneByGoogleBooksId(GoogleBooksId string) (book.Book, error) {
 	db := datasource.DbConnect()
 	b := book.Book{}
-	db.Where("google_books_id = ?", GoogleBooksId).FirstOrCreate(&b)
 
-	return b
+	if err := db.Where("google_books_id = ?", GoogleBooksId).First(&b).Error; err != nil {
+		return b, err
+	}
+	return b, nil
+}
+
+func (bookPersistence) Save(book book.Book) error {
+	db := datasource.DbConnect()
+
+	if err := db.Create(&book).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する

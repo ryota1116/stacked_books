@@ -57,7 +57,11 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	}
 
 	// ログイン中のユーザーを取得する
-	currentUser := ubh.userSessionHandlerMiddleWare.CurrentUser(r)
+	currentUser, err := ubh.userSessionHandlerMiddleWare.CurrentUser(r)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
 
 	command := userBookUseCase.UserBookCreateCommand{
 		UserId: currentUser.Id,
@@ -79,7 +83,11 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 	}
 
 	// UserBooksレコードを作成する
-	bookDto, userBookDto := ubh.userBookUseCase.RegisterUserBook(command)
+	bookDto, userBookDto, err := ubh.userBookUseCase.RegisterUserBook(command)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
 
 	httpResponse.Response{
 		StatusCode: http.StatusOK,
@@ -94,9 +102,13 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
 	ushm := middleware.NewUserSessionHandlerMiddleWare()
-	user := ushm.CurrentUser(r)
+	currentUser, err := ushm.CurrentUser(r)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
 
-	booksDto, err := ubh.userBookUseCase.FindUserBooksByUserId(user.Id)
+	booksDto, err := ubh.userBookUseCase.FindUserBooksByUserId(currentUser.Id)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
