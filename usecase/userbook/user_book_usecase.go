@@ -45,11 +45,9 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 		}
 	}
 
-	userBook := userbook.UserBook{
-		UserId: command.UserId,
-		BookId: b.Id,
-		Status: command.UserBook.Status,
-		Memo:   command.UserBook.Memo,
+	userBook, err := userbook.NewUserBook(command, b)
+	if err != nil {
+		return book.BookDto{}, UserBookDto{}, err
 	}
 
 	// UserBooksレコードを作成する

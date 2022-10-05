@@ -20,5 +20,8 @@ type Book struct {
 	PublishedMonth int       `json:"published_month"`
 	PublishedDate  int       `json:"published_date"`
 	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+func NewBook() {
+	
 }

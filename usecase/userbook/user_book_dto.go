@@ -24,8 +24,8 @@ func (dtog UserBookDtoGenerator) Execute() UserBookDto {
 		Id:        dtog.UserBook.Id,
 		UserId:    dtog.UserBook.UserId,
 		BookId:    dtog.UserBook.BookId,
-		Status:    dtog.UserBook.Status,
-		Memo:      dtog.UserBook.Memo,
+		Status:    dtog.UserBook.Status.Value,
+		Memo:      dtog.UserBook.Memo.Value,
 		CreatedAt: dtog.UserBook.CreatedAt,
 		UpdatedAt: dtog.UserBook.UpdatedAt,
 	}
