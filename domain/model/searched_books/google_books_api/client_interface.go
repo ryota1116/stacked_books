@@ -1,7 +1,7 @@
 package google_books_api
 
-// ResponseBodyFromGoogleBooksAPI : GoogleBooksAPIを叩いた時のJSONレスポンスを格納する構造体
-type ResponseBodyFromGoogleBooksAPI struct {
+// ResponseBodyFromGoogleBooksApi : GoogleBooksAPIを叩いた時のJSONレスポンスを格納する構造体
+type ResponseBodyFromGoogleBooksApi struct {
 	Items []Item `json:"items"`
 }
 
@@ -22,4 +22,8 @@ type VolumeInfo struct {
 type IndustryIdentifier struct {
 	Type       string `json:"type"`
 	Identifier string `json:"identifier"`
+}
+
+type GoogleBooksApiClientInterface interface {
+	SendRequest(searchWord string) (ResponseBodyFromGoogleBooksApi, error)
 }

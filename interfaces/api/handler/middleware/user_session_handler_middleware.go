@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	user3 "github.com/ryota1116/stacked_books/domain/model/user"
-	user2 "github.com/ryota1116/stacked_books/infra/persistence/user"
+	user2 "github.com/ryota1116/stacked_books/infra/datasource/user"
 	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
 	"strconv"
@@ -62,7 +61,7 @@ func VerifyUserToken(w http.ResponseWriter, r *http.Request) {
 }
 
 // CurrentUser : セッションからログイン中のユーザー情報を取得する
-func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) user3.User {
+func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) (user.UserDto, error) {
 	// ParseFromRequestでリクエストヘッダーのAuthorizationからJWTを抽出し、抽出したJWTのclaimをparseしてくれる。
 	parsedToken, err := request.ParseFromRequest(r, request.AuthorizationHeaderExtractor, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC) // 署名アルゴリズムにHS256を使用しているかチェック
@@ -90,7 +89,9 @@ func (userSessionHandlerMiddleWare) CurrentUser(r *http.Request) user3.User {
 			return userUseCase.FindOne(1)
 		}
 	}
-	return user3.User{}
+
+	// この処理に入る = エラーということ(つまりerrをnilで返してはいけない)
+	return user.UserDto{}, err
 }
 
 func SetUserSession(w http.ResponseWriter, user user.UserDto) {

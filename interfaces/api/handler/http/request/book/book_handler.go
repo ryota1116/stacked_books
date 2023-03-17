@@ -57,7 +57,7 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 外部APIで書籍を検索
-	responseFromGoogleBooksAPI, err := bh.bookUseCase.SearchBooks(requestParameter.Title)
+	responseBodyFromGoogleBooksApi, err := bh.bookUseCase.SearchBooks(requestParameter.Title)
 	// 外部APIリクエストでエラーが発生した場合
 	if err != nil {
 		httpResponse.Return500Response(w, errors.New("検索に失敗しました"))
@@ -68,7 +68,7 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 		StatusCode: http.StatusOK,
 		// GoogleBooksAPIのJSONレスポンスの構造体から、 書籍検索用のHTTPレスポンスボディ構造体を生成する
 		ResponseBody: book.SearchBooksResponseGenerator{
-			ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
+			ResponseBodyFromGoogleBooksApi: responseBodyFromGoogleBooksApi,
 		}.Execute(),
 	}.ReturnResponse(w)
 }

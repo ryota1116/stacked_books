@@ -1,10 +1,12 @@
 package book
 
-import "github.com/ryota1116/stacked_books/domain/model/google-books-api"
+import (
+	model "github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
+)
 
 // SearchBooksResponseGenerator : 書籍検索用レスポンスボディのジェネレーター
 type SearchBooksResponseGenerator struct {
-	ResponseBodyFromGoogleBooksAPI google_books_api.ResponseBodyFromGoogleBooksAPI `json:"response_body_from_google_books_api"`
+	ResponseBodyFromGoogleBooksApi model.ResponseBodyFromGoogleBooksApi `json:"response_body_from_google_books_api"`
 }
 
 // SearchBooksResponses : 書籍検索用のレスポンスボディ構造体のコレクション
@@ -37,7 +39,7 @@ func (sbrg SearchBooksResponseGenerator) Execute() SearchBooksResponses {
 
 	// GoogleBooksAPIのJSONレスポンスから、書籍検索用のレスポンスボディ構造体を生成する
 	// 検索結果一覧が配列で返ってくるため、slice型に格納して返す
-	for _, item := range sbrg.ResponseBodyFromGoogleBooksAPI.Items {
+	for _, item := range sbrg.ResponseBodyFromGoogleBooksApi.Items {
 		searchBooksResponse := SearchBooksResponse{
 			GoogleBooksId: item.ID,
 			Title:         item.VolumeInfo.Title,

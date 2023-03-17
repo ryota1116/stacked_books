@@ -1,8 +1,6 @@
 package RegisterUserBooks
 
 import (
-	"fmt"
-	"github.com/ryota1116/stacked_books/domain/model/userbook"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"unicode/utf8"
 )
@@ -29,23 +27,6 @@ func (rbh FormValidator) Validate() (bool, response.ErrorResponseBody) {
 
 	if rbh.RequestBody.Book.PageCount <= 0 {
 		return false, response.ErrorResponseBody{Message: "本のページ数は1ページ以上で入力してください。"}
-	}
-
-	// Contain関数を作成する https://zenn.dev/glassonion1/articles/7c7830a269909c
-	isValidStatus := func() bool {
-		for _, bookStatus := range userbook.GetBookStatuses() {
-			if rbh.RequestBody.UserBook.Status == bookStatus {
-				return true
-			}
-		}
-		return false
-	}
-
-	if !isValidStatus() {
-		return isValidStatus(), response.ErrorResponseBody{Message: fmt.Sprintf(
-			"読書ステータスの値が不正です。 status: %d",
-			rbh.RequestBody.UserBook.Status),
-		}
 	}
 
 	memoCount := utf8.RuneCountInString(rbh.RequestBody.UserBook.Memo)

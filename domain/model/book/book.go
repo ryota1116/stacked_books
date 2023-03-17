@@ -5,7 +5,7 @@ import (
 )
 
 // Book : 本のドメインモデル
-// TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、persistence/userbook/entity.go?を作成する。
+// TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、datasource/userbook/entity.go?を作成する。
 // NOTE: Isbn_10カラムを取得する場合フィールドをIsbn_10にする必要がある(=>Isbn10では取得できない)
 type Book struct {
 	Id             int       `json:"id" gorm:"primaryKey;"`
@@ -20,5 +20,8 @@ type Book struct {
 	PublishedMonth int       `json:"published_month"`
 	PublishedDate  int       `json:"published_date"`
 	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+func NewBook() {
+	
 }

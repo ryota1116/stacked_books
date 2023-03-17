@@ -2,7 +2,7 @@ package book
 
 import (
 	"github.com/magiconair/properties/assert"
-	"github.com/ryota1116/stacked_books/domain/model/google-books-api"
+	"github.com/ryota1116/stacked_books/infra/externalapi/google-books-api"
 	"os"
 	"testing"
 )

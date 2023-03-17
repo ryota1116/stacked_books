@@ -16,7 +16,7 @@ const (
 type UserUseCase interface {
 	SignUp(command UserCreateCommand) (UserDto, error)
 	SignIn(email string, password string) (UserDto, error)
-	FindOne(userId int) user.User
+	FindOne(userId int) (UserDto, error)
 }
 
 // TODO: 依存する方向てきな？
@@ -47,10 +47,10 @@ func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 		Password: string(bcryptHashPassword),
 	}
 
-	savedUser, err := uu.userRepository.Create(u)
+	err = uu.userRepository.Create(u)
 
 	userDto := UserDtoGenerator{
-		User: savedUser,
+		User: u,
 	}.Execute()
 
 	return userDto, err
@@ -58,13 +58,13 @@ func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 
 // SignIn 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
 func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
-	dbUser, err := uu.userRepository.FindOneByEmail(email)
+	user, err := uu.userRepository.FindOneByEmail(email)
 
 	userDto := UserDtoGenerator{
-		User: dbUser,
+		User: user,
 	}.Execute()
 
-	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
 		return userDto, err
 	} else {
@@ -74,8 +74,15 @@ func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
 	return userDto, err
 }
 
-func (uu userUseCase) FindOne(userId int) user.User {
-	return uu.userRepository.FindOne(userId)
+func (uu userUseCase) FindOne(userId int) (UserDto, error) {
+	user, err := uu.userRepository.FindOne(userId)
+	if err != nil {
+		return UserDto{}, err
+	}
+
+	return UserDtoGenerator{
+		User: user,
+	}.Execute(), nil
 }
 
 // GenerateToken : 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本

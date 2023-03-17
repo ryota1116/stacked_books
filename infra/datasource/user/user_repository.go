@@ -1,10 +1,8 @@
 package user
 
 import (
-	"errors"
-	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model/user"
-	"github.com/ryota1116/stacked_books/infra/persistence"
+	"github.com/ryota1116/stacked_books/infra/datasource"
 )
 
 // Userのインフラ層の構造体
@@ -25,23 +23,25 @@ func NewUserPersistence() user.UserRepository {
 // 	関数の中身
 // }
 // インターフェイスの実装
-func (up userPersistence) Create(user user.User) (user.User, error) {
-	db := persistence.DbConnect()
+func (up userPersistence) Create(user user.User) error {
+	db := datasource.DbConnect()
 
-	// TODO: playground/validationを使う
-	var err error
-	if user.UserName == "" {
-		err = errors.New("ユーザー名を入力してください")
-	}
+	// TODO: Domainに移す(DBの制約は必須だが最終防衛手段みたいなものなので
+	//       業務知識としてDomainに書くのがいい)
+	//var err error
+	//if user.UserName == "" {
+	//	err = errors.New("ユーザー名を入力してください")
+	//}
 
 	// DBにユーザーを登録
-	db.Create(&user)
-
-	return user, err
+	if err := db.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (up userPersistence) FindOneByEmail(email string) (user.User, error) {
-	db := persistence.DbConnect()
+	db := datasource.DbConnect()
 
 	u := user.User{}
 	// emailでUserを取得
@@ -56,13 +56,13 @@ func (up userPersistence) FindOneByEmail(email string) (user.User, error) {
 }
 
 // FindOne Userを1件取得
-func (up userPersistence) FindOne(userId int) user.User {
-	db := persistence.DbConnect()
+func (up userPersistence) FindOne(userId int) (user.User, error) {
+	db := datasource.DbConnect()
 
 	u := user.User{}
-	result := db.First(&u, userId)
+	if err := db.First(&u, userId).Error; err != nil {
+		return u, err
+	}
 
-	fmt.Println(&result)
-
-	return u
+	return u, nil
 }

@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model/user"
+	"github.com/ryota1116/stacked_books/usecase/user"
 	"net/http"
 )
 
 type UserSessionHandlerMiddleWareInterface interface {
-	CurrentUser(*http.Request) user.User
+	CurrentUser(*http.Request) (user.UserDto, error)
 }

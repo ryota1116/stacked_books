@@ -1,4 +1,4 @@
-package persistence
+package datasource
 
 import (
 	"fmt"
