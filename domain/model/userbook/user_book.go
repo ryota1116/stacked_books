@@ -6,7 +6,6 @@ import (
 )
 
 type UserBookInterface interface {
-	Id() IdInterface
 	UserId() UserIdInterface
 	BookId() BookIdInterface
 	Status() StatusInterface
@@ -16,7 +15,6 @@ type UserBookInterface interface {
 }
 
 type userBook struct {
-	id        IdInterface
 	userId    UserIdInterface
 	bookId    BookIdInterface
 	status    StatusInterface
@@ -48,10 +46,6 @@ func NewUserBook(
 		status: s,
 		memo:   m,
 	}, nil
-}
-
-func (u *userBook) Id() IdInterface {
-	return u.id
 }
 
 func (u *userBook) UserId() UserIdInterface {

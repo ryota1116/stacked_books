@@ -21,7 +21,6 @@ type UserBookDto struct {
 
 func (dtog UserBookDtoGenerator) Execute() UserBookDto {
 	return UserBookDto{
-		Id:        dtog.UserBook.Id().Value(),
 		UserId:    dtog.UserBook.UserId().Value(),
 		BookId:    dtog.UserBook.BookId().Value(),
 		Status:    dtog.UserBook.Status().Value(),
