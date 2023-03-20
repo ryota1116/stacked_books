@@ -4,11 +4,6 @@ import (
 	"fmt"
 )
 
-// Status : 本の読書ステータス
-type Status struct {
-	Value int
-}
-
 // 本の読書ステータスのEnum
 const (
 	// WantToRead : 読みたい（= 1）
@@ -19,8 +14,26 @@ const (
 	DONE
 )
 
+// GetBookStatuses : 本の読書ステータス一覧を取得する
+func getBookStatuses() []int {
+	return []int{
+		WantToRead,
+		READING,
+		DONE,
+	}
+}
+
+type StatusInterface interface {
+	Value() int
+}
+
+// Status : 本の読書ステータス
+type status struct {
+	value int
+}
+
 // NewStatus : コンストラクター
-func NewStatus(value int) (Status, error) {
+func NewStatus(value int) (StatusInterface, error) {
 	// TODO: Contain関数を作成する https://zenn.dev/glassonion1/articles/7c7830a269909c
 	isValid := func() bool {
 		for _, bookStatus := range getBookStatuses() {
@@ -32,17 +45,12 @@ func NewStatus(value int) (Status, error) {
 	}
 
 	if !isValid() {
-		return Status{}, fmt.Errorf("読書ステータスの値が不正です。 status: %d", value)
+		return &status{}, fmt.Errorf("読書ステータスの値が不正です。 status: %d", value)
 	}
 
-	return Status{value}, nil
+	return &status{value}, nil
 }
 
-// GetBookStatuses : 本の読書ステータス一覧を取得する
-func getBookStatuses() []int {
-	return []int{
-		WantToRead,
-		READING,
-		DONE,
-	}
+func (s *status) Value() int {
+	return s.value
 }

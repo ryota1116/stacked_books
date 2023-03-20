@@ -25,10 +25,11 @@ func NewUserBookUseCase(br model.BookRepository, ubr userbook.UserBookRepository
 
 // RegisterUserBook : UserBooksレコードを作成する
 func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error) {
-	// GoogleBooksIDからBookレコードを検索し、存在しなければ作成する
+	// GoogleBooksIDからBookエンティティを取得
 	var b model.Book
 	b, err := ubu.bookRepository.FindOneByGoogleBooksId(command.Book.GoogleBooksId)
 	if err != nil {
+		// 取得できなければ新規作成する
 		b = model.Book{
 			GoogleBooksId:  command.Book.GoogleBooksId,
 			Title:          command.Book.Title,
@@ -45,16 +46,23 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 		}
 	}
 
-	userBook, err := userbook.NewUserBook(command, b)
+	// UserBookエンティティの生成
+	userBook, err := userbook.NewUserBook(
+		command.UserId,
+		b.Id,
+		command.UserBook.Status,
+		command.UserBook.Memo,
+	)
 	if err != nil {
 		return book.BookDto{}, UserBookDto{}, err
 	}
 
-	// UserBooksレコードを作成する
+	// UserBookを保存する
 	if err := ubu.userBookRepository.Save(userBook); err != nil {
 		return book.BookDto{}, UserBookDto{}, err
 	}
 
+	// DTOを返却
 	return book.BookDtoGenerator{Book: b}.Execute(),
 		UserBookDtoGenerator{UserBook: userBook}.Execute(),
 		nil

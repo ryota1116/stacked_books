@@ -5,21 +5,29 @@ import (
 	"unicode/utf8"
 )
 
-// Memo : 本のメモ
-type Memo struct {
-	Value string
-}
-
 // メモの最大文字数
 const maxCount = 255
 
+type MemoInterface interface {
+	Value() string
+}
+
+// memo : 本のメモ
+type memo struct {
+	value string
+}
+
 // NewMemo : コンストラクター
-func NewMemo(value string) (Memo, error) {
+func NewMemo(value string) (MemoInterface, error) {
 	memoCount := utf8.RuneCountInString(value)
 
 	if memoCount > maxCount {
-		return Memo{}, fmt.Errorf("メモは255文字以下で入力ください。")
+		return &memo{}, fmt.Errorf("メモは255文字以下で入力ください。")
 	}
 
-	return Memo{value}, nil
+	return &memo{value}, nil
+}
+
+func (s *memo) Value() string {
+	return s.value
 }

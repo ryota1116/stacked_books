@@ -2,37 +2,78 @@ package userbook
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
-	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
 	"time"
 )
 
-type UserBook struct {
-	Id        int
-	UserId    int
-	BookId    int
-	Status    Status
-	Memo      Memo
-	CreatedAt time.Time
-	UpdatedAt time.Time
+type UserBookInterface interface {
+	Id() IdInterface
+	UserId() UserIdInterface
+	BookId() BookIdInterface
+	Status() StatusInterface
+	Memo() MemoInterface
+	CreatedAt() time.Time
+	UpdatedAt() time.Time
+}
+
+type userBook struct {
+	id        IdInterface
+	userId    UserIdInterface
+	bookId    BookIdInterface
+	status    StatusInterface
+	memo      MemoInterface
+	createdAt time.Time
+	updatedAt time.Time
 	Book      book.Book
 }
 
-// NewUserBook : コンストラクター
-func NewUserBook(command userBookUseCase.UserBookCreateCommand, book book.Book) (UserBook, error) {
-	status, err := NewStatus(command.UserBook.Status)
+func NewUserBook(
+	userId int,
+	bookId int,
+	status int,
+	memo string,
+) (UserBookInterface, error) {
+	s, err := NewStatus(status)
 	if err != nil {
-		return UserBook{}, err
+		return &userBook{}, err
 	}
 
-	memo, err := NewMemo(command.UserBook.Memo)
+	m, err := NewMemo(memo)
 	if err != nil {
-		return UserBook{}, err
+		return &userBook{}, err
 	}
 
-	return UserBook{
-		UserId: command.UserId,
-		BookId: book.Id,
-		Status: status,
-		Memo:   memo,
+	return &userBook{
+		userId: NewUserId(userId),
+		bookId: NewBookId(bookId),
+		status: s,
+		memo:   m,
 	}, nil
+}
+
+func (u *userBook) Id() IdInterface {
+	return u.id
+}
+
+func (u *userBook) UserId() UserIdInterface {
+	return u.userId
+}
+
+func (u *userBook) BookId() BookIdInterface {
+	return u.bookId
+}
+
+func (u *userBook) Status() StatusInterface {
+	return u.status
+}
+
+func (u *userBook) Memo() MemoInterface {
+	return u.memo
+}
+
+func (u *userBook) CreatedAt() time.Time {
+	return u.createdAt
+}
+
+func (u *userBook) UpdatedAt() time.Time {
+	return u.updatedAt
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type UserBookDtoGenerator struct {
-	UserBook userbook.UserBook
+	UserBook userbook.UserBookInterface
 }
 
 type UserBookDto struct {
@@ -21,12 +21,12 @@ type UserBookDto struct {
 
 func (dtog UserBookDtoGenerator) Execute() UserBookDto {
 	return UserBookDto{
-		Id:        dtog.UserBook.Id,
-		UserId:    dtog.UserBook.UserId,
-		BookId:    dtog.UserBook.BookId,
-		Status:    dtog.UserBook.Status.Value,
-		Memo:      dtog.UserBook.Memo.Value,
-		CreatedAt: dtog.UserBook.CreatedAt,
-		UpdatedAt: dtog.UserBook.UpdatedAt,
+		Id:        dtog.UserBook.Id().Value(),
+		UserId:    dtog.UserBook.UserId().Value(),
+		BookId:    dtog.UserBook.BookId().Value(),
+		Status:    dtog.UserBook.Status().Value(),
+		Memo:      dtog.UserBook.Memo().Value(),
+		CreatedAt: dtog.UserBook.CreatedAt(),
+		UpdatedAt: dtog.UserBook.UpdatedAt(),
 	}
 }
