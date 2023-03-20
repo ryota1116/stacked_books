@@ -9,25 +9,28 @@ import (
 const maxCount = 255
 
 type MemoInterface interface {
-	Value() string
+	Value() *string
 }
 
 // memo : 本のメモ
 type memo struct {
-	value string
+	value *string
 }
 
 // NewMemo : コンストラクター
-func NewMemo(value string) (MemoInterface, error) {
-	memoCount := utf8.RuneCountInString(value)
+func NewMemo(value *string) (MemoInterface, error) {
+	if value != nil {
+		memoCount := utf8.RuneCountInString(*value)
 
-	if memoCount > maxCount {
-		return &memo{}, fmt.Errorf("メモは255文字以下で入力ください。")
+		if memoCount > maxCount {
+			return &memo{}, fmt.Errorf("メモは255文字以下で入力ください。")
+		}
 	}
 
+	// &でポインタ型を生成
 	return &memo{value}, nil
 }
 
-func (s *memo) Value() string {
+func (s *memo) Value() *string {
 	return s.value
 }

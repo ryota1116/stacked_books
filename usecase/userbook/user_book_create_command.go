@@ -20,5 +20,5 @@ type Book struct {
 
 type UserBook struct {
 	Status int
-	Memo   string
+	Memo   *string
 }

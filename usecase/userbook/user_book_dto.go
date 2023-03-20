@@ -14,7 +14,7 @@ type UserBookDto struct {
 	UserId    int
 	BookId    int
 	Status    int
-	Memo      string
+	Memo      *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

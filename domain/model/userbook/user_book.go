@@ -30,7 +30,7 @@ func NewUserBook(
 	userId int,
 	bookId int,
 	status int,
-	memo string,
+	memo *string,
 ) (UserBookInterface, error) {
 	s, err := NewStatus(status)
 	if err != nil {

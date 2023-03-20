@@ -14,7 +14,7 @@ type RequestBody struct {
 		PublishedDate  int    `json:"published_date"`
 	} `json:"book"`
 	UserBook struct {
-		Status int    `json:"status"`
-		Memo   string `json:"memo"`
+		Status int     `json:"status"`
+		Memo   *string `json:"memo"`
 	} `json:"user_book"`
 }
