@@ -31,6 +31,6 @@ func NewMemo(value *string) (MemoInterface, error) {
 	return &memo{value}, nil
 }
 
-func (s *memo) Value() *string {
-	return s.value
+func (m *memo) Value() *string {
+	return m.value
 }

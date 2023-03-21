@@ -12,6 +12,6 @@ func NewPublishedYear(value *int) PublishedYearInterface {
 	return &publishedYear{value}
 }
 
-func (s *publishedYear) Value() *int {
-	return s.value
+func (py *publishedYear) Value() *int {
+	return py.value
 }

@@ -12,6 +12,6 @@ func NewGoogleBooksId(value string) GoogleBooksIdInterface {
 	return &googleBooksId{value}
 }
 
-func (s *googleBooksId) Value() string {
-	return s.value
+func (gbi *googleBooksId) Value() string {
+	return gbi.value
 }

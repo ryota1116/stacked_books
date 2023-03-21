@@ -12,6 +12,6 @@ func NewDescription(value *string) DescriptionInterface {
 	return &description{value}
 }
 
-func (s *description) Value() *string {
-	return s.value
+func (d *description) Value() *string {
+	return d.value
 }

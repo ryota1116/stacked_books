@@ -12,6 +12,6 @@ func NewUserId(value int) UserIdInterface {
 	return &userId{value}
 }
 
-func (s *userId) Value() int {
-	return s.value
+func (ui *userId) Value() int {
+	return ui.value
 }

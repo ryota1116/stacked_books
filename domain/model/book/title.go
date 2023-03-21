@@ -12,6 +12,6 @@ func NewTitle(value string) TitleInterface {
 	return &title{value}
 }
 
-func (s *title) Value() string {
-	return s.value
+func (t *title) Value() string {
+	return t.value
 }
