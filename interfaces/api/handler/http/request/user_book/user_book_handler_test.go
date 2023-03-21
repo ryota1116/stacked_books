@@ -1,65 +1,81 @@
 package user_book
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model/book"
-	"github.com/ryota1116/stacked_books/domain/model/user"
-	"github.com/ryota1116/stacked_books/domain/model/userbook"
+	"github.com/ryota1116/stacked_books/tests"
 	"github.com/ryota1116/stacked_books/tests/test_assertion"
+	bookUseCase "github.com/ryota1116/stacked_books/usecase/book"
+	user2 "github.com/ryota1116/stacked_books/usecase/user"
 	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
 )
 
 // テストで期待するレスポンスボディJSON文字列のファイルパス
-const expectedRegisterUserBookJson = "../tests/expected/api/userBookHandler/200_register_user_book.json"
+const expectedJsonDirectory = "/tests/expected/api/userBookHandler"
 
 type UserBookUseCaseMock struct{}
 
-// モック型でプロダクションコードの
-func (UserBookUseCaseMock) RegisterUserBook(command userBookUseCase.UserBookCreateCommand) (book.Book, userbook.UserBook) {
-	return book.Book{
+func (UserBookUseCaseMock) RegisterUserBook(_ userBookUseCase.UserBookCreateCommand) (bookUseCase.BookDto, userBookUseCase.UserBookDto, error) {
+	description := "読んでわかるコードの重要性と方法について解説"
+	image := ""
+	isbn10 := "4873115655"
+	isbn13 := "9784873115658"
+	publishedYear := 2012
+	publishedMonth := 6
+	publishedDate := 0
+	memo := "メモメモメモ"
+
+	return bookUseCase.BookDto{
 			Id:             1,
 			GoogleBooksId:  "Wx1dLwEACAAJ",
 			Title:          "リーダブルコード",
-			Description:    "読んでわかるコードの重要性と方法について解説",
-			Image:          "",
-			Isbn_10:        "4873115655",
-			Isbn_13:        "9784873115658",
+			Description:    &description,
+			Image:          &image,
+			Isbn10:         &isbn10,
+			Isbn13:         &isbn13,
 			PageCount:      237,
-			PublishedYear:  2012,
-			PublishedMonth: 6,
-			PublishedDate:  0,
-			CreatedAt:      time.Time{},
-			UpdatedAt:      time.Time{},
-		}, userbook.UserBook{
+			PublishedYear:  &publishedYear,
+			PublishedMonth: &publishedMonth,
+			PublishedDate:  &publishedDate,
+		}, userBookUseCase.UserBookDto{
 			Id:        1,
 			UserId:    1,
 			BookId:    1,
 			Status:    1,
-			Memo:      "メモメモメモ",
+			Memo:      &memo,
 			CreatedAt: time.Time{},
 			UpdatedAt: time.Time{},
-			Book:      book.Book{},
-		}
+		}, nil
 }
 
-func (UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]userBookUseCase.UserBookDto, error) {
-	var userBookDto []userBookUseCase.UserBookDto
-	userBookDto = append(userBookDto, userBookUseCase.UserBookDto{
-		ID:             1,
-		GoogleBooksId:  "",
-		Title:          "",
-		Description:    "",
-		Isbn10:         "",
-		Isbn13:         "",
-		PageCount:      0,
-		PublishedYear:  0,
-		PublishedMonth: 0,
-		PublishedDate:  0,
+func (UserBookUseCaseMock) FindUserBooksByUserId(_ int) ([]bookUseCase.BookDto, error) {
+	description := "読んでわかるコードの重要性と方法について解説"
+	image := ""
+	isbn10 := "4873115655"
+	isbn13 := "9784873115658"
+	publishedYear := 2012
+	publishedMonth := 6
+	publishedDate := 0
+
+	var userBookDto []bookUseCase.BookDto
+	userBookDto = append(userBookDto, bookUseCase.BookDto{
+		Id:             1,
+		GoogleBooksId:  "Wx1dLwEACAAJ",
+		Title:          "リーダブルコード",
+		Description:    &description,
+		Image:          &image,
+		Isbn10:         &isbn10,
+		Isbn13:         &isbn13,
+		PageCount:      237,
+		PublishedYear:  &publishedYear,
+		PublishedMonth: &publishedMonth,
+		PublishedDate:  &publishedDate,
 	})
 
 	return userBookDto, nil
@@ -67,29 +83,35 @@ func (UserBookUseCaseMock) FindUserBooksByUserId(userId int) ([]userBookUseCase.
 
 type UserSessionHandlerMiddleWareMock struct{}
 
-func (UserSessionHandlerMiddleWareMock) CurrentUser(*http.Request) user.User {
-	return user.User{
-		Id:        1,
-		UserName:  "",
-		Email:     "",
-		Password:  "",
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-		DeletedAt: nil,
-		Books:     nil,
-	}
+func (UserSessionHandlerMiddleWareMock) CurrentUser(_ *http.Request) (user2.UserDto, error) {
+	return user2.UserDto{
+		Id:       1,
+		UserName: "user_name",
+		Email:    "user@example.com",
+		Password: "password",
+	}, nil
 }
 
-func TestBookHandlerRegisterUserBook(t *testing.T) {
-	ubu := UserBookUseCaseMock{}
-	ushmw := UserSessionHandlerMiddleWareMock{}
-	ubh := NewUserBookHandler(ubu, ushmw)
+func TestMain(m *testing.M) {
+	// テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）
+	// => また各ユニットテストの中でテストデータをinsertすれば良さそう。
+	status := m.Run()
 
-	// リクエストボディを検証しているならこの記述が活きてくる気がするが、、
-	bodyReader := strings.NewReader(`{
-		"userbook" :{
+	// 0が渡れば成功する。プロセスのkillも実行される。
+	os.Exit(status)
+}
+
+func TestUserBookHandler_RegisterUserBook(t *testing.T) {
+	ubh := NewUserBookHandler(UserBookUseCaseMock{}, UserSessionHandlerMiddleWareMock{})
+
+	// jsonファイルの絶対パスを取得(TODO: ローカル用の取得になっているので修正する)
+	_, testFilePath, _, _ := runtime.Caller(0)
+	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
+
+	t.Run("正常系のテスト", func(t *testing.T) {
+		// リクエスト
+		body := strings.NewReader(`{
+		"book" :{
 			"google_books_id": "Wx1dLwEACAAJ",
 			"title": "リーダブルコード",
 			"authors": ["Dustin Boswell","Trevor Foucher"],
@@ -103,30 +125,66 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 		"userbook" :{
 			"status": 1,
 			"memo": "メモメモメモ"
+			}
+		}`)
+		r := httptest.NewRequest("GET", "/register/userbook", body)
+		w := httptest.NewRecorder()
+		r.Header.Add("Authorization", "")
+		ubh.RegisterUserBook(w, r)
+		response := w.Result()
+
+		// ステータスコードのテスト
+		if response.StatusCode != 200 {
+			testHandler := tests.TestHandler{T: t}
+			testHandler.PrintErrorFormatFromResponse(response)
 		}
-	}`)
 
-	r := httptest.NewRequest("GET", "/register/userbook", bodyReader)
-	w := httptest.NewRecorder()
+		expectedJsonFilePath := filepath.Join(
+			projectRootDir,
+			expectedJsonDirectory+"/register_user_book/200_response.json",
+		)
 
-	r.Header.Add("Authorization", "")
+		// レスポンスボディのjson文字列をテスト
+		test_assertion.CompareResponseBodyWithJsonFile(
+			t,
+			response.Body,
+			expectedJsonFilePath,
+		)
+	})
+}
 
-	// この中でUserBookUseCaseMockのRegisterUserBookが実行される
-	ubh.RegisterUserBook(w, r)
+func TestUserBookHandler_FindUserBooks(t *testing.T) {
+	ubh := NewUserBookHandler(UserBookUseCaseMock{}, UserSessionHandlerMiddleWareMock{})
 
-	// レスポンスを代入
-	response := w.Result()
+	// jsonファイルの絶対パスを取得(TODO: ローカル用の取得になっているので修正する)
+	_, testFilePath, _, _ := runtime.Caller(0)
+	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
-	// ステータスコードのテスト
-	if response.StatusCode != 200 {
-		t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
-		t.Errorf(`レスポンスボディは「 %s 」でした`, response.Body)
-	}
+	t.Run("正常系のテスト", func(t *testing.T) {
+		// リクエスト
+		body := strings.NewReader(``)
+		r := httptest.NewRequest("GET", "/register/userbook", body)
+		w := httptest.NewRecorder()
+		r.Header.Add("Authorization", "")
+		ubh.FindUserBooks(w, r)
+		response := w.Result()
 
-	// JSON文字列の比較
-	test_assertion.CompareResponseBodyWithJsonFile(
-		t,
-		response.Body,
-		expectedRegisterUserBookJson
-	)
+		// ステータスコードのテスト
+		if response.StatusCode != 200 {
+			testHandler := tests.TestHandler{T: t}
+			testHandler.PrintErrorFormatFromResponse(response)
+		}
+
+		expectedJsonFilePath := filepath.Join(
+			projectRootDir,
+			expectedJsonDirectory+"/find_user_books/200_response.json",
+		)
+
+		// レスポンスボディのjson文字列をテスト
+		test_assertion.CompareResponseBodyWithJsonFile(
+			t,
+			response.Body,
+			expectedJsonFilePath,
+		)
+	})
 }
