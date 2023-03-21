@@ -31,7 +31,7 @@ type user struct {
 	DeletedAt *time.Time
 }
 
-func (up userPersistence) Create(u userEntity.UserInterface) (userEntity.UserInterface, error) {
+func (up userPersistence) Save(u userEntity.UserInterface) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
 	uRecord := user{
 		UserName: u.UserName().Value(),
