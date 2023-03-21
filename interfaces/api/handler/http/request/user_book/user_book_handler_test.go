@@ -123,12 +123,10 @@ func TestBookHandlerRegisterUserBook(t *testing.T) {
 		t.Errorf(`レスポンスボディは「 %s 」でした`, response.Body)
 	}
 
-	// レスポンスボディを[]byte型に変換
-	responseBodyBytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		panic(err)
-	}
-
 	// JSON文字列の比較
-	test_assertion.CompareResponseBodyWithJsonFile(t, responseBodyBytes, expectedRegisterUserBookJson)
+	test_assertion.CompareResponseBodyWithJsonFile(
+		t,
+		response.Body,
+		expectedRegisterUserBookJson
+	)
 }
