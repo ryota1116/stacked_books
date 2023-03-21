@@ -21,7 +21,7 @@ func NewUserPersistence() userEntity.UserRepository {
 }
 
 type user struct {
-	id        int
+	Id        int
 	UserName  string
 	Email     string
 	Password  string
@@ -72,7 +72,7 @@ func (up userPersistence) FindOneByEmail(email string) (userEntity.User, error) 
 	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
 
 	return userEntity.User{
-		Id:        user.id,
+		Id:        user.Id,
 		UserName:  user.UserName,
 		Email:     user.Email,
 		Password:  user.Password,
@@ -95,7 +95,7 @@ func (up userPersistence) FindOne(userId int) (userEntity.User, error) {
 	}
 
 	return userEntity.User{
-		Id:        user.id,
+		Id:        user.Id,
 		UserName:  user.UserName,
 		Email:     user.Email,
 		Password:  user.Password,
