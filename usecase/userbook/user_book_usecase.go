@@ -26,20 +26,26 @@ func NewUserBookUseCase(br model.BookRepository, ubr userbook.UserBookRepository
 // RegisterUserBook : UserBooksレコードを作成する
 func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error) {
 	// GoogleBooksIDからBookエンティティを取得
-	var b model.Book
 	b, err := ubu.bookRepository.FindOneByGoogleBooksId(command.Book.GoogleBooksId)
 	if err != nil {
 		// 取得できなければ新規作成する
-		b = model.Book{
-			GoogleBooksId:  command.Book.GoogleBooksId,
-			Title:          command.Book.Title,
-			Description:    command.Book.Description,
-			Isbn_10:        command.Book.Isbn10,
-			Isbn_13:        command.Book.Isbn13,
-			PageCount:      command.Book.PageCount,
-			PublishedYear:  command.Book.PublishedYear,
-			PublishedMonth: command.Book.PublishedMonth,
-			PublishedDate:  command.Book.PublishedDate,
+		b, err := model.NewBook(
+			nil,
+			command.Book.GoogleBooksId,
+			command.Book.Title,
+			command.Book.Description,
+			command.Book.Image,
+			command.Book.Isbn10,
+			command.Book.Isbn13,
+			command.Book.PageCount,
+			command.Book.PublishedYear,
+			command.Book.PublishedMonth,
+			command.Book.PublishedDate,
+			nil,
+		)
+
+		if err != nil {
+			return book.BookDto{}, UserBookDto{}, err
 		}
 		if err := ubu.bookRepository.Save(b); err != nil {
 			return book.BookDto{}, UserBookDto{}, err
@@ -49,7 +55,7 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 	// UserBookエンティティの生成
 	userBook, err := userbook.NewUserBook(
 		command.UserId,
-		b.Id,
+		*b.Id().Value(),
 		command.UserBook.Status,
 		command.UserBook.Memo,
 	)

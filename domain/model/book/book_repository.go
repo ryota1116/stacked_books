@@ -1,7 +1,7 @@
 package book
 
 type BookRepository interface {
-	FindAllByUserId(userId int) ([]Book, error)
-	FindOneByGoogleBooksId(GoogleBooksId string) (Book, error)
-	Save(book Book) error
+	FindAllByUserId(userId int) ([]BookInterface, error)
+	FindOneByGoogleBooksId(GoogleBooksId string) (BookInterface, error)
+	Save(book BookInterface) error
 }

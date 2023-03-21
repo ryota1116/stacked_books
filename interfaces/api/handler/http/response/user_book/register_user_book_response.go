@@ -13,13 +13,14 @@ type RegisterUserBookResponseGenerator struct {
 type RegisterUserBookResponse struct {
 	GoogleBooksId  string  `json:"google_books_id"`
 	Title          string  `json:"title"`
-	Description    string  `json:"description"`
-	Isbn10         string  `json:"isbn_10"`
-	Isbn13         string  `json:"isbn_13"`
+	Description    *string `json:"description"`
+	Image          *string `json:"image"`
+	Isbn10         *string `json:"isbn_10"`
+	Isbn13         *string `json:"isbn_13"`
 	PageCount      int     `json:"page_count"`
-	PublishedYear  int     `json:"published_year"`
-	PublishedMonth int     `json:"published_month"`
-	PublishedDate  int     `json:"published_date"`
+	PublishedYear  *int    `json:"published_year"`
+	PublishedMonth *int    `json:"published_month"`
+	PublishedDate  *int    `json:"published_date"`
 	Status         int     `json:"status"`
 	Memo           *string `json:"memo"`
 }
@@ -30,12 +31,12 @@ func (rubrg RegisterUserBookResponseGenerator) Execute() RegisterUserBookRespons
 		GoogleBooksId:  rubrg.BookDto.GoogleBooksId,
 		Title:          rubrg.BookDto.Title,
 		Description:    rubrg.BookDto.Description,
-		Isbn10:         *rubrg.BookDto.Isbn_10,
-		Isbn13:         *rubrg.BookDto.Isbn_13,
-		PageCount:      *rubrg.BookDto.PageCount,
-		PublishedYear:  *rubrg.BookDto.PublishedYear,
-		PublishedMonth: *rubrg.BookDto.PublishedMonth,
-		PublishedDate:  *rubrg.BookDto.PublishedDate,
+		Isbn10:         rubrg.BookDto.Isbn10,
+		Isbn13:         rubrg.BookDto.Isbn13,
+		PageCount:      rubrg.BookDto.PageCount,
+		PublishedYear:  rubrg.BookDto.PublishedYear,
+		PublishedMonth: rubrg.BookDto.PublishedMonth,
+		PublishedDate:  rubrg.BookDto.PublishedDate,
 		Status:         rubrg.UserBookDto.Status,
 		Memo:           rubrg.UserBookDto.Memo,
 	}

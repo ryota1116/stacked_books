@@ -69,6 +69,7 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 			GoogleBooksId:  requestBody.Book.GoogleBooksId,
 			Title:          requestBody.Book.Title,
 			Description:    requestBody.Book.Description,
+			Image:          nil,
 			Isbn10:         requestBody.Book.Isbn10,
 			Isbn13:         requestBody.Book.Isbn13,
 			PageCount:      requestBody.Book.PageCount,

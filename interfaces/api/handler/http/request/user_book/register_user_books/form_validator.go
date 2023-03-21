@@ -21,7 +21,7 @@ func (rbh FormValidator) Validate() (bool, response.ErrorResponseBody) {
 		return false, response.ErrorResponseBody{Message: "本のタイトルを入力してください。"}
 	}
 
-	if rbh.RequestBody.Book.Description == "" {
+	if *rbh.RequestBody.Book.Description == "" {
 		return false, response.ErrorResponseBody{Message: "本の説明文を入力してください。"}
 	}
 
