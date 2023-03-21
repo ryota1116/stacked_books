@@ -12,6 +12,6 @@ func NewEmail(value string) EmailInterface {
 	return &email{value}
 }
 
-func (s *email) Value() string {
-	return s.value
+func (e *email) Value() string {
+	return e.value
 }

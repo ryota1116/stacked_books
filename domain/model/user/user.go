@@ -13,6 +13,8 @@ type UserInterface interface {
 	Role() RoleInterface
 	CreatedAt() *time.Time
 	UpdatedAt() *time.Time
+
+	ChangeUserName(value string)
 }
 
 type user struct {
@@ -78,4 +80,8 @@ func (u *user) CreatedAt() *time.Time {
 
 func (u *user) UpdatedAt() *time.Time {
 	return u.updatedAt
+}
+
+func (u *user) ChangeUserName(value string) {
+	u.userName.changeUserName(value)
 }

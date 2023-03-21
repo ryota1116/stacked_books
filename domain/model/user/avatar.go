@@ -12,6 +12,6 @@ func NewAvatar(value *string) AvatarInterface {
 	return &avatar{value}
 }
 
-func (s *avatar) Value() *string {
-	return s.value
+func (a *avatar) Value() *string {
+	return a.value
 }

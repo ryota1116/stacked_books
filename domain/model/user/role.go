@@ -12,6 +12,6 @@ func NewRole(value int) RoleInterface {
 	return &role{value}
 }
 
-func (s *role) Value() int {
-	return s.value
+func (r *role) Value() int {
+	return r.value
 }

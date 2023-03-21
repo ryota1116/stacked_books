@@ -12,6 +12,6 @@ func NewId(value *int) IdInterface {
 	return &id{value}
 }
 
-func (s *id) Value() *int {
-	return s.value
+func (i *id) Value() *int {
+	return i.value
 }
