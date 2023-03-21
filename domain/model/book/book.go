@@ -20,7 +20,6 @@ type BookInterface interface {
 }
 
 // Book : 本のドメインモデル
-// TODO: ドメインモデルをORMのEntityの用に使ってしまっているから、datasource/userbook/entity.go?を作成する。
 // NOTE: Isbn_10カラムを取得する場合フィールドをIsbn_10にする必要がある(=>Isbn10では取得できない)
 type book struct {
 	id             IdInterface

@@ -17,8 +17,8 @@ type book struct {
 	GoogleBooksId  string
 	Title          string
 	Description    *string
-	Isbn_10        *string
-	Isbn_13        *string
+	Isbn10         *string
+	Isbn13         *string
 	PageCount      int
 	PublishedYear  *int
 	PublishedMonth *int
@@ -42,8 +42,8 @@ func (bookPersistence) FindOneByGoogleBooksId(GoogleBooksId string) (bookEntity.
 		book.Title,
 		book.Description,
 		nil,
-		book.Isbn_10,
-		book.Isbn_13,
+		book.Isbn10,
+		book.Isbn13,
 		book.PageCount,
 		book.PublishedYear,
 		book.PublishedMonth,
@@ -91,8 +91,8 @@ func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, 
 			book.Title,
 			book.Description,
 			nil,
-			book.Isbn_10,
-			book.Isbn_13,
+			book.Isbn10,
+			book.Isbn13,
 			book.PageCount,
 			book.PublishedYear,
 			book.PublishedMonth,

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	userEntity "github.com/ryota1116/stacked_books/domain/model/user"
 	"github.com/ryota1116/stacked_books/infra/datasource"
 	"time"
@@ -21,89 +20,98 @@ func NewUserPersistence() userEntity.UserRepository {
 }
 
 type user struct {
-	Id        int
-	UserName  string
-	Email     string
-	Password  string
-	Avatar    string
+	Id        *int   `gorm:"primaryKey"`
+	UserName  string `validate:"required,max=255"`
+	Email     string `validate:"required,max=255,email"`
+	Password  string `validate:"required,gte=8,max=255"`
+	Avatar    *string
 	Role      int
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
 	DeletedAt *time.Time
 }
 
-// Create 構造体にインターフェイスを実装する書き方
-// func (引数 構造体名) 関数名(){
-// 	関数の中身
-// }
-// インターフェイスの実装
-func (up userPersistence) Create(user userEntity.User) error {
+func (up userPersistence) Create(u userEntity.UserInterface) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
-
-	// TODO: Domainに移す(DBの制約は必須だが最終防衛手段みたいなものなので
-	//       業務知識としてDomainに書くのがいい)
-	//var err error
-	//if user.UserName == "" {
-	//	err = errors.New("ユーザー名を入力してください")
-	//}
+	uRecord := user{
+		UserName: u.UserName().Value(),
+		Email:    u.Email().Value(),
+		Password: u.Password().Value(),
+		Avatar:   u.Avatar().Value(),
+		Role:     u.Role().Value(),
+	}
 
 	// DBにユーザーを登録
-	if err := db.Create(&user).Error; err != nil {
-		return err
+	if err := db.Create(&uRecord).Error; err != nil {
+		return nil, err
 	}
-	return nil
+
+	u, err := userEntity.NewUser(
+		uRecord.Id,
+		uRecord.UserName,
+		uRecord.Email,
+		uRecord.Password,
+		uRecord.Avatar,
+		uRecord.Role,
+		uRecord.CreatedAt,
+		uRecord.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }
 
-func (up userPersistence) FindOneByEmail(email string) (userEntity.User, error) {
+func (up userPersistence) FindOneByEmail(email string) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
-	user := user{}
+	uRecord := user{}
 
-	err := db.Where("email = ?", email).First(&user).Error
-	fmt.Println("========")
-	fmt.Println(user)
-	if err != nil {
-		return userEntity.User{}, nil
+	if err := db.Where("email = ?", email).
+		First(&uRecord).Error; err != nil {
+		return nil, err
 	}
 
-	//if err := db.Where("email = ?", email).
-	//	First(&user).Error; err != nil {
-	//	return userEntity.User{}, err
-	//}
-	// err := db.Debug().Select([]string{"password"}).Where("email = ?", user.Email).Find(&dbUser).Row().Scan(&dbUser.Password) // DBからユーザー取得
+	u, err := userEntity.NewUser(
+		uRecord.Id,
+		uRecord.UserName,
+		uRecord.Email,
+		uRecord.Password,
+		uRecord.Avatar,
+		uRecord.Role,
+		uRecord.CreatedAt,
+		uRecord.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-	return userEntity.User{
-		Id:        user.Id,
-		UserName:  user.UserName,
-		Email:     user.Email,
-		Password:  user.Password,
-		Avatar:    user.Avatar,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		DeletedAt: user.DeletedAt,
-		Books:     nil,
-	}, nil
+	return u, nil
 }
 
 // FindOne Userを1件取得
-func (up userPersistence) FindOne(userId int) (userEntity.User, error) {
+func (up userPersistence) FindOne(userId int) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
-	user := user{}
+	uRecord := user{}
 
-	if err := db.Where("id = ?", userId).First(&user).Error; err != nil {
-		return userEntity.User{}, err
+	if err := db.Where("id = ?", userId).
+		First(&uRecord).Error; err != nil {
+		return nil, err
 	}
 
-	return userEntity.User{
-		Id:        user.Id,
-		UserName:  user.UserName,
-		Email:     user.Email,
-		Password:  user.Password,
-		Avatar:    user.Avatar,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		DeletedAt: user.DeletedAt,
-		Books:     nil,
-	}, nil
+	u, err := userEntity.NewUser(
+		uRecord.Id,
+		uRecord.UserName,
+		uRecord.Email,
+		uRecord.Password,
+		uRecord.Avatar,
+		uRecord.Role,
+		uRecord.CreatedAt,
+		uRecord.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }

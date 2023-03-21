@@ -37,23 +37,29 @@ func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 	// bcryptを使ってパスワードをハッシュ化する
 	bcryptHashPassword, err := bcrypt.GenerateFromPassword([]byte(command.Password), bcrypt.DefaultCost)
 	if err != nil {
-		//return
-		fmt.Println(err)
+		return UserDto{}, err
 	}
 
-	u := user.User{
-		UserName: command.UserName,
-		Email:    command.Email,
-		Password: string(bcryptHashPassword),
+	u, err := user.NewUser(
+		nil,
+		command.UserName,
+		command.Email,
+		string(bcryptHashPassword),
+		command.Avatar,
+		command.Role,
+		nil,
+		nil,
+	)
+	if err != nil {
+		return UserDto{}, err
 	}
 
-	err = uu.userRepository.Create(u)
+	u, err = uu.userRepository.Create(u)
+	if err != nil {
+		return UserDto{}, err
+	}
 
-	userDto := UserDtoGenerator{
-		User: u,
-	}.Execute()
-
-	return userDto, err
+	return UserDtoGenerator{User: u}.Execute(), err
 }
 
 // SignIn 「emailで取得したUserのpassword(ハッシュ化されている)」と「クライアントのpassword入力値」を比較する
@@ -67,7 +73,7 @@ func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
 		User: u,
 	}.Execute()
 
-	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password().Value()), []byte(password)); err != nil {
 		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
 		return userDto, err
 	} else {
@@ -93,7 +99,6 @@ func (uu userUseCase) FindOne(userId int) (UserDto, error) {
 func GenerateToken(user UserDto) (string, error) {
 	// 署名生成に使用するアルゴリズムにHS256を使用
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
-	fmt.Println(token)
 
 	// ペイロードに格納するclaimを作成
 	token.Claims = jwt.MapClaims{
@@ -104,14 +109,13 @@ func GenerateToken(user UserDto) (string, error) {
 		"email":    user.Email,                                // メールアドレス
 		"password": user.Password,                             // パスワード
 	}
-	fmt.Println(token)
 
 	// TODO: シークレットキーを環境変数で持たせる
 	// link: https://qiita.com/po3rin/items/740445d21487dfcb5d9f
 	// データに対して署名を付与して、文字列にする
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
 	return tokenString, nil // nilでエラーが無かったことを返す

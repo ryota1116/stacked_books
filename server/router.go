@@ -34,7 +34,6 @@ func HandleFunc() mux.Router {
 	// エンドポイント(リクエストを処理して、レスポンスを返す)
 	router.HandleFunc("/signup", userHandler.SignUp).Methods("POST", "OPTIONS")
 	router.HandleFunc("/signin", userHandler.SignIn).Methods("POST", "OPTIONS")
-	router.HandleFunc("/user/{userId:[0-9]+}", userHandler.ShowUser).Methods("GET")
 
 	// 外部APIを用いた書籍検索のエンドポイント
 	router.HandleFunc("/books/search", bookHandler.SearchBooks).Methods("GET", "OPTIONS")

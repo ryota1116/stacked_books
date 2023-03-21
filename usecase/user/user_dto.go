@@ -5,7 +5,7 @@ import (
 )
 
 type UserDtoGenerator struct {
-	User user.User
+	User user.UserInterface
 }
 
 type UserDto struct {
@@ -16,12 +16,10 @@ type UserDto struct {
 }
 
 func (sdg UserDtoGenerator) Execute() UserDto {
-	var userDto = UserDto{
-		Id:       sdg.User.Id,
-		UserName: sdg.User.UserName,
-		Email:    sdg.User.Email,
-		Password: sdg.User.Password,
+	return UserDto{
+		Id:       *sdg.User.Id().Value(),
+		UserName: sdg.User.UserName().Value(),
+		Email:    sdg.User.Email().Value(),
+		Password: sdg.User.Password().Value(),
 	}
-
-	return userDto
 }

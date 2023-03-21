@@ -21,7 +21,7 @@ type userBook struct {
 	memo      MemoInterface
 	createdAt time.Time
 	updatedAt time.Time
-	Book      book.BookInterface
+	book      book.BookInterface
 }
 
 func NewUserBook(
