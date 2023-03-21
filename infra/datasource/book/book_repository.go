@@ -17,8 +17,8 @@ type book struct {
 	GoogleBooksId  string
 	Title          string
 	Description    *string
-	Isbn10         *string
-	Isbn13         *string
+	Isbn10         *string `gorm:"column:isbn_10"`
+	Isbn13         *string `gorm:"column:isbn_13"`
 	PageCount      int
 	PublishedYear  *int
 	PublishedMonth *int
