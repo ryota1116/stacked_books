@@ -73,7 +73,8 @@ func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, 
 	books := []book{}
 
 	// ユーザーが登録している本一覧を取得
-	if err := db.Joins("inner join user_books on books.id = user_books.book_id").
+	if err := db.
+		Joins("inner join user_books on books.id = user_books.book_id").
 		Joins("inner join users on user_books.user_id = ?", userId).
 		Group("books.id").
 		Find(&books).Error; err != nil {
@@ -82,8 +83,10 @@ func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, 
 
 	bs := []bookEntity.BookInterface{}
 	for _, book := range books {
+		id := book.Id
+
 		b, err := bookEntity.NewBook(
-			&book.Id,
+			&id, // NOTE:　book.Idを直接入れると同じメモリが渡されたので、一時変数idを使っている
 			book.GoogleBooksId,
 			book.Title,
 			book.Description,
