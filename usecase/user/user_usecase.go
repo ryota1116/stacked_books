@@ -17,6 +17,7 @@ type UserUseCase interface {
 	SignUp(command UserCreateCommand) (UserDto, error)
 	SignIn(email string, password string) (UserDto, error)
 	FindOne(userId int) (UserDto, error)
+	GenerateToken(user UserDto) (string, error)
 }
 
 // TODO: 依存する方向てきな？
@@ -96,7 +97,7 @@ func (uu userUseCase) FindOne(userId int) (UserDto, error) {
 
 // GenerateToken : 最後の返り値をerror型(インターフェイス)にすることで、エラーの有無を返す。Goは例外処理が無いため、多値で返すのが基本
 // 多値でない(エラーの戻り値が無い)場合、その関数が失敗しないことを期待している？
-func GenerateToken(user UserDto) (string, error) {
+func (uu userUseCase) GenerateToken(user UserDto) (string, error) {
 	// 署名生成に使用するアルゴリズムにHS256を使用
 	token := jwt.New(jwt.GetSigningMethod("HS256"))
 
