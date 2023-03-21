@@ -12,6 +12,6 @@ func NewBookId(value int) BookIdInterface {
 	return &bookId{value}
 }
 
-func (s *bookId) Value() int {
-	return s.value
+func (bi *bookId) Value() int {
+	return bi.value
 }

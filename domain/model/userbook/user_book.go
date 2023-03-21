@@ -48,26 +48,26 @@ func NewUserBook(
 	}, nil
 }
 
-func (u *userBook) UserId() UserIdInterface {
-	return u.userId
+func (ub *userBook) UserId() UserIdInterface {
+	return ub.userId
 }
 
-func (u *userBook) BookId() BookIdInterface {
-	return u.bookId
+func (ub *userBook) BookId() BookIdInterface {
+	return ub.bookId
 }
 
-func (u *userBook) Status() StatusInterface {
-	return u.status
+func (ub *userBook) Status() StatusInterface {
+	return ub.status
 }
 
-func (u *userBook) Memo() MemoInterface {
-	return u.memo
+func (ub *userBook) Memo() MemoInterface {
+	return ub.memo
 }
 
-func (u *userBook) CreatedAt() time.Time {
-	return u.createdAt
+func (ub *userBook) CreatedAt() time.Time {
+	return ub.createdAt
 }
 
-func (u *userBook) UpdatedAt() time.Time {
-	return u.updatedAt
+func (ub *userBook) UpdatedAt() time.Time {
+	return ub.updatedAt
 }

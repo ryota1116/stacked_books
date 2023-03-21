@@ -12,6 +12,6 @@ func NewPageCount(value int) PageCountInterface {
 	return &pageCount{value}
 }
 
-func (s *pageCount) Value() int {
-	return s.value
+func (pc *pageCount) Value() int {
+	return pc.value
 }

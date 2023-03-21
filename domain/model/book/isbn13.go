@@ -12,6 +12,6 @@ func NewIsbn13(value *string) Isbn13Interface {
 	return &isbn13{value}
 }
 
-func (s *isbn13) Value() *string {
-	return s.value
+func (i *isbn13) Value() *string {
+	return i.value
 }

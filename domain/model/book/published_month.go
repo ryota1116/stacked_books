@@ -12,6 +12,6 @@ func NewPublishedMonth(value *int) PublishedMonthInterface {
 	return &publishedMonth{value}
 }
 
-func (s *publishedMonth) Value() *int {
-	return s.value
+func (pm *publishedMonth) Value() *int {
+	return pm.value
 }

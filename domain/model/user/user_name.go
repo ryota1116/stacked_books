@@ -2,7 +2,6 @@ package user
 
 type UserNameInterface interface {
 	Value() string
-	changeUserName(value string)
 }
 
 type userName struct {
@@ -15,8 +14,4 @@ func NewUserName(value string) UserNameInterface {
 
 func (un *userName) Value() string {
 	return un.value
-}
-
-func (un *userName) changeUserName(value string) {
-	un.value = value
 }
