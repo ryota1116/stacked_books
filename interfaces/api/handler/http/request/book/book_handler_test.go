@@ -107,7 +107,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 
 		expectedJsonFilePath := filepath.Join(
 			projectRootDir,
-			expectedJsonDirectory+"/200_search_books_response.json",
+			expectedJsonDirectory+"/search_books/200_response.json",
 		)
 
 		// レスポンスボディのjson文字列をテスト
@@ -138,7 +138,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 
 		expectedJsonFilePath := filepath.Join(
 			projectRootDir,
-			expectedJsonDirectory+"/response_without_title.json",
+			expectedJsonDirectory+"/search_books/response_without_title.json",
 		)
 
 		// レスポンスボディのjson文字列をテスト
@@ -172,7 +172,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 
 		expectedJsonFilePath := filepath.Join(
 			projectRootDir,
-			expectedJsonDirectory+"/response_without_title.json",
+			expectedJsonDirectory+"/search_books/response_without_title.json",
 		)
 
 		// レスポンスボディのjson文字列をテスト
