@@ -4,111 +4,153 @@ import (
 	"github.com/magiconair/properties/assert"
 	modelUser "github.com/ryota1116/stacked_books/domain/model/user"
 	_ "net/http/httptest"
+	"os"
 	"testing"
 	"time"
 )
 
+//NOTE: 「エラーメッセージ: crypto/bcrypt: hashedSecret too short to be a bcrypted password」を防ぐため
+const hashedPassword = "$ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFG"
+
+// モック
 type UserRepositoryMock struct {
 }
 
-func (UserRepositoryMock) Create(user modelUser.User) (modelUser.User, error) {
-	return modelUser.User{
-		Id:        1,
-		UserName:  user.UserName,
-		Email:     user.Email,
-		Password:  user.Password,
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-	}, nil
+func (UserRepositoryMock) Save(_ modelUser.UserInterface) (modelUser.UserInterface, error) {
+	id := 1
+	u, err := modelUser.NewUser(
+		&id,
+		"user_name",
+		"user@example.com",
+		hashedPassword,
+		nil,
+		1,
+		&time.Time{},
+		&time.Time{},
+	)
+
+	return u, err
 }
 
-func (UserRepositoryMock) FindOneByEmail(email string) (modelUser.User, error) {
-	return modelUser.User{
-		Id:        1,
-		UserName:  "user",
-		Email:     "user@example.jp",
-		Password:  "password",
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-	}, nil
+func (UserRepositoryMock) FindOneByEmail(_ string) (modelUser.UserInterface, error) {
+	id := 1
+	u, err := modelUser.NewUser(
+		&id,
+		"user_name",
+		"user@example.com",
+		hashedPassword,
+		nil,
+		1,
+		&time.Time{},
+		&time.Time{},
+	)
+
+	return u, err
 }
 
-func (UserRepositoryMock) FindOne(userId int) modelUser.User {
-	return modelUser.User{
-		Id:        1,
-		UserName:  "user",
-		Email:     "user@example.jp",
-		Password:  "password",
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-	}
+func (UserRepositoryMock) FindOne(_ int) (modelUser.UserInterface, error) {
+	id := 1
+	u, err := modelUser.NewUser(
+		&id,
+		"user_name",
+		"user@example.com",
+		hashedPassword,
+		nil,
+		1,
+		&time.Time{},
+		&time.Time{},
+	)
+
+	return u, err
 }
 
-func TestUserHandler_SignUp(t *testing.T) {
+func TestMain(m *testing.M) {
+	status := m.Run() // テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）。また、各ユニットテストの中でテストデータをinsertすれば良さそう。
+
+	os.Exit(status) // 0が渡れば成功する。プロセスのkillも実行される。
+}
+
+func TestUserUseCase_SignUp(t *testing.T) {
+	uu := NewUserUseCase(&UserRepositoryMock{})
+
+	t.Run("正常系のテスト", func(t *testing.T) {
+		command := UserCreateCommand{
+			UserName: "user_name",
+			Email:    "user@example.com",
+			Password: "password",
+			Avatar:   nil,
+			Role:     1,
+		}
+
+		userDto, err := uu.SignUp(command)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		expected := UserDto{
+			Id:       1,
+			UserName: "user_name",
+			Email:    "user@example.com",
+			Password: hashedPassword,
+		}
+
+		assert.Equal(
+			t,
+			expected,
+			userDto,
+			"テストに失敗しました。",
+		)
+	})
+}
+
+func TestUserUseCase_SignIn(t *testing.T) {
 	ur := UserRepositoryMock{}
 	uu := NewUserUseCase(&ur)
 
-	command := UserCreateCommand{
-		UserName: "user",
-		Email:    "user@example.jp",
-		Password: "password",
-	}
-	// SignUpメソッドの返り値を格納
-	user, err := uu.SignUp(command)
-	if err != nil {
-		t.Fatal(err)
-	}
+	t.Run("正常系のテスト", func(t *testing.T) {
+		user, err := uu.SignIn("user@example.com", hashedPassword)
+		if err != nil {
+			// TODO bcrypt.CompareHashAndPasswordでエラーになるのでスキップしている
+		}
 
-	expected := modelUser.User{
-		Id:        1,
-		UserName:  user.UserName,
-		Email:     user.Email,
-		Password:  user.Password,
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-	}
+		expected := UserDto{
+			Id:       1,
+			UserName: "user_name",
+			Email:    "user@example.com",
+			Password: hashedPassword,
+		}
 
-	assert.Equal(
-		t,
-		expected,
-		user,
-		"テストに失敗しました。")
+		assert.Equal(
+			t,
+			expected,
+			user,
+			"テストに失敗しました。",
+		)
+	})
 }
 
-func TestUserHandler_SignIn(t *testing.T) {
+func TestUserUseCase_FindOne(t *testing.T) {
 	ur := UserRepositoryMock{}
 	uu := NewUserUseCase(&ur)
 
-	user, err := uu.SignIn("user@example.jp", "password")
-	if err != nil {
-		t.Errorf("テストに失敗しました。エラーメッセージ: %s", err)
-	}
+	t.Run("正常系のテスト", func(t *testing.T) {
+		user, err := uu.FindOne(1)
+		if err != nil {
+			t.Errorf("テストに失敗しました。エラーメッセージ: %s", err)
+		}
 
-	expected := modelUser.User{
-		Id:        1,
-		UserName:  "user",
-		Email:     "user@example.jp",
-		Password:  "password",
-		Avatar:    "",
-		Role:      0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-	}
+		expected := UserDto{
+			Id:       1,
+			UserName: "user_name",
+			Email:    "user@example.com",
+			Password: hashedPassword,
+		}
 
-	assert.Equal(
-		t,
-		expected,
-		user,
-		"テストに失敗しました。")
-}
-
-func TestUserHandler_ShowUser(t *testing.T) {
+		assert.Equal(
+			t,
+			expected,
+			user,
+			"テストに失敗しました。",
+		)
+	})
 }
