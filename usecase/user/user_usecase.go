@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ryota1116/stacked_books/domain/model/user"
 	"golang.org/x/crypto/bcrypt"
@@ -74,11 +73,9 @@ func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
 		User: u,
 	}.Execute()
 
+	// ハッシュ化されたパスワードと平文を比較
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password().Value()), []byte(password)); err != nil {
-		fmt.Println("ログインできませんでした") // レスポンスボディに入れる文字列を返すようにする
 		return userDto, err
-	} else {
-		fmt.Println("ログインできました")
 	}
 
 	return userDto, err
