@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/ryota1116/stacked_books/tests"
-	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	userUseCase "github.com/ryota1116/stacked_books/usecase/user"
 	"net/http/httptest"
 	"os"
@@ -68,6 +67,8 @@ func TestUserHandler_SignUp(t *testing.T) {
 	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
 	t.Run("正常系のテスト", func(t *testing.T) {
+		testHandler := tests.TestHandler{T: t}
+
 		// リクエスト
 		body := strings.NewReader(`{
 			"user_name": "user_name",
@@ -81,7 +82,6 @@ func TestUserHandler_SignUp(t *testing.T) {
 
 		// ステータスコードのテスト
 		if response.StatusCode != 200 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -91,8 +91,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)
@@ -107,6 +106,8 @@ func TestUserHandler_SignIn(t *testing.T) {
 	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
 	t.Run("正常系のテスト", func(t *testing.T) {
+		testHandler := tests.TestHandler{T: t}
+
 		// リクエスト
 		body := strings.NewReader(`{
 			"email": "user@example.com",
@@ -119,7 +120,6 @@ func TestUserHandler_SignIn(t *testing.T) {
 
 		// ステータスコードのテスト
 		if response.StatusCode != 200 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -129,8 +129,7 @@ func TestUserHandler_SignIn(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)

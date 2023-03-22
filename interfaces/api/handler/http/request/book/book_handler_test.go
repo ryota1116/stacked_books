@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
 	"github.com/ryota1116/stacked_books/tests"
-	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -86,6 +85,8 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
 	t.Run("正常系のテスト", func(t *testing.T) {
+		testHandler := tests.TestHandler{T: t}
+
 		title := "リーダブルコード"
 		body := strings.NewReader(``)
 
@@ -101,7 +102,6 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 
 		// ステータスコードのテスト
 		if response.StatusCode != 200 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -111,28 +111,23 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)
 	})
 
 	t.Run("異常系_リクエストボディにTitleが含まれていない場合", func(t *testing.T) {
-		// リクエストボディにTitleが含まれていない場合
-		bodyReader := strings.NewReader(`{}`)
+		testHandler := tests.TestHandler{T: t}
 
+		bodyReader := strings.NewReader(`{}`)
 		r := httptest.NewRequest("GET", "/books/search", bodyReader)
 		w := httptest.NewRecorder()
-
 		bh.SearchBooks(w, r)
-
-		// レスポンスを代入
 		response := w.Result()
 
 		// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
 		if response.StatusCode != 422 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -142,31 +137,26 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)
 	})
 
 	t.Run("異常系_リクエストボディのTitleの値が空の場合", func(t *testing.T) {
-		// リクエストボディのTitleが空の場合
+		testHandler := tests.TestHandler{T: t}
+
 		bodyReader := strings.NewReader(`{
 			"title": ""
 		}`)
-
 		r := httptest.NewRequest("GET", "/books/search", bodyReader)
 		w := httptest.NewRecorder()
-
 		bh.SearchBooks(w, r)
-
-		// レスポンスを代入
 		response := w.Result()
 
 		// NOTE: ステータスコード422はHandlerが返しているから、Handlerの責務としてテストして良さそう。
 		// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
 		if response.StatusCode != 422 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -176,8 +166,7 @@ func TestBookHandler_SearchBooks(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)

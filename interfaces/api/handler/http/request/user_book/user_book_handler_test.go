@@ -2,7 +2,6 @@ package user_book
 
 import (
 	"github.com/ryota1116/stacked_books/tests"
-	"github.com/ryota1116/stacked_books/tests/test_assertion"
 	bookUseCase "github.com/ryota1116/stacked_books/usecase/book"
 	user2 "github.com/ryota1116/stacked_books/usecase/user"
 	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
@@ -109,6 +108,8 @@ func TestUserBookHandler_RegisterUserBook(t *testing.T) {
 	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
 	t.Run("正常系のテスト", func(t *testing.T) {
+		testHandler := tests.TestHandler{T: t}
+
 		// リクエスト
 		body := strings.NewReader(`{
 		"book" :{
@@ -135,7 +136,6 @@ func TestUserBookHandler_RegisterUserBook(t *testing.T) {
 
 		// ステータスコードのテスト
 		if response.StatusCode != 200 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -145,8 +145,7 @@ func TestUserBookHandler_RegisterUserBook(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)
@@ -161,6 +160,8 @@ func TestUserBookHandler_FindUserBooks(t *testing.T) {
 	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
 	t.Run("正常系のテスト", func(t *testing.T) {
+		testHandler := tests.TestHandler{T: t}
+
 		// リクエスト
 		body := strings.NewReader(``)
 		r := httptest.NewRequest("GET", "/register/userbook", body)
@@ -171,7 +172,6 @@ func TestUserBookHandler_FindUserBooks(t *testing.T) {
 
 		// ステータスコードのテスト
 		if response.StatusCode != 200 {
-			testHandler := tests.TestHandler{T: t}
 			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
@@ -181,8 +181,7 @@ func TestUserBookHandler_FindUserBooks(t *testing.T) {
 		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(
-			t,
+		testHandler.CompareResponseBodyWithJsonFile(
 			response.Body,
 			expectedJsonFilePath,
 		)
