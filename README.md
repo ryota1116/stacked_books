@@ -69,6 +69,9 @@
 - ER図: https://drive.google.com/file/d/1uspJ44TKzTZGpcBljSUNiJvVqTQJt1qT/view?usp=sharing
 - API定義: https://github.com/ryota1116/stacked_books_api_definition
 
+## README一覧
+- [ドメイン層のREADME](https://github.com/ryota1116/stacked_books/blob/develop/domain/model/README.md)
+
 ## 本リポジトリのディレクトリ構造
 - 一部集約に限定して記述している。
 
