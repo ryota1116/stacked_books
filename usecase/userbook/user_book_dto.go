@@ -10,7 +10,6 @@ type UserBookDtoGenerator struct {
 }
 
 type UserBookDto struct {
-	Id        int
 	UserId    int
 	BookId    int
 	Status    int

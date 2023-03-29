@@ -1,8 +1,8 @@
 package book
 
 import (
-	"github.com/magiconair/properties/assert"
 	"github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
+	"github.com/ryota1116/stacked_books/tests"
 	"os"
 	"testing"
 )
@@ -84,9 +84,6 @@ func TestBookUseCase_SearchBooks(t *testing.T) {
 			},
 		}
 
-		assert.Equal(
-			t,
-			responseFromGoogleBooksAPI,
-			expected)
+		tests.Assertion{T: t}.AssertEqual(expected, responseFromGoogleBooksAPI)
 	})
 }

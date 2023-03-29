@@ -3,9 +3,9 @@ package userbook
 import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
+	"github.com/ryota1116/stacked_books/tests"
 	book2 "github.com/ryota1116/stacked_books/usecase/book"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -23,7 +23,7 @@ func (BookRepositoryMock) FindAllByUserId(_ int) ([]book.BookInterface, error) {
 	createdAt := time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC)
 	b, _ := book.NewBook(
 		&id,
-		"test",
+		"test_id",
 		"タイトル",
 		&description,
 		nil,
@@ -49,7 +49,7 @@ func (BookRepositoryMock) FindOneByGoogleBooksId(_ string) (book.BookInterface, 
 	createdAt := time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC)
 	b, _ := book.NewBook(
 		&id,
-		"test",
+		"test_id",
 		"タイトル",
 		&description,
 		nil,
@@ -91,75 +91,51 @@ func TestUserBookUseCase_RegisterUserBook(t *testing.T) {
 		publishedMonth := 8
 		publishedDate := 10
 		memo := "メモ"
-		command := UserBookCreateCommand{
-			UserId: 1,
-			Book: Book{
-				GoogleBooksId:  "Wx1dLwEACAAJ",
-				Title:          "リーダブルコード",
-				Description:    &description,
-				Image:          nil,
-				Isbn10:         nil,
-				Isbn13:         nil,
-				PageCount:      237,
-				PublishedYear:  &publishedYear,
-				PublishedMonth: &publishedMonth,
-				PublishedDate:  &publishedDate,
-			},
-			UserBook: UserBook{
-				Status: 0,
-				Memo:   &memo,
-			},
-		}
-
-		bookDto, userBookDto, _ := ubu.RegisterUserBook(command)
 
 		expectedBookDto := book2.BookDto{
-			Id:             0,
-			GoogleBooksId:  "",
-			Title:          "リーダブルコード",
+			Id:             1,
+			GoogleBooksId:  "test_id",
+			Title:          "タイトル",
 			Description:    &description,
 			Image:          nil,
 			Isbn10:         nil,
 			Isbn13:         nil,
-			PageCount:      237,
+			PageCount:      100,
 			PublishedYear:  &publishedYear,
 			PublishedMonth: &publishedMonth,
 			PublishedDate:  &publishedDate,
 		}
+		expectedUserBookDto := UserBookDto{
+			UserId: 1,
+			BookId: 1,
+			Status: 1,
+			Memo:   &memo,
+		}
 
-		expectedUserBookDto := UserBookCreateCommand{
+		command := UserBookCreateCommand{
 			UserId: 1,
 			Book: Book{
-				GoogleBooksId:  "Wx1dLwEACAAJ",
-				Title:          "リーダブルコード",
+				GoogleBooksId:  "test_id",
+				Title:          "タイトル",
 				Description:    &description,
 				Image:          nil,
 				Isbn10:         nil,
 				Isbn13:         nil,
-				PageCount:      237,
+				PageCount:      100,
 				PublishedYear:  &publishedYear,
 				PublishedMonth: &publishedMonth,
 				PublishedDate:  &publishedDate,
 			},
 			UserBook: UserBook{
-				Status: 0,
+				Status: 1,
 				Memo:   &memo,
 			},
 		}
+		bookDto, userBookDto, _ := ubu.RegisterUserBook(command)
 
 		// 戻り値である構造体が正しいことをテスト
-		if reflect.DeepEqual(bookDto, expectedBookDto) {
-			t.Errorf(`bookDtoの比較が失敗しました。`)
-		}
-
-		if reflect.DeepEqual(userBookDto, expectedUserBookDto) {
-			t.Errorf(`userBookDtoの比較が失敗しました。`)
-		}
-
-		// TODO: 差分がある場合に、cmpを使って差分を出力できるようにしたい
-		//if diff := cmp.Diff(book, expectedBook); diff != "" {
-		//	t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
-		//}
+		tests.Assertion{T: t}.AssertEqual(expectedBookDto, bookDto)
+		tests.Assertion{T: t}.AssertEqual(expectedUserBookDto, userBookDto)
 	})
 }
 
@@ -168,34 +144,29 @@ func TestUserBookUseCase_FindUserBooksByUserId(t *testing.T) {
 	ubu := NewUserBookUseCase(BookRepositoryMock{}, UserBookRepositoryMock{})
 
 	t.Run("正常系のテスト", func(t *testing.T) {
-		bookDto, _ := ubu.FindUserBooksByUserId(1)
-
+		// 期待値を作成
+		var expected []book2.BookDto
 		description := "説明文です"
 		publishedYear := 2022
 		publishedMonth := 8
 		publishedDate := 10
-		expectedBookDto := book2.BookDto{
-			Id:             0,
-			GoogleBooksId:  "",
-			Title:          "リーダブルコード",
+		expected = append(expected, book2.BookDto{
+			Id:             1,
+			GoogleBooksId:  "test_id",
+			Title:          "タイトル",
 			Description:    &description,
 			Image:          nil,
 			Isbn10:         nil,
 			Isbn13:         nil,
-			PageCount:      237,
+			PageCount:      100,
 			PublishedYear:  &publishedYear,
 			PublishedMonth: &publishedMonth,
 			PublishedDate:  &publishedDate,
-		}
+		})
+
+		bookDto, _ := ubu.FindUserBooksByUserId(1)
 
 		// 戻り値である構造体が正しいことをテスト
-		if reflect.DeepEqual(bookDto, expectedBookDto) {
-			t.Errorf(`bookDtoの比較が失敗しました。`)
-		}
-
-		// TODO: 差分がある場合に、cmpを使って差分を出力できるようにしたい
-		//if diff := cmp.Diff(book, expectedBook); diff != "" {
-		//	t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
-		//}
+		tests.Assertion{T: t}.AssertEqual(expected, bookDto)
 	})
 }

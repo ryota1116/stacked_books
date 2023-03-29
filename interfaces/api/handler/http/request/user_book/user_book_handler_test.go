@@ -43,7 +43,6 @@ func (UserBookUseCaseMock) RegisterUserBook(_ userBookUseCase.UserBookCreateComm
 			PublishedMonth: &publishedMonth,
 			PublishedDate:  &publishedDate,
 		}, userBookUseCase.UserBookDto{
-			Id:        1,
 			UserId:    1,
 			BookId:    1,
 			Status:    1,

@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/magiconair/properties/assert"
 	modelUser "github.com/ryota1116/stacked_books/domain/model/user"
+	"github.com/ryota1116/stacked_books/tests"
 	_ "net/http/httptest"
 	"os"
 	"testing"
@@ -94,12 +94,7 @@ func TestUserUseCase_SignUp(t *testing.T) {
 			Password: hashedPassword,
 		}
 
-		assert.Equal(
-			t,
-			expected,
-			userDto,
-			"テストに失敗しました。",
-		)
+		tests.Assertion{T: t}.AssertEqual(expected, userDto)
 	})
 }
 
@@ -120,12 +115,7 @@ func TestUserUseCase_SignIn(t *testing.T) {
 			Password: hashedPassword,
 		}
 
-		assert.Equal(
-			t,
-			expected,
-			user,
-			"テストに失敗しました。",
-		)
+		tests.Assertion{T: t}.AssertEqual(expected, user)
 	})
 }
 
@@ -146,11 +136,6 @@ func TestUserUseCase_FindOne(t *testing.T) {
 			Password: hashedPassword,
 		}
 
-		assert.Equal(
-			t,
-			expected,
-			user,
-			"テストに失敗しました。",
-		)
+		tests.Assertion{T: t}.AssertEqual(expected, user)
 	})
 }

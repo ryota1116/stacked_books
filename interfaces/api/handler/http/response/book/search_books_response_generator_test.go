@@ -2,14 +2,28 @@ package book
 
 import (
 	"encoding/json"
-	"github.com/google/go-cmp/cmp"
-	"github.com/ryota1116/stacked_books/infra/externalapi/google-books-api"
+	"github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
+	"github.com/ryota1116/stacked_books/tests"
 	"testing"
 )
 
 // GoogleBooksAPIのJSONレスポンスの構造体から、書籍検索用のレスポンスボディ構造体を生成するメソッドの正常系テスト
 func TestSearchBooksResponseGeneratorExecute(t *testing.T) {
-	// GoogleBooksAPIのJSONレスポンス
+	// 書籍検索用レスポンスボディ構造体の期待値を作る
+	var expectedSearchBooksResponse []SearchBooksResponse
+	expectedSearchBooksResponse = append(expectedSearchBooksResponse, SearchBooksResponse{
+		GoogleBooksId: "Wx1dLwEACAAJ",
+		Title:         "リーダブルコード",
+		Authors:       []string{"Dustin Boswell", "Trevor Foucher"},
+		Description:   "読んでわかるコードの重要性と方法について解説",
+		Isbn10:        "4873115655",
+		Isbn13:        "9784873115658",
+		PageCount:     237,
+		RegisteredAt:  "2012-06",
+	})
+	expected := SearchBooksResponses{expectedSearchBooksResponse}
+
+	// GoogleBooksAPIが返すJSONレスポンス
 	responseBody := []byte(`
 	{
 	  "kind": "books#volumes",
@@ -89,33 +103,21 @@ func TestSearchBooksResponseGeneratorExecute(t *testing.T) {
 	}`)
 
 	// JSONデータをparseして、構造体に格納する
-	var responseFromGoogleBooksAPI google_books_api.ResponseBodyFromGoogleBooksAPI
+	var responseFromGoogleBooksAPI google_books_api.ResponseBodyFromGoogleBooksApi
 	if err := json.Unmarshal(responseBody, &responseFromGoogleBooksAPI); err != nil {
 		t.Errorf(err.Error())
 	}
 
-	// GoogleBooksAPIのJSONレスポンスの構造体から、 書籍検索用のレスポンスボディ構造体を生成する
+	// 書籍検索用のレスポンスボディ構造体を生成する(テスト対象)
 	searchBooksResponses := SearchBooksResponseGenerator{
-		ResponseBodyFromGoogleBooksAPI: responseFromGoogleBooksAPI,
+		ResponseBodyFromGoogleBooksApi: responseFromGoogleBooksAPI,
 	}.Execute()
 
-	var expectedSearchBooksResponse []SearchBooksResponse
-	expectedSearchBooksResponse = append(expectedSearchBooksResponse, SearchBooksResponse{
-		GoogleBooksId: "Wx1dLwEACAAJ",
-		Title:         "リーダブルコード",
-		Authors:       []string{"Dustin Boswell", "Trevor Foucher"},
-		Description:   "読んでわかるコードの重要性と方法について解説",
-		Isbn10:        "4873115655",
-		Isbn13:        "9784873115658",
-		PageCount:     237,
-		RegisteredAt:  "2012-06",
-	})
+	// 戻り値である構造体が正しいことをテスト
+	tests.Assertion{T: t}.AssertEqual(expected, searchBooksResponses)
 
-	// 書籍検索用レスポンスボディ構造体の期待値
-	expected := SearchBooksResponses{expectedSearchBooksResponse}
-
-	// google/go-cmpで構造体の中身までテストできる
-	if diff := cmp.Diff(searchBooksResponses, expected); diff != "" {
-		t.Errorf("期待値との差分: (-got +want)\n%s", diff)
-	}
+	// TODO: 差分がある場合に、cmpを使って差分を出力できるようにしたい
+	//if diff := cmp.Diff(book, expectedBook); diff != "" {
+	//	t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
+	//}
 }
