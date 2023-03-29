@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	modelUser "github.com/ryota1116/stacked_books/domain/model/user"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user/sign_in"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user/sign_up"
 	httpResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
@@ -19,7 +18,6 @@ const (
 type UserHandler interface {
 	SignUp(w http.ResponseWriter, r *http.Request)
 	SignIn(w http.ResponseWriter, r *http.Request)
-	ShowUser(w http.ResponseWriter, r *http.Request)
 }
 
 type userHandler struct {
@@ -52,6 +50,8 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		UserName: requestBody.UserName,
 		Email:    requestBody.Email,
 		Password: requestBody.Password,
+		Avatar:   requestBody.Avatar,
+		Role:     requestBody.Role,
 	}
 
 	userDto, err := uh.userUseCase.SignUp(command)
@@ -108,24 +108,5 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 			UserDto: userDto,
 			Token:   token,
 		}.Execute(),
-	}.ReturnResponse(w)
-}
-
-func (uh userHandler) ShowUser(w http.ResponseWriter, r *http.Request) {
-	user1 := modelUser.User{}
-	err := json.NewDecoder(r.Body).Decode(&user1)
-	if err != nil {
-		return
-	}
-
-	userDto, err := uh.userUseCase.FindOne(user1.Id)
-	if err != nil {
-		httpResponse.Return500Response(w, err)
-		return
-	}
-
-	httpResponse.Response{
-		StatusCode:   http.StatusOK,
-		ResponseBody: userDto,
 	}.ReturnResponse(w)
 }

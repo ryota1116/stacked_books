@@ -1,10 +1,9 @@
 package sign_up
 
 type RequestBody struct {
-	Id       int
-	UserName string
-	Email    string
-	Password string
-	Avatar   string
-	Role     int
+	UserName string  `json:"user_name"`
+	Email    string  `json:"email"`
+	Password string  `json:"password"`
+	Avatar   *string `json:"avatar"`
+	Role     int     `json:"role"`
 }

@@ -21,7 +21,7 @@ func (rbh FormValidator) Validate() (bool, response.ErrorResponseBody) {
 		return false, response.ErrorResponseBody{Message: "本のタイトルを入力してください。"}
 	}
 
-	if rbh.RequestBody.Book.Description == "" {
+	if *rbh.RequestBody.Book.Description == "" {
 		return false, response.ErrorResponseBody{Message: "本の説明文を入力してください。"}
 	}
 
@@ -29,10 +29,11 @@ func (rbh FormValidator) Validate() (bool, response.ErrorResponseBody) {
 		return false, response.ErrorResponseBody{Message: "本のページ数は1ページ以上で入力してください。"}
 	}
 
-	memoCount := utf8.RuneCountInString(rbh.RequestBody.UserBook.Memo)
-	if memoCount > maxMemoWordCount {
-		return false, response.ErrorResponseBody{Message: "メモは255文字以下で入力ください。"}
+	if rbh.RequestBody.UserBook.Memo != nil {
+		memoCount := utf8.RuneCountInString(*rbh.RequestBody.UserBook.Memo)
+		if memoCount > maxMemoWordCount {
+			return false, response.ErrorResponseBody{Message: "メモは255文字以下で入力ください。"}
+		}
 	}
-
 	return true, response.ErrorResponseBody{Message: ""}
 }

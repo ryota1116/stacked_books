@@ -12,7 +12,7 @@ func NewUserBookPersistence() userbook.UserBookRepository {
 }
 
 // CreateOne : UserBooksレコードを作成する
-func (userBookPersistence) Save(userBook userbook.UserBook) error {
+func (userBookPersistence) Save(userBook userbook.UserBookInterface) error {
 	db := datasource.DbConnect()
 
 	if err := db.Create(&userBook).Error; err != nil {

@@ -5,5 +5,5 @@ type UserCreateCommand struct {
 	Email    string
 	Password string
 	Avatar   *string
-	Role     *int
+	Role     int
 }

@@ -1,27 +1,64 @@
 package book
 
 import (
-	"github.com/ryota1116/stacked_books/domain/model/book"
+	bookEntity "github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/infra/datasource"
+	"time"
 )
 
 type bookPersistence struct{}
 
-func NewBookPersistence() book.BookRepository {
+func NewBookPersistence() bookEntity.BookRepository {
 	return &bookPersistence{}
 }
 
-func (bookPersistence) FindOneByGoogleBooksId(GoogleBooksId string) (book.Book, error) {
-	db := datasource.DbConnect()
-	b := book.Book{}
-
-	if err := db.Where("google_books_id = ?", GoogleBooksId).First(&b).Error; err != nil {
-		return b, err
-	}
-	return b, nil
+type book struct {
+	Id             int `gorm:"primaryKey"`
+	GoogleBooksId  string
+	Title          string
+	Description    *string
+	Isbn10         *string `gorm:"column:isbn_10"`
+	Isbn13         *string `gorm:"column:isbn_13"`
+	PageCount      int
+	PublishedYear  *int
+	PublishedMonth *int
+	PublishedDate  *int
+	CreatedAt      time.Time
 }
 
-func (bookPersistence) Save(book book.Book) error {
+func (bookPersistence) FindOneByGoogleBooksId(GoogleBooksId string) (bookEntity.BookInterface, error) {
+	db := datasource.DbConnect()
+	book := book{}
+
+	if err := db.Table("books").
+		Where("google_books_id = ?", GoogleBooksId).
+		Find(&book).Error; err != nil {
+		return nil, err
+	}
+
+	u, err := bookEntity.NewBook(
+		&book.Id,
+		book.GoogleBooksId,
+		book.Title,
+		book.Description,
+		nil,
+		book.Isbn10,
+		book.Isbn13,
+		book.PageCount,
+		book.PublishedYear,
+		book.PublishedMonth,
+		book.PublishedDate,
+		&book.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
+func (bookPersistence) Save(book bookEntity.BookInterface) error {
 	db := datasource.DbConnect()
 
 	if err := db.Create(&book).Error; err != nil {
@@ -31,17 +68,43 @@ func (bookPersistence) Save(book book.Book) error {
 }
 
 // FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
-func (bookPersistence) FindAllByUserId(userId int) ([]book.Book, error) {
+func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, error) {
 	db := datasource.DbConnect()
-	var books []book.Book
+	books := []book{}
 
 	// ユーザーが登録している本一覧を取得
-	if err := db.Joins("inner join user_books on books.id = user_books.book_id").
+	if err := db.
+		Joins("inner join user_books on books.id = user_books.book_id").
 		Joins("inner join users on user_books.user_id = ?", userId).
 		Group("books.id").
 		Find(&books).Error; err != nil {
-		return books, err
+		return nil, err
 	}
 
-	return books, nil
+	bs := []bookEntity.BookInterface{}
+	for _, book := range books {
+		id := book.Id
+
+		b, err := bookEntity.NewBook(
+			&id, // NOTE:　book.Idを直接入れると同じメモリが渡されたので、一時変数idを使っている
+			book.GoogleBooksId,
+			book.Title,
+			book.Description,
+			nil,
+			book.Isbn10,
+			book.Isbn13,
+			book.PageCount,
+			book.PublishedYear,
+			book.PublishedMonth,
+			book.PublishedDate,
+			&book.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		bs = append(bs, b)
+	}
+
+	return bs, nil
 }

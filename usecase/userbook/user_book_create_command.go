@@ -9,16 +9,17 @@ type UserBookCreateCommand struct {
 type Book struct {
 	GoogleBooksId  string
 	Title          string
-	Description    string
-	Isbn10         string
-	Isbn13         string
+	Description    *string
+	Image          *string
+	Isbn10         *string
+	Isbn13         *string
 	PageCount      int
-	PublishedYear  int
-	PublishedMonth int
-	PublishedDate  int
+	PublishedYear  *int
+	PublishedMonth *int
+	PublishedDate  *int
 }
 
 type UserBook struct {
 	Status int
-	Memo   string
+	Memo   *string
 }

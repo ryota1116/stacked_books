@@ -2,37 +2,78 @@ package userbook
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model/book"
-	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
 	"time"
 )
 
-type UserBook struct {
-	Id        int
-	UserId    int
-	BookId    int
-	Status    Status
-	Memo      Memo
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Book      book.Book
+type UserBookInterface interface {
+	UserId() UserIdInterface
+	BookId() BookIdInterface
+	Status() StatusInterface
+	Memo() MemoInterface
+	CreatedAt() time.Time
+	UpdatedAt() time.Time
+
+	ChangeMemo(value *string) error
 }
 
-// NewUserBook : コンストラクター
-func NewUserBook(command userBookUseCase.UserBookCreateCommand, book book.Book) (UserBook, error) {
-	status, err := NewStatus(command.UserBook.Status)
+type userBook struct {
+	userId    UserIdInterface
+	bookId    BookIdInterface
+	status    StatusInterface
+	memo      MemoInterface
+	createdAt time.Time
+	updatedAt time.Time
+	book      book.BookInterface
+}
+
+func NewUserBook(
+	userId int,
+	bookId int,
+	status int,
+	memo *string,
+) (UserBookInterface, error) {
+	s, err := NewStatus(status)
 	if err != nil {
-		return UserBook{}, err
+		return &userBook{}, err
 	}
 
-	memo, err := NewMemo(command.UserBook.Memo)
+	m, err := NewMemo(memo)
 	if err != nil {
-		return UserBook{}, err
+		return &userBook{}, err
 	}
 
-	return UserBook{
-		UserId: command.UserId,
-		BookId: book.Id,
-		Status: status,
-		Memo:   memo,
+	return &userBook{
+		userId: NewUserId(userId),
+		bookId: NewBookId(bookId),
+		status: s,
+		memo:   m,
 	}, nil
+}
+
+func (ub *userBook) UserId() UserIdInterface {
+	return ub.userId
+}
+
+func (ub *userBook) BookId() BookIdInterface {
+	return ub.bookId
+}
+
+func (ub *userBook) Status() StatusInterface {
+	return ub.status
+}
+
+func (ub *userBook) Memo() MemoInterface {
+	return ub.memo
+}
+
+func (ub *userBook) CreatedAt() time.Time {
+	return ub.createdAt
+}
+
+func (ub *userBook) UpdatedAt() time.Time {
+	return ub.updatedAt
+}
+
+func (ub *userBook) ChangeMemo(value *string) error {
+	return ub.memo.changeMemo(value)
 }
