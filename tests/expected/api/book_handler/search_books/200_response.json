@@ -1,0 +1,24 @@
+{
+  "books": [
+    {
+      "googleBooksId": "Wx1dLwEACAAJ",
+      "title":"リーダブルコード",
+      "authors":["Dustin Boswell","Trevor Foucher"],
+      "description":"読んでわかるコードの重要性と方法について解説",
+      "isbn10":"4873115655",
+      "isbn13":"9784873115658",
+      "pageCount":237,
+      "publishedAt":"2012-06"
+    },
+    {
+      "googleBooksId": "n6YqDwAAQBAJ",
+      "title":"ExcelVBAを実務で使い倒す技術",
+      "authors":["高橋宣成"],
+      "description":"本書では、VBAを実務の現場で活かすための知識(テクニック)と知恵(考え方とコツ)を教えます!",
+      "isbn10":"4798049999",
+      "isbn13":"9784798049991",
+      "pageCount":289,
+      "publishedAt":"2017-04"
+    }
+  ]
+}

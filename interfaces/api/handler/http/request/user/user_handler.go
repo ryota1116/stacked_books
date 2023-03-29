@@ -60,7 +60,7 @@ func (uh userHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := userUseCase.GenerateToken(userDto)
+	token, err := uh.userUseCase.GenerateToken(userDto)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
@@ -96,7 +96,7 @@ func (uh userHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := userUseCase.GenerateToken(userDto)
+	token, err := uh.userUseCase.GenerateToken(userDto)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return

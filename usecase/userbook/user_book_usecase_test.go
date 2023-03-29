@@ -1,119 +1,172 @@
 package userbook
 
 import (
-	"github.com/google/go-cmp/cmp"
 	"github.com/ryota1116/stacked_books/domain/model/book"
 	"github.com/ryota1116/stacked_books/domain/model/userbook"
+	"github.com/ryota1116/stacked_books/tests"
+	book2 "github.com/ryota1116/stacked_books/usecase/book"
+	"os"
 	"testing"
 	"time"
 )
 
 type BookRepositoryMock struct{}
 
-type UserBookRepositoryMock struct{}
+func (BookRepositoryMock) FindAllByUserId(_ int) ([]book.BookInterface, error) {
+	var books []book.BookInterface
 
-func (BookRepositoryMock) FindOneByGoogleBooksId(GoogleBooksId string) book.Book {
-	return book.Book{
-		Id:             1,
-		GoogleBooksId:  "test",
-		Title:          "タイトル",
-		Description:    "説明文です",
-		Image:          "",
-		Isbn_10:        "",
-		Isbn_13:        "",
-		PageCount:      100,
-		PublishedYear:  2022,
-		PublishedMonth: 8,
-		PublishedDate:  10,
-		CreatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
-		UpdatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
-	}
-}
-
-func (BookRepositoryMock) Save(book2 book.Book) error {
-	return nil
-}
-
-func (BookRepositoryMock) FindAllByUserId(int) ([]book.Book, error) {
-	var books []book.Book
-	books = append(books, book.Book{
-		Id:             1,
-		GoogleBooksId:  "test",
-		Title:          "タイトル",
-		Description:    "説明文です",
-		Image:          "",
-		Isbn_10:        "",
-		Isbn_13:        "",
-		PageCount:      100,
-		PublishedYear:  2022,
-		PublishedMonth: 8,
-		PublishedDate:  10,
-		CreatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
-		UpdatedAt:      time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC),
-	})
+	id := 1
+	description := "説明文です"
+	publishedYear := 2022
+	publishedMonth := 8
+	publishedDate := 10
+	createdAt := time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC)
+	b, _ := book.NewBook(
+		&id,
+		"test_id",
+		"タイトル",
+		&description,
+		nil,
+		nil,
+		nil,
+		100,
+		&publishedYear,
+		&publishedMonth,
+		&publishedDate,
+		&createdAt,
+	)
+	books = append(books, b)
 
 	return books, nil
 }
 
-func (UserBookRepositoryMock) Save(userbook.UserBook) error {
+func (BookRepositoryMock) FindOneByGoogleBooksId(_ string) (book.BookInterface, error) {
+	id := 1
+	description := "説明文です"
+	publishedYear := 2022
+	publishedMonth := 8
+	publishedDate := 10
+	createdAt := time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC)
+	b, _ := book.NewBook(
+		&id,
+		"test_id",
+		"タイトル",
+		&description,
+		nil,
+		nil,
+		nil,
+		100,
+		&publishedYear,
+		&publishedMonth,
+		&publishedDate,
+		&createdAt,
+	)
+
+	return b, nil
+}
+
+func (BookRepositoryMock) Save(_ book.BookInterface) error {
 	return nil
 }
 
+type UserBookRepositoryMock struct{}
+
+func (UserBookRepositoryMock) Save(_ userbook.UserBookInterface) error {
+	return nil
+}
+
+func TestMain(m *testing.M) {
+	status := m.Run() // テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）。また、各ユニットテストの中でテストデータをinsertすれば良さそう。
+
+	os.Exit(status) // 0が渡れば成功する。プロセスのkillも実行される。
+}
+
 // UserBookUseCaseのRegisterUserBookの正常系テスト
-func TestUserBookUseCaseRegisterUserBook(t *testing.T) {
+func TestUserBookUseCase_RegisterUserBook(t *testing.T) {
 	ubu := NewUserBookUseCase(BookRepositoryMock{}, UserBookRepositoryMock{})
 
-	command := UserBookCreateCommand{
-		UserId: 1,
-		Book: Book{
-			GoogleBooksId:  "Wx1dLwEACAAJ",
-			Title:          "リーダブルコード",
-			Description:    "読んでわかるコードの重要性と方法について解説",
-			Isbn10:         "4873115655",
-			Isbn13:         "9784873115658",
-			PageCount:      237,
-			PublishedYear:  2012,
-			PublishedMonth: 6,
-		},
-		UserBook: UserBook{
-			Status: 0,
-			Memo:   "メモ",
-		},
-	}
+	t.Run("正常系のテスト", func(t *testing.T) {
+		description := "説明文です"
+		publishedYear := 2022
+		publishedMonth := 8
+		publishedDate := 10
+		memo := "メモ"
 
-	// userBookUseCaseのRegisterUserBookを実行
-	book, userBook, _ := ubu.RegisterUserBook(command)
+		expectedBookDto := book2.BookDto{
+			Id:             1,
+			GoogleBooksId:  "test_id",
+			Title:          "タイトル",
+			Description:    &description,
+			Image:          nil,
+			Isbn10:         nil,
+			Isbn13:         nil,
+			PageCount:      100,
+			PublishedYear:  &publishedYear,
+			PublishedMonth: &publishedMonth,
+			PublishedDate:  &publishedDate,
+		}
+		expectedUserBookDto := UserBookDto{
+			UserId: 1,
+			BookId: 1,
+			Status: 1,
+			Memo:   &memo,
+		}
 
-	// 戻り値である構造体が正しいことをテスト
-	if diff := cmp.Diff(book, expectedBook); diff != "" {
-		t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
-	}
+		command := UserBookCreateCommand{
+			UserId: 1,
+			Book: Book{
+				GoogleBooksId:  "test_id",
+				Title:          "タイトル",
+				Description:    &description,
+				Image:          nil,
+				Isbn10:         nil,
+				Isbn13:         nil,
+				PageCount:      100,
+				PublishedYear:  &publishedYear,
+				PublishedMonth: &publishedMonth,
+				PublishedDate:  &publishedDate,
+			},
+			UserBook: UserBook{
+				Status: 1,
+				Memo:   &memo,
+			},
+		}
+		bookDto, userBookDto, _ := ubu.RegisterUserBook(command)
 
-	if diff := cmp.Diff(userBook, expectedUserBook); diff != "" {
-		t.Errorf("戻り値の構造体が期待するものではありません。: (-got +want)\n%s", diff)
-	}
+		// 戻り値である構造体が正しいことをテスト
+		tests.Assertion{T: t}.AssertEqual(expectedBookDto, bookDto)
+		tests.Assertion{T: t}.AssertEqual(expectedUserBookDto, userBookDto)
+	})
 }
 
-// expectedBook userBookUseCase.RegisterUserBookの戻り値で期待するBook構造体
-// 構造体を定数constに格納することは出来ないので、変数宣言している
-var expectedBook = book.Book{
-	GoogleBooksId:  "Wx1dLwEACAAJ",
-	Title:          "リーダブルコード",
-	Description:    "読んでわかるコードの重要性と方法について解説",
-	Isbn_10:        "4873115655",
-	Isbn_13:        "9784873115658",
-	PageCount:      237,
-	PublishedYear:  2012,
-	PublishedMonth: 6,
-	PublishedDate:  0,
-}
+// UserBookUseCaseのRegisterUserBookの正常系テスト
+func TestUserBookUseCase_FindUserBooksByUserId(t *testing.T) {
+	ubu := NewUserBookUseCase(BookRepositoryMock{}, UserBookRepositoryMock{})
 
-// expectedUserBook userBookUseCase.RegisterUserBookの戻り値で期待するUserBook構造体
-// 構造体を定数constに格納することは出来ないので、変数宣言している
-var expectedUserBook = userbook.UserBook{
-	Id:     1,
-	UserId: 1,
-	BookId: 1,
-	Status: 1,
-	Memo:   "メモメモメモ",
+	t.Run("正常系のテスト", func(t *testing.T) {
+		// 期待値を作成
+		var expected []book2.BookDto
+		description := "説明文です"
+		publishedYear := 2022
+		publishedMonth := 8
+		publishedDate := 10
+		expected = append(expected, book2.BookDto{
+			Id:             1,
+			GoogleBooksId:  "test_id",
+			Title:          "タイトル",
+			Description:    &description,
+			Image:          nil,
+			Isbn10:         nil,
+			Isbn13:         nil,
+			PageCount:      100,
+			PublishedYear:  &publishedYear,
+			PublishedMonth: &publishedMonth,
+			PublishedDate:  &publishedDate,
+		})
+
+		bookDto, _ := ubu.FindUserBooksByUserId(1)
+
+		// 戻り値である構造体が正しいことをテスト
+		tests.Assertion{T: t}.AssertEqual(expected, bookDto)
+	})
 }

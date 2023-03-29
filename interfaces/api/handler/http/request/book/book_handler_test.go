@@ -1,27 +1,26 @@
 package book
 
 import (
-	"encoding/json"
-	"github.com/magiconair/properties/assert"
-	"github.com/ryota1116/stacked_books/infra/externalapi/google-books-api"
-	res "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
-	"github.com/ryota1116/stacked_books/tests/test_assertion"
-	"io/ioutil"
+	"fmt"
+	"github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
+	"github.com/ryota1116/stacked_books/tests"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
 
 // テストで期待するレスポンスボディJSON文字列のファイルパス
-const expectedSearchBooksJson = "../tests/expected/api/book_handler/200_search_books_response.json"
+const expectedJsonDirectory = "/tests/expected/api/book_handler"
 
-// bookUseCaseMock : BookUseCaseInterfaceを実装しているモック
+// BookUseCaseInterfaceを実装しているモック構造体
 type bookUseCaseMock struct{}
 
-// SearchBooks : インターフェイスを満たすためのメソッド
-func (bu bookUseCaseMock) SearchBooks(title string) (google_books_api.ResponseBodyFromGoogleBooksAPI, error) {
-	return google_books_api.ResponseBodyFromGoogleBooksAPI{
+// インターフェイスを満たすためのメソッド
+func (bu bookUseCaseMock) SearchBooks(string) (google_books_api.ResponseBodyFromGoogleBooksApi, error) {
+	return google_books_api.ResponseBodyFromGoogleBooksApi{
 		Items: []google_books_api.Item{
 			{
 				ID: "Wx1dLwEACAAJ",
@@ -69,7 +68,7 @@ func (bu bookUseCaseMock) SearchBooks(title string) (google_books_api.ResponseBo
 
 func TestMain(m *testing.M) {
 	// テストコードの実行（testing.M.Runで各テストケースが実行され、成功の場合0を返す）
-	// また、各ユニットテストの中でテストデータをinsertすれば良さそう。
+	// => また各ユニットテストの中でテストデータをinsertすれば良さそう。
 	status := m.Run()
 
 	// 0が渡れば成功する。プロセスのkillも実行される。
@@ -78,107 +77,98 @@ func TestMain(m *testing.M) {
 
 // 外部APIを用いた書籍検索のエンドポイントのテスト
 func TestBookHandler_SearchBooks(t *testing.T) {
+	// モックを注入している
 	bh := NewBookHandler(bookUseCaseMock{})
 
-	t.Run("正常系のテスト", func(t *testing.T) {
-		bodyReader := strings.NewReader(`{
-			"title": "リーダブルコード"
-		}`)
+	// jsonファイルの絶対パスを取得(TODO: ローカル用の取得になっているので修正する)
+	_, testFilePath, _, _ := runtime.Caller(0)
+	projectRootDir := filepath.Join(filepath.Dir(testFilePath), "..", "..", "..", "..", "..", "..")
 
+	t.Run("正常系のテスト", func(t *testing.T) {
+		testHandler := tests.TestHandler{T: t}
+
+		title := "リーダブルコード"
+		body := strings.NewReader(``)
+
+		// リクエスト
 		r := httptest.NewRequest(
 			"GET",
-			"/books/search",
-			bodyReader)
+			fmt.Sprintf("/books/search?title=%s", title),
+			body,
+		)
 		w := httptest.NewRecorder()
-
-		// handler/userbook.goのSearchBooksメソッドを呼び出し、
-		// その中でbookUseCaseMockのSearchBooksメソッドが呼び出されている
-		bh.SearchBooks(w, r)
-
-		// レスポンスを代入
-		response := w.Result()
+		bh.SearchBooks(w, r)   // この中でbookUseCaseMockのSearchBooksメソッドが呼び出される
+		response := w.Result() // レスポンスを代入
 
 		// ステータスコードのテスト
 		if response.StatusCode != 200 {
-			t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
-		// レスポンスボディを[]byte型に変換
-		responseBodyBytes, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			panic(err)
-		}
+		expectedJsonFilePath := filepath.Join(
+			projectRootDir,
+			expectedJsonDirectory+"/search_books/200_response.json",
+		)
 
 		// レスポンスボディのjson文字列をテスト
-		test_assertion.CompareResponseBodyWithJsonFile(t, responseBodyBytes, expectedSearchBooksJson)
+		testHandler.CompareResponseBodyWithJsonFile(
+			response.Body,
+			expectedJsonFilePath,
+		)
 	})
 
 	t.Run("異常系_リクエストボディにTitleが含まれていない場合", func(t *testing.T) {
-		// リクエストボディにTitleが含まれていない場合
-		bodyReader := strings.NewReader(`{}`)
+		testHandler := tests.TestHandler{T: t}
 
+		bodyReader := strings.NewReader(`{}`)
 		r := httptest.NewRequest("GET", "/books/search", bodyReader)
 		w := httptest.NewRecorder()
-
 		bh.SearchBooks(w, r)
-
-		// レスポンスを代入
 		response := w.Result()
 
 		// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
 		if response.StatusCode != 422 {
-			t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
+			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
-		// レスポンスボディを[]byte型に変換
-		responseBodyBytes, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			panic(err)
-		}
-		// []byte型を構造体に格納
-		var errorResponseBody res.ErrorResponseBody
-		if err := json.Unmarshal(responseBodyBytes, &errorResponseBody); err != nil {
-			panic(err)
-		}
+		expectedJsonFilePath := filepath.Join(
+			projectRootDir,
+			expectedJsonDirectory+"/search_books/response_without_title.json",
+		)
 
-		// レスポンスボディの結果をテスト(構造体に戻してテストしている)
-		assert.Equal(t, errorResponseBody.Message, "本のタイトルを入力してください")
+		// レスポンスボディのjson文字列をテスト
+		testHandler.CompareResponseBodyWithJsonFile(
+			response.Body,
+			expectedJsonFilePath,
+		)
 	})
 
 	t.Run("異常系_リクエストボディのTitleの値が空の場合", func(t *testing.T) {
-		// リクエストボディのTitleが空の場合
+		testHandler := tests.TestHandler{T: t}
+
 		bodyReader := strings.NewReader(`{
 			"title": ""
 		}`)
-
 		r := httptest.NewRequest("GET", "/books/search", bodyReader)
 		w := httptest.NewRecorder()
-
 		bh.SearchBooks(w, r)
-
-		// レスポンスを代入
 		response := w.Result()
 
 		// NOTE: ステータスコード422はHandlerが返しているから、Handlerの責務としてテストして良さそう。
 		// ステータスコードのテスト(バリデーションエラーによりステータスコードが422を期待)
 		if response.StatusCode != 422 {
-			t.Errorf(`レスポンスのステータスコードは %d でした`, response.StatusCode)
-			t.Errorf(`レスポンスボディは「 %s 」でした`, response.Body)
+			testHandler.PrintErrorFormatFromResponse(response)
 		}
 
-		// レスポンスボディを[]byte型に変換
-		responseBodyBytes, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			panic(err)
-		}
-		// []byte型を構造体に格納
-		var errorResponseBody res.ErrorResponseBody
-		if err := json.Unmarshal(responseBodyBytes, &errorResponseBody); err != nil {
-			panic(err)
-		}
+		expectedJsonFilePath := filepath.Join(
+			projectRootDir,
+			expectedJsonDirectory+"/search_books/response_without_title.json",
+		)
 
-		// TODO: バリデーションメッセージはValidatorが返しているから、Handlerの責務ではない。
-		// レスポンスボディの結果をテスト(構造体に戻してテストしている)
-		assert.Equal(t, errorResponseBody.Message, "本のタイトルを入力してください")
+		// レスポンスボディのjson文字列をテスト
+		testHandler.CompareResponseBodyWithJsonFile(
+			response.Body,
+			expectedJsonFilePath,
+		)
 	})
 }

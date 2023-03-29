@@ -23,7 +23,8 @@ type userBookHandler struct {
 
 func NewUserBookHandler(
 	ubu userBookUseCase.UserBookUseCase,
-	ushmw middleware.UserSessionHandlerMiddleWareInterface) UserBookHandler {
+	ushmw middleware.UserSessionHandlerMiddleWareInterface,
+) UserBookHandler {
 	return &userBookHandler{
 		userBookUseCase:              ubu,
 		userSessionHandlerMiddleWare: ushmw,
@@ -102,8 +103,7 @@ func (ubh userBookHandler) RegisterUserBook(w http.ResponseWriter, r *http.Reque
 // FindUserBooks : ログイン中のユーザーが登録している本の一覧を取得する
 func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request) {
 	// セッション情報からUserを取得
-	ushm := middleware.NewUserSessionHandlerMiddleWare()
-	currentUser, err := ushm.CurrentUser(r)
+	currentUser, err := ubh.userSessionHandlerMiddleWare.CurrentUser(r)
 	if err != nil {
 		httpResponse.Return500Response(w, err)
 		return
