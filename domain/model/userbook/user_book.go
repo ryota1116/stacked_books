@@ -38,7 +38,6 @@ func NewUserBook(
 	}
 
 	m, err := NewMemo(memo)
-
 	if err != nil {
 		return &userBook{}, err
 	}
