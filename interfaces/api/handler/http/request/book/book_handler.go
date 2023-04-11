@@ -2,15 +2,18 @@ package book
 
 import (
 	"errors"
+	"github.com/gorilla/mux"
 	search_books2 "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/book/search_books"
 	httpResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/book"
 	book2 "github.com/ryota1116/stacked_books/usecase/book"
 	"net/http"
+	"strconv"
 )
 
 type BookHandlerInterface interface {
 	SearchBooks(w http.ResponseWriter, r *http.Request)
+	GetBook(w http.ResponseWriter, r *http.Request)
 }
 
 type bookHandler struct {
@@ -70,5 +73,32 @@ func (bh bookHandler) SearchBooks(w http.ResponseWriter, r *http.Request) {
 		ResponseBody: book.SearchBooksResponseGenerator{
 			ResponseBodyFromGoogleBooksApi: responseBodyFromGoogleBooksApi,
 		}.Execute(),
+	}.ReturnResponse(w)
+}
+
+func (bh bookHandler) GetBook(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		httpResponse.Response{
+			StatusCode:   http.StatusNotFound,
+			ResponseBody: err.Error(),
+		}.ReturnResponse(w)
+	}
+
+	bookDto, err := bh.bookUseCase.GetBookById(id)
+	if err != nil {
+		httpResponse.Response{
+			StatusCode:   http.StatusNotFound,
+			ResponseBody: err.Error(),
+		}.ReturnResponse(w)
+		return
+	}
+
+	httpResponse.Response{
+		StatusCode:   http.StatusOK,
+		ResponseBody: bookDto,
 	}.ReturnResponse(w)
 }

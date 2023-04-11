@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
 	"github.com/ryota1116/stacked_books/tests"
+	"github.com/ryota1116/stacked_books/usecase/book"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -63,6 +64,30 @@ func (bu bookUseCaseMock) SearchBooks(string) (google_books_api.ResponseBodyFrom
 				},
 			},
 		},
+	}, nil
+}
+
+func (bu bookUseCaseMock) GetBookById(_ int) (book.BookDto, error) {
+	description := "読んでわかるコードの重要性と方法について解説"
+	image := ""
+	isbn10 := "4873115655"
+	isbn13 := "9784873115658"
+	publishedYear := 2012
+	publishedMonth := 6
+	publishedDate := 0
+
+	return book.BookDto{
+		Id:             1,
+		GoogleBooksId:  "test_id",
+		Title:          "タイトル",
+		Description:    &description,
+		Image:          &image,
+		Isbn10:         &isbn10,
+		Isbn13:         &isbn13,
+		PageCount:      100,
+		PublishedYear:  &publishedYear,
+		PublishedMonth: &publishedMonth,
+		PublishedDate:  &publishedDate,
 	}, nil
 }
 

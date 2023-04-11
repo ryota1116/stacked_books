@@ -1,21 +1,26 @@
 package book
 
 import (
+	"github.com/ryota1116/stacked_books/domain/model/book"
 	model "github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
 )
 
 type BookUseCaseInterface interface {
 	SearchBooks(title string) (model.ResponseBodyFromGoogleBooksApi, error)
+	GetBookById(bookId int) (BookDto, error)
 }
 
 type bookUseCase struct {
-	// BookRepositoryを使う必要が出たときにコメントアウト外す
-	// bookRepository repository.BookRepository
+	bookRepository       book.BookRepository
 	googleBooksAPIClient model.GoogleBooksApiClientInterface
 }
 
-func NewBookUseCase(client model.GoogleBooksApiClientInterface) BookUseCaseInterface {
+func NewBookUseCase(
+	br book.BookRepository,
+	client model.GoogleBooksApiClientInterface,
+) BookUseCaseInterface {
 	return &bookUseCase{
+		br,
 		client,
 	}
 }
@@ -31,4 +36,16 @@ func (bu bookUseCase) SearchBooks(title string) (model.ResponseBodyFromGoogleBoo
 
 	// GoogleBooksAPIのJSONレスポンスの構造体を返す
 	return responseFromGoogleBooksAPI, nil
+}
+
+func (bu bookUseCase) GetBookById(bookId int) (BookDto, error) {
+	b, err := bu.bookRepository.FindOneById(bookId)
+	if err != nil {
+		return BookDto{}, err
+	}
+
+	bookDtoGenerator := BookDtoGenerator{Book: b}
+	bookDto := bookDtoGenerator.Execute()
+
+	return bookDto, nil
 }
