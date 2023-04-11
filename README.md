@@ -1,10 +1,12 @@
-# stacked_books(サービス名考え中)
+# stacked_books
 
 ## サービス概要
-
 読書の積み上げによって達成感を得たい人に<br>
 **読書量を「本の厚さ(cm, m)」で可視化**することによって達成感を与える<br>
 読書量記録サービス
+
+<details>
+<summary>サービス詳細</summary>
 
 ## マーケット
 - 読書量を記録することで達成感を得たい人
@@ -57,9 +59,9 @@
 例えば300ページの書籍を読了した場合、その本をアプリ上に登録することで<br>
 300ページ x 0.1mm/1ページ(※参考値) = 3cm<br>
 という計算から読書量が3cm加算されるような設定となっています。
+</details>
 
-
-# 技術構成
+## 技術構成
 - バックエンド
   - Golang: https://github.com/ryota1116/stacked_books
   - パッケージ構成・アーキテクチャ: オニオンアーキテクチャを意識
@@ -69,12 +71,12 @@
 - ER図: https://drive.google.com/file/d/1uspJ44TKzTZGpcBljSUNiJvVqTQJt1qT/view?usp=sharing
 - API定義: https://github.com/ryota1116/stacked_books_api_definition
 
-## README一覧
+### README一覧
 - [ドメイン層のREADME](https://github.com/ryota1116/stacked_books/blob/develop/domain/model/README.md)
 - インフラ層のREADME 
 - テストコードのREADME
 
-## 本リポジトリのディレクトリ構造
+### 本リポジトリのディレクトリ構造
 - 一部集約に限定して記述している。
 
 ```
