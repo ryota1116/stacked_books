@@ -9,6 +9,7 @@ import (
 type UserBookUseCase interface {
 	RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error)
 	FindUserBooksByUserId(userId int) ([]book.BookDto, error)
+	SearchUserBooksByStatus(command SearchUserBooksByStatusCommand) ([]UserBookDto, error)
 }
 
 type userBookUseCase struct {
@@ -58,6 +59,7 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 		*b.Id().Value(),
 		command.UserBook.Status,
 		command.UserBook.Memo,
+		b,
 	)
 	if err != nil {
 		return book.BookDto{}, UserBookDto{}, err
@@ -87,4 +89,27 @@ func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]book.BookDto, er
 	}
 
 	return booksDto, err
+}
+
+func (ubu userBookUseCase) SearchUserBooksByStatus(
+	command SearchUserBooksByStatusCommand,
+) ([]UserBookDto, error) {
+	status, err := userbook.NewStatus(command.Status)
+	if err != nil {
+		return nil, err
+	}
+
+	userBooks, err := ubu.userBookRepository.FindUserBooksByStatus(
+		command.UserId,
+		status,
+	)
+
+	// DTOに変換
+	var userBooksDto []UserBookDto
+	for _, b := range userBooks {
+		dtog := UserBookDtoGenerator{UserBook: b}
+
+		userBooksDto = append(userBooksDto, dtog.Execute())
+	}
+	return userBooksDto, err
 }

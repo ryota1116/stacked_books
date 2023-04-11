@@ -12,6 +12,7 @@ type UserBookInterface interface {
 	Memo() MemoInterface
 	CreatedAt() time.Time
 	UpdatedAt() time.Time
+	Book() book.BookInterface
 
 	ChangeMemo(value *string) error
 }
@@ -31,6 +32,7 @@ func NewUserBook(
 	bookId int,
 	status int,
 	memo *string,
+	book book.BookInterface,
 ) (UserBookInterface, error) {
 	s, err := NewStatus(status)
 	if err != nil {
@@ -47,6 +49,7 @@ func NewUserBook(
 		bookId: NewBookId(bookId),
 		status: s,
 		memo:   m,
+		book:   book,
 	}, nil
 }
 
@@ -72,6 +75,10 @@ func (ub *userBook) CreatedAt() time.Time {
 
 func (ub *userBook) UpdatedAt() time.Time {
 	return ub.updatedAt
+}
+
+func (ub *userBook) Book() book.BookInterface {
+	return ub.book
 }
 
 func (ub *userBook) ChangeMemo(value *string) error {

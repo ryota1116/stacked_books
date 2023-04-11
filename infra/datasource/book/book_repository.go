@@ -12,7 +12,7 @@ func NewBookPersistence() bookEntity.BookRepository {
 	return &bookPersistence{}
 }
 
-type book struct {
+type Book struct {
 	Id             int `gorm:"primaryKey"`
 	GoogleBooksId  string
 	Title          string
@@ -28,7 +28,7 @@ type book struct {
 
 func (bookPersistence) FindOneByGoogleBooksId(GoogleBooksId string) (bookEntity.BookInterface, error) {
 	db := datasource.DbConnect()
-	book := book{}
+	book := Book{}
 
 	if err := db.Table("books").
 		Where("google_books_id = ?", GoogleBooksId).
@@ -70,7 +70,7 @@ func (bookPersistence) Save(book bookEntity.BookInterface) error {
 // FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
 func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, error) {
 	db := datasource.DbConnect()
-	books := []book{}
+	books := []Book{}
 
 	// ユーザーが登録している本一覧を取得
 	if err := db.
@@ -81,7 +81,7 @@ func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, 
 		return nil, err
 	}
 
-	bs := []bookEntity.BookInterface{}
+	var bs []bookEntity.BookInterface
 	for _, book := range books {
 		id := book.Id
 
@@ -111,7 +111,7 @@ func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, 
 
 func (bookPersistence) FindOneById(bookId int) (bookEntity.BookInterface, error) {
 	db := datasource.DbConnect()
-	book := book{}
+	book := Book{}
 
 	if err := db.Where("id = ?", bookId).First(&book).Error; err != nil {
 		return nil, err
