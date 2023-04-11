@@ -108,3 +108,33 @@ func (bookPersistence) FindAllByUserId(userId int) ([]bookEntity.BookInterface, 
 
 	return bs, nil
 }
+
+func (bookPersistence) FindOneById(bookId int) (bookEntity.BookInterface, error) {
+	db := datasource.DbConnect()
+	book := book{}
+
+	if err := db.Where("id = ?", bookId).First(&book).Error; err != nil {
+		return nil, err
+	}
+
+	b, err := bookEntity.NewBook(
+		&book.Id,
+		book.GoogleBooksId,
+		book.Title,
+		book.Description,
+		nil,
+		book.Isbn10,
+		book.Isbn13,
+		book.PageCount,
+		book.PublishedYear,
+		book.PublishedMonth,
+		book.PublishedDate,
+		&book.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
