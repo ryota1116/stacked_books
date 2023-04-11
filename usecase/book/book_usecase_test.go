@@ -2,6 +2,7 @@ package book
 
 import (
 	"github.com/ryota1116/stacked_books/domain/model/searched_books/google_books_api"
+	"github.com/ryota1116/stacked_books/infra/datasource/book"
 	"github.com/ryota1116/stacked_books/tests"
 	"os"
 	"testing"
@@ -48,7 +49,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestBookUseCase_SearchBooks(t *testing.T) {
-	useCase := NewBookUseCase(googleBooksAPIClientMock{})
+	// TODO: bookPersistenceMockを用意すること
+	useCase := NewBookUseCase(book.NewBookPersistence(), googleBooksAPIClientMock{})
 
 	t.Run("正常系のテスト", func(t *testing.T) {
 		responseFromGoogleBooksAPI, err := useCase.SearchBooks("リーダブルコード")

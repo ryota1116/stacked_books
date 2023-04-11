@@ -69,6 +69,31 @@ func (BookRepositoryMock) Save(_ book.BookInterface) error {
 	return nil
 }
 
+func (BookRepositoryMock) FindOneById(_ int) (book.BookInterface, error) {
+	id := 1
+	description := "説明文です"
+	publishedYear := 2022
+	publishedMonth := 8
+	publishedDate := 10
+	createdAt := time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC)
+	b, _ := book.NewBook(
+		&id,
+		"test_id",
+		"タイトル",
+		&description,
+		nil,
+		nil,
+		nil,
+		100,
+		&publishedYear,
+		&publishedMonth,
+		&publishedDate,
+		&createdAt,
+	)
+
+	return b, nil
+}
+
 type UserBookRepositoryMock struct{}
 
 func (UserBookRepositoryMock) Save(_ userbook.UserBookInterface) error {
