@@ -69,7 +69,7 @@
   - ~~React: https://github.com/ryota1116/stacked_books_ui~~
 - 画面遷移図: https://www.figma.com/file/OTN0BtC3RrgPhMgW9wILm2/Stacked_Books?node-id=0%3A1
 - ER図: https://drive.google.com/file/d/1uspJ44TKzTZGpcBljSUNiJvVqTQJt1qT/view?usp=sharing
-- API定義: https://github.com/ryota1116/stacked_books_api_definition
+- API定義: ~~https://github.com/ryota1116/stacked_books_api_definition~~
 
 ### README一覧
 - [ドメイン層のREADME](https://github.com/ryota1116/stacked_books/blob/develop/domain/model/README.md)
