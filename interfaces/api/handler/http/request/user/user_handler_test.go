@@ -11,7 +11,6 @@ import (
 	"testing"
 )
 
-// モックを導入
 type UserUseCaseMock struct {
 }
 
