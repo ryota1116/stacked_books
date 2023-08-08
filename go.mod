@@ -12,10 +12,10 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
-	github.com/google/go-cmp v0.5.5
+	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/magiconair/properties v1.8.4
+	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.1.0
