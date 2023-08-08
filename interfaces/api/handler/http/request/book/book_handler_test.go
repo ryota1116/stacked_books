@@ -67,7 +67,7 @@ func (bu bookUseCaseMock) SearchBooks(string) (google_books_api.ResponseBodyFrom
 	}, nil
 }
 
-func (bu bookUseCaseMock) GetBookById(_ int) (book.BookDto, error) {
+func (bu bookUseCaseMock) GetBookById(_ int) (book.Dto, error) {
 	description := "読んでわかるコードの重要性と方法について解説"
 	image := ""
 	isbn10 := "4873115655"
@@ -76,7 +76,7 @@ func (bu bookUseCaseMock) GetBookById(_ int) (book.BookDto, error) {
 	publishedMonth := 6
 	publishedDate := 0
 
-	return book.BookDto{
+	return book.Dto{
 		Id:             1,
 		GoogleBooksId:  "test_id",
 		Title:          "タイトル",

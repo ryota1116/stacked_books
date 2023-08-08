@@ -17,7 +17,7 @@ type UserBookDto struct {
 	Memo      *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	BookDto   book.BookDto
+	BookDto   book.Dto
 }
 
 func (dtog UserBookDtoGenerator) Execute() UserBookDto {
@@ -28,6 +28,6 @@ func (dtog UserBookDtoGenerator) Execute() UserBookDto {
 		Memo:      dtog.UserBook.Memo().Value(),
 		CreatedAt: dtog.UserBook.CreatedAt(),
 		UpdatedAt: dtog.UserBook.UpdatedAt(),
-		BookDto:   book.BookDtoGenerator{Book: dtog.UserBook.Book()}.Execute(),
+		BookDto:   book.DtoGenerator{Book: dtog.UserBook.Book()}.Execute(),
 	}
 }

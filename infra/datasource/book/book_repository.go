@@ -67,10 +67,10 @@ func (bookPersistence) SaveOne(book bookEntity.BookInterface) error {
 	return nil
 }
 
-// FindAllByUserId : ログイン中のユーザーが登録している本の一覧を取得する
+// FindListByUserId : ログイン中のユーザーが登録している本の一覧を取得する
 func (bookPersistence) FindListByUserId(userId int) ([]bookEntity.BookInterface, error) {
 	db := datasource.DbConnect()
-	books := []Record{}
+	var books []Record
 
 	// ユーザーが登録している本一覧を取得
 	if err := db.

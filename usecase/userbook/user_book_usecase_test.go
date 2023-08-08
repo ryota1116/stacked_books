@@ -12,9 +12,7 @@ import (
 
 type BookRepositoryMock struct{}
 
-func (BookRepositoryMock) FindAllByUserId(_ int) ([]book.BookInterface, error) {
-	var books []book.BookInterface
-
+func (BookRepositoryMock) FindListByUserId(_ int) ([]book.BookInterface, error) {
 	id := 1
 	description := "説明文です"
 	publishedYear := 2022
@@ -35,9 +33,9 @@ func (BookRepositoryMock) FindAllByUserId(_ int) ([]book.BookInterface, error) {
 		&publishedDate,
 		&createdAt,
 	)
-	books = append(books, b)
 
-	return books, nil
+	var books []book.BookInterface
+	return append(books, b), nil
 }
 
 func (BookRepositoryMock) FindOneByGoogleBooksId(_ string) (book.BookInterface, error) {
@@ -65,7 +63,7 @@ func (BookRepositoryMock) FindOneByGoogleBooksId(_ string) (book.BookInterface, 
 	return b, nil
 }
 
-func (BookRepositoryMock) Save(_ book.BookInterface) error {
+func (BookRepositoryMock) SaveOne(_ book.BookInterface) error {
 	return nil
 }
 
@@ -96,8 +94,48 @@ func (BookRepositoryMock) FindOneById(_ int) (book.BookInterface, error) {
 
 type UserBookRepositoryMock struct{}
 
-func (UserBookRepositoryMock) Save(_ userbook.UserBookInterface) error {
+func (UserBookRepositoryMock) SaveOne(_ userbook.UserBookInterface) error {
 	return nil
+}
+
+func (UserBookRepositoryMock) FindListByStatus(
+	_ int,
+	_ userbook.StatusInterface,
+) ([]userbook.UserBookInterface, error) {
+	// Bookの生成
+	id := 1
+	description := "説明文です"
+	publishedYear := 2022
+	publishedMonth := 8
+	publishedDate := 10
+	createdAt := time.Date(2022, time.August, 10, 12, 0, 0, 0, time.UTC)
+	b, _ := book.NewBook(
+		&id,
+		"test_id",
+		"タイトル",
+		&description,
+		nil,
+		nil,
+		nil,
+		100,
+		&publishedYear,
+		&publishedMonth,
+		&publishedDate,
+		&createdAt,
+	)
+
+	// UserBookの生成
+	memo := "メモ"
+	ub, _ := userbook.NewUserBook(
+		1,
+		1,
+		1,
+		&memo,
+		b,
+	)
+
+	var bs []userbook.UserBookInterface
+	return append(bs, ub), nil
 }
 
 func TestMain(m *testing.M) {
@@ -117,7 +155,7 @@ func TestUserBookUseCase_RegisterUserBook(t *testing.T) {
 		publishedDate := 10
 		memo := "メモ"
 
-		expectedBookDto := book2.BookDto{
+		expectedBookDto := book2.Dto{
 			Id:             1,
 			GoogleBooksId:  "test_id",
 			Title:          "タイトル",
@@ -137,6 +175,7 @@ func TestUserBookUseCase_RegisterUserBook(t *testing.T) {
 			Memo:   &memo,
 		}
 
+		// テスト対象の関数を実行
 		command := UserBookCreateCommand{
 			UserId: 1,
 			Book: Book{
@@ -170,12 +209,12 @@ func TestUserBookUseCase_FindUserBooksByUserId(t *testing.T) {
 
 	t.Run("正常系のテスト", func(t *testing.T) {
 		// 期待値を作成
-		var expected []book2.BookDto
+		var expected []book2.Dto
 		description := "説明文です"
 		publishedYear := 2022
 		publishedMonth := 8
 		publishedDate := 10
-		expected = append(expected, book2.BookDto{
+		expected = append(expected, book2.Dto{
 			Id:             1,
 			GoogleBooksId:  "test_id",
 			Title:          "タイトル",
@@ -189,9 +228,10 @@ func TestUserBookUseCase_FindUserBooksByUserId(t *testing.T) {
 			PublishedDate:  &publishedDate,
 		})
 
+		// テスト対象の関数を実行
 		bookDto, _ := ubu.FindUserBooksByUserId(1)
 
-		// 戻り値である構造体が正しいことをテスト
+		// 戻り値が正しいことをテスト
 		tests.Assertion{T: t}.AssertEqual(expected, bookDto)
 	})
 }

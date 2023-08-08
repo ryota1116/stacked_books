@@ -4,11 +4,11 @@ import (
 	model "github.com/ryota1116/stacked_books/domain/model/book"
 )
 
-type BookDtoGenerator struct {
+type DtoGenerator struct {
 	Book model.BookInterface
 }
 
-type BookDto struct {
+type Dto struct {
 	Id             int
 	GoogleBooksId  string
 	Title          string
@@ -22,8 +22,8 @@ type BookDto struct {
 	PublishedDate  *int
 }
 
-func (dtog BookDtoGenerator) Execute() BookDto {
-	var bookDto = BookDto{
+func (dtog DtoGenerator) Execute() Dto {
+	var bookDto = Dto{
 		Id:             *dtog.Book.Id().Value(),
 		GoogleBooksId:  dtog.Book.GoogleBooksId().Value(),
 		Title:          dtog.Book.Title().Value(),
