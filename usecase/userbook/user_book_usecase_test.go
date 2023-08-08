@@ -169,10 +169,13 @@ func TestUserBookUseCase_RegisterUserBook(t *testing.T) {
 			PublishedDate:  &publishedDate,
 		}
 		expectedUserBookDto := UserBookDto{
-			UserId: 1,
-			BookId: 1,
-			Status: 1,
-			Memo:   &memo,
+			UserId:    1,
+			BookId:    1,
+			Status:    1,
+			Memo:      &memo,
+			CreatedAt: time.Time{},
+			UpdatedAt: time.Time{},
+			BookDto:   expectedBookDto,
 		}
 
 		// テスト対象の関数を実行
