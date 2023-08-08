@@ -48,7 +48,7 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 		if err != nil {
 			return book.BookDto{}, UserBookDto{}, err
 		}
-		if err := ubu.bookRepository.Save(b); err != nil {
+		if err := ubu.bookRepository.SaveOne(b); err != nil {
 			return book.BookDto{}, UserBookDto{}, err
 		}
 	}
@@ -66,7 +66,7 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 	}
 
 	// UserBookを保存する
-	if err := ubu.userBookRepository.Save(userBook); err != nil {
+	if err := ubu.userBookRepository.SaveOne(userBook); err != nil {
 		return book.BookDto{}, UserBookDto{}, err
 	}
 
@@ -78,7 +78,7 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 
 // FindUserBooksByUserId : ログイン中のユーザーが登録している本の一覧を取得する
 func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]book.BookDto, error) {
-	books, err := ubu.bookRepository.FindAllByUserId(userId)
+	books, err := ubu.bookRepository.FindListByUserId(userId)
 
 	// DTOに変換
 	var booksDto []book.BookDto
@@ -99,7 +99,7 @@ func (ubu userBookUseCase) SearchUserBooksByStatus(
 		return nil, err
 	}
 
-	userBooks, err := ubu.userBookRepository.FindUserBooksByStatus(
+	userBooks, err := ubu.userBookRepository.FindListByStatus(
 		command.UserId,
 		status,
 	)

@@ -19,7 +19,7 @@ func NewUserPersistence() userEntity.UserRepository {
 	return &userPersistence{}
 }
 
-type user struct {
+type record struct {
 	Id        *int   `gorm:"primaryKey"`
 	UserName  string `validate:"required,max=255"`
 	Email     string `validate:"required,max=255,email"`
@@ -31,9 +31,9 @@ type user struct {
 	DeletedAt *time.Time
 }
 
-func (up userPersistence) Save(u userEntity.UserInterface) (userEntity.UserInterface, error) {
+func (up userPersistence) SaveOne(u userEntity.UserInterface) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
-	uRecord := user{
+	uRecord := record{
 		UserName: u.UserName().Value(),
 		Email:    u.Email().Value(),
 		Password: u.Password().Value(),
@@ -65,7 +65,7 @@ func (up userPersistence) Save(u userEntity.UserInterface) (userEntity.UserInter
 
 func (up userPersistence) FindOneByEmail(email string) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
-	uRecord := user{}
+	uRecord := record{}
 
 	if err := db.Where("email = ?", email).
 		First(&uRecord).Error; err != nil {
@@ -90,9 +90,9 @@ func (up userPersistence) FindOneByEmail(email string) (userEntity.UserInterface
 }
 
 // FindOne Userを1件取得
-func (up userPersistence) FindOne(userId int) (userEntity.UserInterface, error) {
+func (up userPersistence) FindOneById(userId int) (userEntity.UserInterface, error) {
 	db := datasource.DbConnect()
-	uRecord := user{}
+	uRecord := record{}
 
 	if err := db.Where("id = ?", userId).
 		First(&uRecord).Error; err != nil {
