@@ -5,7 +5,7 @@ import (
 )
 
 type FindUserBooksResponseGenerator struct {
-	BooksDto []book.BookDto
+	BooksDto []book.Dto
 }
 
 type FindUserBooksResponse struct {

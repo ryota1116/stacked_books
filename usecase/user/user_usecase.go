@@ -54,7 +54,7 @@ func (uu userUseCase) SignUp(command UserCreateCommand) (UserDto, error) {
 		return UserDto{}, err
 	}
 
-	u, err = uu.userRepository.Save(u)
+	u, err = uu.userRepository.SaveOne(u)
 	if err != nil {
 		return UserDto{}, err
 	}
@@ -82,7 +82,7 @@ func (uu userUseCase) SignIn(email string, password string) (UserDto, error) {
 }
 
 func (uu userUseCase) FindOne(userId int) (UserDto, error) {
-	u, err := uu.userRepository.FindOne(userId)
+	u, err := uu.userRepository.FindOneById(userId)
 	if err != nil {
 		return UserDto{}, err
 	}

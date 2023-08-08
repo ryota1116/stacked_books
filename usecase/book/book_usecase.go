@@ -7,7 +7,7 @@ import (
 
 type BookUseCaseInterface interface {
 	SearchBooks(title string) (model.ResponseBodyFromGoogleBooksApi, error)
-	GetBookById(bookId int) (BookDto, error)
+	GetBookById(bookId int) (Dto, error)
 }
 
 type bookUseCase struct {
@@ -38,13 +38,13 @@ func (bu bookUseCase) SearchBooks(title string) (model.ResponseBodyFromGoogleBoo
 	return responseFromGoogleBooksAPI, nil
 }
 
-func (bu bookUseCase) GetBookById(bookId int) (BookDto, error) {
+func (bu bookUseCase) GetBookById(bookId int) (Dto, error) {
 	b, err := bu.bookRepository.FindOneById(bookId)
 	if err != nil {
-		return BookDto{}, err
+		return Dto{}, err
 	}
 
-	bookDtoGenerator := BookDtoGenerator{Book: b}
+	bookDtoGenerator := DtoGenerator{Book: b}
 	bookDto := bookDtoGenerator.Execute()
 
 	return bookDto, nil

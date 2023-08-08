@@ -7,8 +7,9 @@ import (
 )
 
 type UserBookUseCase interface {
-	RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error)
-	FindUserBooksByUserId(userId int) ([]book.BookDto, error)
+	RegisterUserBook(command UserBookCreateCommand) (book.Dto, UserBookDto, error)
+	FindUserBooksByUserId(userId int) ([]book.Dto, error)
+	SearchUserBooksByStatus(command SearchUserBooksByStatusCommand) ([]UserBookDto, error)
 }
 
 type userBookUseCase struct {
@@ -24,7 +25,7 @@ func NewUserBookUseCase(br model.BookRepository, ubr userbook.UserBookRepository
 }
 
 // RegisterUserBook : UserBooksレコードを作成する
-func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book.BookDto, UserBookDto, error) {
+func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book.Dto, UserBookDto, error) {
 	// GoogleBooksIDからBookエンティティを取得
 	b, err := ubu.bookRepository.FindOneByGoogleBooksId(command.Book.GoogleBooksId)
 	if err != nil {
@@ -45,10 +46,10 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 		)
 
 		if err != nil {
-			return book.BookDto{}, UserBookDto{}, err
+			return book.Dto{}, UserBookDto{}, err
 		}
-		if err := ubu.bookRepository.Save(b); err != nil {
-			return book.BookDto{}, UserBookDto{}, err
+		if err := ubu.bookRepository.SaveOne(b); err != nil {
+			return book.Dto{}, UserBookDto{}, err
 		}
 	}
 
@@ -58,33 +59,57 @@ func (ubu userBookUseCase) RegisterUserBook(command UserBookCreateCommand) (book
 		*b.Id().Value(),
 		command.UserBook.Status,
 		command.UserBook.Memo,
+		b,
 	)
 	if err != nil {
-		return book.BookDto{}, UserBookDto{}, err
+		return book.Dto{}, UserBookDto{}, err
 	}
 
 	// UserBookを保存する
-	if err := ubu.userBookRepository.Save(userBook); err != nil {
-		return book.BookDto{}, UserBookDto{}, err
+	if err := ubu.userBookRepository.SaveOne(userBook); err != nil {
+		return book.Dto{}, UserBookDto{}, err
 	}
 
 	// DTOを返却
-	return book.BookDtoGenerator{Book: b}.Execute(),
+	return book.DtoGenerator{Book: b}.Execute(),
 		UserBookDtoGenerator{UserBook: userBook}.Execute(),
 		nil
 }
 
 // FindUserBooksByUserId : ログイン中のユーザーが登録している本の一覧を取得する
-func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]book.BookDto, error) {
-	books, err := ubu.bookRepository.FindAllByUserId(userId)
+func (ubu userBookUseCase) FindUserBooksByUserId(userId int) ([]book.Dto, error) {
+	books, err := ubu.bookRepository.FindListByUserId(userId)
 
 	// DTOに変換
-	var booksDto []book.BookDto
+	var booksDto []book.Dto
 	for _, b := range books {
-		dtog := book.BookDtoGenerator{Book: b}
+		dtog := book.DtoGenerator{Book: b}
 
 		booksDto = append(booksDto, dtog.Execute())
 	}
 
 	return booksDto, err
+}
+
+func (ubu userBookUseCase) SearchUserBooksByStatus(
+	command SearchUserBooksByStatusCommand,
+) ([]UserBookDto, error) {
+	status, err := userbook.NewStatus(command.Status)
+	if err != nil {
+		return nil, err
+	}
+
+	userBooks, err := ubu.userBookRepository.FindListByStatus(
+		command.UserId,
+		status,
+	)
+
+	// DTOに変換
+	var userBooksDto []UserBookDto
+	for _, b := range userBooks {
+		dtog := UserBookDtoGenerator{UserBook: b}
+
+		userBooksDto = append(userBooksDto, dtog.Execute())
+	}
+	return userBooksDto, err
 }

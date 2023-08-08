@@ -6,7 +6,7 @@ import (
 )
 
 type RegisterUserBookResponseGenerator struct {
-	BookDto     book.BookDto
+	BookDto     book.Dto
 	UserBookDto userbook.UserBookDto
 }
 

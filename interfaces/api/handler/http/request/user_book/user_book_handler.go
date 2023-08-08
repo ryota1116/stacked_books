@@ -3,9 +3,11 @@ package user_book
 import (
 	"encoding/json"
 	RegisterUserBooks "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/register_user_books"
+	SearchUserBooksByStatus "github.com/ryota1116/stacked_books/interfaces/api/handler/http/request/user_book/search_user_books_by_status"
 	httpResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/user_book"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/user_book/find_user_books"
+	searchUserBooksByResponse "github.com/ryota1116/stacked_books/interfaces/api/handler/http/response/user_book/search_user_books_by_response"
 	"github.com/ryota1116/stacked_books/interfaces/api/handler/middleware"
 	userBookUseCase "github.com/ryota1116/stacked_books/usecase/userbook"
 	"net/http"
@@ -14,6 +16,7 @@ import (
 type UserBookHandler interface {
 	RegisterUserBook(w http.ResponseWriter, r *http.Request)
 	FindUserBooks(w http.ResponseWriter, r *http.Request)
+	SearchUserBooksByStatus(w http.ResponseWriter, r *http.Request)
 }
 
 type userBookHandler struct {
@@ -119,6 +122,44 @@ func (ubh userBookHandler) FindUserBooks(w http.ResponseWriter, r *http.Request)
 		StatusCode: http.StatusOK,
 		ResponseBody: find_user_books.FindUserBooksResponseGenerator{
 			BooksDto: booksDto,
+		}.Execute(),
+	}.ReturnResponse(w)
+}
+
+func (ubh userBookHandler) SearchUserBooksByStatus(w http.ResponseWriter, r *http.Request) {
+	// JSONのリクエストボディを構造体に変換する
+	requestBody := SearchUserBooksByStatus.RequestBody{}
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		httpResponse.Response{
+			StatusCode:   http.StatusInternalServerError,
+			ResponseBody: err.Error(),
+		}.ReturnResponse(w)
+		return
+	}
+
+	// ログイン中のユーザーを取得する
+	currentUser, err := ubh.userSessionHandlerMiddleWare.CurrentUser(r)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
+
+	command := userBookUseCase.SearchUserBooksByStatusCommand{
+		UserId: currentUser.Id,
+		Status: requestBody.Status,
+	}
+
+	userBooksDto, err := ubh.userBookUseCase.SearchUserBooksByStatus(command)
+	if err != nil {
+		httpResponse.Return500Response(w, err)
+		return
+	}
+
+	httpResponse.Response{
+		StatusCode: http.StatusOK,
+		ResponseBody: searchUserBooksByResponse.ResponseGenerator{
+			UserBooksDto: userBooksDto,
 		}.Execute(),
 	}.ReturnResponse(w)
 }

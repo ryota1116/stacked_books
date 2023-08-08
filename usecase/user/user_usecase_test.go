@@ -16,7 +16,7 @@ const hashedPassword = "$ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABC
 type UserRepositoryMock struct {
 }
 
-func (UserRepositoryMock) Save(_ modelUser.UserInterface) (modelUser.UserInterface, error) {
+func (UserRepositoryMock) SaveOne(_ modelUser.UserInterface) (modelUser.UserInterface, error) {
 	id := 1
 	u, err := modelUser.NewUser(
 		&id,
@@ -48,7 +48,7 @@ func (UserRepositoryMock) FindOneByEmail(_ string) (modelUser.UserInterface, err
 	return u, err
 }
 
-func (UserRepositoryMock) FindOne(_ int) (modelUser.UserInterface, error) {
+func (UserRepositoryMock) FindOneById(_ int) (modelUser.UserInterface, error) {
 	id := 1
 	u, err := modelUser.NewUser(
 		&id,

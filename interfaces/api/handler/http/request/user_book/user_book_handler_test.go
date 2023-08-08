@@ -20,7 +20,7 @@ const expectedJsonDirectory = "/tests/expected/api/userBookHandler"
 
 type UserBookUseCaseMock struct{}
 
-func (UserBookUseCaseMock) RegisterUserBook(_ userBookUseCase.UserBookCreateCommand) (bookUseCase.BookDto, userBookUseCase.UserBookDto, error) {
+func (UserBookUseCaseMock) RegisterUserBook(_ userBookUseCase.UserBookCreateCommand) (bookUseCase.Dto, userBookUseCase.UserBookDto, error) {
 	description := "読んでわかるコードの重要性と方法について解説"
 	image := ""
 	isbn10 := "4873115655"
@@ -30,7 +30,7 @@ func (UserBookUseCaseMock) RegisterUserBook(_ userBookUseCase.UserBookCreateComm
 	publishedDate := 0
 	memo := "メモメモメモ"
 
-	return bookUseCase.BookDto{
+	return bookUseCase.Dto{
 			Id:             1,
 			GoogleBooksId:  "Wx1dLwEACAAJ",
 			Title:          "リーダブルコード",
@@ -52,7 +52,7 @@ func (UserBookUseCaseMock) RegisterUserBook(_ userBookUseCase.UserBookCreateComm
 		}, nil
 }
 
-func (UserBookUseCaseMock) FindUserBooksByUserId(_ int) ([]bookUseCase.BookDto, error) {
+func (UserBookUseCaseMock) FindUserBooksByUserId(_ int) ([]bookUseCase.Dto, error) {
 	description := "読んでわかるコードの重要性と方法について解説"
 	image := ""
 	isbn10 := "4873115655"
@@ -61,8 +61,8 @@ func (UserBookUseCaseMock) FindUserBooksByUserId(_ int) ([]bookUseCase.BookDto, 
 	publishedMonth := 6
 	publishedDate := 0
 
-	var userBookDto []bookUseCase.BookDto
-	userBookDto = append(userBookDto, bookUseCase.BookDto{
+	var userBookDto []bookUseCase.Dto
+	userBookDto = append(userBookDto, bookUseCase.Dto{
 		Id:             1,
 		GoogleBooksId:  "Wx1dLwEACAAJ",
 		Title:          "リーダブルコード",
@@ -77,6 +77,23 @@ func (UserBookUseCaseMock) FindUserBooksByUserId(_ int) ([]bookUseCase.BookDto, 
 	})
 
 	return userBookDto, nil
+}
+
+func (UserBookUseCaseMock) SearchUserBooksByStatus(
+	_ userBookUseCase.SearchUserBooksByStatusCommand,
+) ([]userBookUseCase.UserBookDto, error) {
+	memo := "メモメモメモ"
+	ubDto := userBookUseCase.UserBookDto{
+		UserId:    1,
+		BookId:    1,
+		Status:    1,
+		Memo:      &memo,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+	}
+
+	var userBooksDto []userBookUseCase.UserBookDto
+	return append(userBooksDto, ubDto), nil
 }
 
 type UserSessionHandlerMiddleWareMock struct{}
